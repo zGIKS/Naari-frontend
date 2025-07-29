@@ -36,8 +36,8 @@ export class AuthService {
     return this.sessionManager.getCurrentUser();
   }
 
-  logout() {
-    this.sessionManager.clearSession();
+  async logout() {
+    await this.sessionManager.logout();
     this.notifyObservers('LOGOUT_SUCCESS', null);
   }
 

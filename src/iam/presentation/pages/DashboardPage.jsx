@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Header from '../../../shared/components/Header';
+import DashboardLayout from '../../../shared/components/DashboardLayout';
 import { AuthServiceFactory } from '../../infrastructure/factories/AuthServiceFactory';
 
 const DashboardPage = () => {
@@ -28,14 +28,12 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="dashboard-page">
-      <Header />
-      
-      <main className="dashboard-content">
-        <h1>{t('welcome.title')}</h1>
+    <DashboardLayout>
+      <div className="dashboard-welcome">
+        <h1>{t('dashboard.title')}</h1>
         <h2>{t('welcome.message', { name: user.full_name || user.firstName || user.email })}</h2>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
 

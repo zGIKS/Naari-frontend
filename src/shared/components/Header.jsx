@@ -1,5 +1,9 @@
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
+import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
+import { useUserRole } from '../hooks/useUserRole';
 
 const SunIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -14,9 +18,69 @@ const MoonIcon = () => (
   </svg>
 );
 
-const Header = () => {
+const UserIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
+const ChevronDownIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="6,9 12,15 18,9"></polyline>
+  </svg>
+);
+
+const MenuBarsIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+
+const GlobeIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="2" y1="12" x2="22" y2="12"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  </svg>
+);
+
+const ProfileIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
+const SettingsIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m15.5-3.5L19 12l-2.5 2.5m-9-9L5 12l2.5 2.5"/>
+  </svg>
+);
+
+const LogoutIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <polyline points="16,17 21,12 16,7"/>
+    <line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+);
+
+const Header = ({ onToggleSidebar, sidebarOpen = false }) => {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const [user, setUser] = useState(null);
+  const { userRole } = useUserRole();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const authService = AuthServiceFactory.getInstance();
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+  }, []);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'es' ? 'en' : 'es';
@@ -24,31 +88,56 @@ const Header = () => {
     localStorage.setItem('naari_language', newLang);
   };
 
+  const handleLogout = async () => {
+    try {
+      const authService = AuthServiceFactory.getInstance();
+      await authService.logout();
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Error during logout:', error);
+      window.location.href = '/login';
+    }
+  };
+
   return (
     <header className="app-header">
       <div className="header-content">
-        <div className="logo">
-          <h2>Naari</h2>
+        <div className="header-left">
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              className="sidebar-toggle"
+              aria-label={t('sidebar.toggle')}
+            >
+              <MenuBarsIcon />
+            </button>
+          )}
+          <div className="logo">
+            <h2>Naari</h2>
+          </div>
         </div>
         
         <div className="header-controls">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="theme-toggle"
-            aria-label={t('theme.toggle')}
-          >
-            {theme === 'light' ? <MoonIcon /> : <SunIcon />}
-          </button>
-          
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            className="language-toggle"
-            aria-label="Toggle language"
-          >
-            {i18n.language === 'es' ? 'EN' : 'ES'}
-          </button>
+          {/* Desktop Controls */}
+          <div className="header-controls-desktop">
+            <div className="user-name-display">
+              <UserIcon />
+              <span className="user-name">
+                {user?.full_name || user?.firstName || user?.email || 'Usuario'}
+              </span>
+            </div>
+          </div>
+
+          {/* Mobile Controls */}
+          <div className="header-controls-mobile">
+            <div className="user-name-display">
+              <UserIcon />
+              <span className="user-name">
+                {user?.full_name || user?.firstName || user?.email || 'Usuario'}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </header>

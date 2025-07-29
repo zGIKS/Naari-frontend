@@ -7,7 +7,8 @@ export class ApiRouter {
   
   static get AUTH() {
     return {
-      LOGIN: this.buildUrl(API_ENDPOINTS.AUTH.LOGIN)
+      LOGIN: this.buildUrl(API_ENDPOINTS.AUTH.LOGIN),
+      LOGOUT: this.buildUrl(API_ENDPOINTS.AUTH.LOGOUT)
     };
   }
   

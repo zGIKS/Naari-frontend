@@ -9,7 +9,8 @@ export const API_CONFIG = {
 
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/auth/login'
+    LOGIN: '/auth/login',
+    LOGOUT: '/auth/logout'
   },
   
   USERS: {

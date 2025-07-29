@@ -4,6 +4,8 @@ import ProtectedRoute from './shared/components/ProtectedRoute';
 import PublicRoute from './shared/components/PublicRoute';
 import LoginPage from './iam/presentation/pages/LoginPage';
 import DashboardPage from './iam/presentation/pages/DashboardPage';
+import SettingsPage from './shared/pages/SettingsPage';
+import ProfilePage from './shared/pages/ProfilePage';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -28,6 +30,24 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             } 
           />

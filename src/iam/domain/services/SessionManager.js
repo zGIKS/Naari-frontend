@@ -1,4 +1,5 @@
 import { ApiRouter } from '../../../shared/services/ApiRouter.js';
+import { JWTUtils } from '../../../shared/utils/jwtUtils.js';
 
 export class SessionManager {
   constructor(apiClient) {
@@ -22,12 +23,30 @@ export class SessionManager {
       return false;
     }
 
+    // Verificar si el token ha expirado
+    if (JWTUtils.isTokenExpired(token)) {
+      this.clearSession();
+      return false;
+    }
+
     try {
       this.apiClient.setAuthToken(token);
+      
+      // Extraer roles del JWT
+      const tokenInfo = JWTUtils.getTokenInfo(token);
+      
       const userResponse = await this.apiClient.get(ApiRouter.USERS.ME);
       
       if (userResponse.authenticated && userResponse.active) {
-        this.currentUser = userResponse;
+        // Combinar datos del usuario con roles del JWT
+        const userWithRoles = {
+          ...userResponse,
+          roles: tokenInfo?.roles || [],
+          userId: tokenInfo?.userId,
+          sessionId: tokenInfo?.sessionId
+        };
+        
+        this.currentUser = userWithRoles;
         this.token = token;
         return true;
       } else {
@@ -49,13 +68,24 @@ export class SessionManager {
         this.storeToken(loginResponse.accessToken);
         this.apiClient.setAuthToken(loginResponse.accessToken);
         
+        // Extraer roles del JWT
+        const tokenInfo = JWTUtils.getTokenInfo(loginResponse.accessToken);
+        
         // Obtener datos del usuario
         const userResponse = await this.apiClient.get(ApiRouter.USERS.ME);
         
         if (userResponse.authenticated && userResponse.active) {
-          this.currentUser = userResponse;
-          this.notifyObservers('SESSION_CREATED', userResponse);
-          return { success: true, user: userResponse };
+          // Combinar datos del usuario con roles del JWT
+          const userWithRoles = {
+            ...userResponse,
+            roles: tokenInfo?.roles || [],
+            userId: tokenInfo?.userId,
+            sessionId: tokenInfo?.sessionId
+          };
+          
+          this.currentUser = userWithRoles;
+          this.notifyObservers('SESSION_CREATED', userWithRoles);
+          return { success: true, user: userWithRoles };
         } else {
           this.clearSession();
           return { success: false, error: 'USER_NOT_ACTIVE' };
@@ -65,6 +95,18 @@ export class SessionManager {
       }
     } catch (error) {
       return { success: false, error: error.response?.data?.message || 'Authentication failed' };
+    }
+  }
+
+  async logout() {
+    try {
+      if (this.token) {
+        await this.apiClient.post(ApiRouter.AUTH.LOGOUT, {});
+      }
+    } catch (error) {
+      console.warn('Error during logout API call:', error);
+    } finally {
+      this.clearSession();
     }
   }
 
