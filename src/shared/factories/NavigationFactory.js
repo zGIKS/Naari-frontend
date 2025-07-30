@@ -22,13 +22,19 @@ export class NavigationFactory {
     return [
       {
         icon: 'DashboardIcon',
-        label: 'Dashboard',
+        label: 'navigation.dashboard',
         path: '/dashboard',
         id: 'dashboard'
       },
       {
+        icon: 'AdminIcon',
+        label: 'navigation.admin',
+        path: '/admin',
+        id: 'admin'
+      },
+      {
         icon: 'ClientsIcon',
-        label: 'Clientes',
+        label: 'navigation.clients',
         path: '/clients',
         id: 'clients',
         permission: 'clients:read',
@@ -47,7 +53,7 @@ export class NavigationFactory {
       },
       {
         icon: 'UsersIcon',
-        label: 'Usuarios',
+        label: 'navigation.users',
         path: '/users',
         id: 'users',
         permission: 'users:read',
@@ -66,7 +72,7 @@ export class NavigationFactory {
       },
       {
         icon: 'ServicesIcon',
-        label: 'Servicios',
+        label: 'navigation.services',
         path: '/services',
         id: 'services',
         permission: 'services:read',
@@ -90,7 +96,7 @@ export class NavigationFactory {
       },
       {
         icon: 'ProductsIcon',
-        label: 'Productos',
+        label: 'navigation.products',
         path: '/products',
         id: 'products',
         permission: 'products:read',
@@ -104,7 +110,7 @@ export class NavigationFactory {
       },
       {
         icon: 'BranchesIcon',
-        label: 'Sucursales',
+        label: 'navigation.branches',
         path: '/branches',
         id: 'branches',
         permission: 'branches:read',
@@ -118,7 +124,7 @@ export class NavigationFactory {
       },
       {
         icon: 'AppointmentsIcon',
-        label: 'Citas',
+        label: 'navigation.appointments',
         path: '/appointments',
         id: 'appointments',
         permission: 'appointments:read',
@@ -137,7 +143,7 @@ export class NavigationFactory {
       },
       {
         icon: 'AnalyticsIcon',
-        label: 'Analytics',
+        label: 'navigation.analytics',
         path: '/analytics',
         id: 'analytics',
         permission: 'analytics:read',
@@ -167,7 +173,7 @@ export class NavigationFactory {
       },
       {
         icon: 'ClientsIcon',
-        label: 'Clientes',
+        label: 'navigation.clients',
         path: '/clients',
         id: 'clients',
         permission: 'clients:read',
@@ -186,7 +192,7 @@ export class NavigationFactory {
       },
       {
         icon: 'AppointmentsIcon',
-        label: 'Citas',
+        label: 'navigation.appointments',
         path: '/appointments',
         id: 'appointments',
         permission: 'appointments:read',
@@ -205,7 +211,7 @@ export class NavigationFactory {
       },
       {
         icon: 'CatalogIcon',
-        label: 'Servicios y productos',
+        label: 'navigation.catalog',
         path: '/catalog',
         id: 'catalog',
         subItems: [
@@ -228,13 +234,13 @@ export class NavigationFactory {
     return [
       {
         icon: 'DashboardIcon',
-        label: 'Mi Panel',
+        label: 'navigation.dashboard',
         path: '/dashboard',
         id: 'dashboard'
       },
       {
         icon: 'AgendaIcon',
-        label: 'Mi Agenda',
+        label: 'navigation.my-appointments',
         path: '/my-appointments',
         id: 'my-appointments',
         subItems: [
@@ -247,7 +253,7 @@ export class NavigationFactory {
       },
       {
         icon: 'ClientsIcon',
-        label: 'Mis clientes',
+        label: 'navigation.my-clients',
         path: '/my-clients',
         id: 'my-clients',
         subItems: [

@@ -62,7 +62,7 @@ const SidebarItem = ({ item, isActive, onClick, isExpanded, onToggle }) => {
           <span className="sidebar-item-icon">
             {SidebarIcons[item.icon] ? SidebarIcons[item.icon]() : <span>{item.icon}</span>}
           </span>
-          <span className="sidebar-item-label">{t(`navigation.${item.id}`, item.label)}</span>
+          <span className="sidebar-item-label">{t(item.label)}</span>
         </div>
         {hasSubItems && (
           <span className="sidebar-item-chevron">

@@ -69,6 +69,7 @@ const resources = {
       },
       navigation: {
         dashboard: 'Panel de Control',
+        admin: 'Panel Admin',
         clients: 'Clientes',
         users: 'Usuarios',
         services: 'Servicios',
@@ -176,6 +177,7 @@ const resources = {
       },
       navigation: {
         dashboard: 'Dashboard',
+        admin: 'Admin Panel',
         clients: 'Clients',
         users: 'Users',
         services: 'Services',

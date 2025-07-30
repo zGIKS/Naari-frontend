@@ -6,6 +6,7 @@ import LoginPage from './iam/presentation/pages/LoginPage';
 import DashboardPage from './iam/presentation/pages/DashboardPage';
 import SettingsPage from './shared/pages/SettingsPage';
 import ProfilePage from './shared/pages/ProfilePage';
+import { AdminDashboard } from './catalog/presentation/pages/AdminDashboard';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -48,6 +49,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminDashboard />
               </ProtectedRoute>
             } 
           />
