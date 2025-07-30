@@ -3,11 +3,12 @@
  * Patrón: Entity (DDD)
  */
 export class Category {
-  constructor(id, name, description, branchId) {
+  constructor(id, name, description, branchId, isActive = true) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.branchId = branchId;
+    this.isActive = isActive;
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
@@ -15,6 +16,16 @@ export class Category {
   updateInfo(name, description) {
     this.name = name;
     this.description = description;
+    this.updatedAt = new Date();
+  }
+
+  activate() {
+    this.isActive = true;
+    this.updatedAt = new Date();
+  }
+
+  deactivate() {
+    this.isActive = false;
     this.updatedAt = new Date();
   }
 
@@ -29,7 +40,8 @@ export class Category {
       data.id,
       data.name,
       data.description,
-      data.branch_id
+      data.branch_id || data.BranchId,
+      data.active
     );
   }
 
@@ -38,6 +50,13 @@ export class Category {
       name: this.name,
       description: this.description,
       branch_id: this.branchId
+    };
+  }
+
+  toUpdatePayload() {
+    return {
+      name: this.name,
+      description: this.description
     };
   }
 }

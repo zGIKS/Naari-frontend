@@ -71,16 +71,43 @@ export class CategoryService {
     this.observer.unsubscribe(observer);
   }
 
-  async getAllCategories() {
+  async getAllCategories(branchId = null) {
+    if (!branchId) {
+      // If no branchId provided, return empty array
+      console.warn('No branchId provided for categories, returning empty array');
+      return [];
+    }
+
     try {
-      const response = await this.apiService.getAll();
+      const response = await this.apiService.getAll(branchId);
       // Handle different response formats
       const data = Array.isArray(response) ? response : response.data || [];
       return data.map(item => Category.fromApiResponse(item));
     } catch (error) {
       this.observer.notify('categoryLoadFailed', error);
       // Return empty array instead of throwing to prevent app crash
-      console.warn('Categories endpoint not available, returning empty array');
+      console.warn('Categories endpoint failed, returning empty array:', error.message);
+      return [];
+    }
+  }
+
+  async getAllCategoriesFromAllBranches(branches) {
+    try {
+      const allCategories = [];
+      
+      for (const branch of branches) {
+        try {
+          const branchCategories = await this.getAllCategories(branch.id);
+          allCategories.push(...branchCategories);
+        } catch (error) {
+          console.warn(`Failed to load categories for branch ${branch.id}:`, error);
+        }
+      }
+      
+      return allCategories;
+    } catch (error) {
+      this.observer.notify('categoryLoadFailed', error);
+      console.warn('Failed to load categories from all branches:', error);
       return [];
     }
   }
@@ -99,12 +126,53 @@ export class CategoryService {
 
   async createCategory(categoryData) {
     try {
-      const response = await this.apiService.create(categoryData);
-      const category = Category.fromApiResponse(response.data || response);
-      this.observer.notify('categoryCreated', category);
-      return category;
+      const command = new CreateCategoryCommand(categoryData, this.apiService, this.observer);
+      const result = await command.execute();
+      return Category.fromApiResponse(result.data || result);
     } catch (error) {
-      this.observer.notify('categoryCreateFailed', error);
+      throw error;
+    }
+  }
+
+  async updateCategory(categoryId, categoryData) {
+    try {
+      const category = new Category(
+        categoryId,
+        categoryData.name,
+        categoryData.description,
+        null // branchId is not needed for update
+      );
+
+      if (!category.name || !category.description) {
+        throw new Error('Datos de categoría inválidos');
+      }
+
+      const result = await this.apiService.update(categoryId, category.toUpdatePayload());
+      const updatedCategory = Category.fromApiResponse(result.data || result);
+      this.observer.notify('categoryUpdated', updatedCategory);
+      return updatedCategory;
+    } catch (error) {
+      this.observer.notify('categoryUpdateFailed', error);
+      throw error;
+    }
+  }
+
+  async toggleCategoryStatus(categoryId, activate, category) {
+    try {
+      let result;
+      if (activate) {
+        result = await this.apiService.activate(categoryId);
+        category.activate();
+      } else {
+        result = await this.apiService.deactivate(categoryId);
+        category.deactivate();
+      }
+
+      const updatedCategory = Category.fromApiResponse(result.data || result);
+      this.observer.notify('categoryStatusChanged', updatedCategory);
+      return updatedCategory;
+    } catch (error) {
+      this.observer.notify('categoryStatusChangeFailed', error);
       throw error;
     }
   }

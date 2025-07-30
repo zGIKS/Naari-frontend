@@ -51,13 +51,40 @@ class BaseApiService {
       ...options
     };
 
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        
+        try {
+          const errorBody = await response.json();
+          if (errorBody.message) {
+            errorMessage = errorBody.message;
+          } else if (errorBody.error) {
+            errorMessage = errorBody.error;
+          }
+        } catch (parseError) {
+          // If we can't parse the error response, use the default message
+        }
+        
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        error.endpoint = endpoint;
+        throw error;
+      }
 
-    return response.json();
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        // Network error
+        const networkError = new Error('Network error: Unable to connect to server');
+        networkError.status = 0;
+        networkError.endpoint = endpoint;
+        throw networkError;
+      }
+      throw error;
+    }
   }
 
   // Métodos abstractos para ser implementados por subclases
@@ -109,8 +136,11 @@ class BranchApiService extends BaseApiService {
  * Servicio para Categories
  */
 class CategoryApiService extends BaseApiService {
-  async getAll() {
-    return this.makeRequest('/categories');
+  async getAll(branchId) {
+    if (!branchId) {
+      throw new Error('branchId is required for categories endpoint');
+    }
+    return this.makeRequest(`/categories?branchId=${encodeURIComponent(branchId)}`);
   }
 
   async getByBranch(branchId) {
@@ -121,6 +151,25 @@ class CategoryApiService extends BaseApiService {
     return this.makeRequest('/categories', {
       method: 'POST',
       body: JSON.stringify(categoryData)
+    });
+  }
+
+  async update(id, categoryData) {
+    return this.makeRequest(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(categoryData)
+    });
+  }
+
+  async activate(id) {
+    return this.makeRequest(`/categories/${id}/activate`, {
+      method: 'PATCH'
+    });
+  }
+
+  async deactivate(id) {
+    return this.makeRequest(`/categories/${id}/deactivate`, {
+      method: 'PATCH'
     });
   }
 }
