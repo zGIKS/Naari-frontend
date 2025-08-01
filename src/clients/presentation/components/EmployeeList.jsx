@@ -62,32 +62,46 @@ export const EmployeeList = ({
     }
   };
 
-  // Debounce search to avoid too many API calls
+
+  // Debounce de 500ms y búsqueda inmediata con Enter
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const debounceTimeout = React.useRef();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-      setIsSearching(false);
-    }, 300); // Reduced to 300ms for better responsiveness
-
-    if (searchTerm !== debouncedSearchTerm) {
-      setIsSearching(true);
-    }
-
-    return () => clearTimeout(timer);
-  }, [searchTerm, debouncedSearchTerm]);
-
-  // Call onSearch when debounced search term changes
-  const debouncedOnSearch = useCallback(async (term) => {
-    if (onSearch) {
-      await onSearch(term);
-    }
+  // Ejecuta búsqueda (llama onSearch) y controla loading
+  const triggerSearch = useCallback(async (term) => {
+    setIsSearching(true);
+    if (onSearch) await onSearch(term);
+    setIsSearching(false);
   }, [onSearch]);
 
+  // Debounce: espera 500ms tras escribir
   useEffect(() => {
-    debouncedOnSearch(debouncedSearchTerm);
-  }, [debouncedSearchTerm, debouncedOnSearch]);
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    if (searchTerm === '') {
+      setDebouncedSearchTerm('');
+      triggerSearch('');
+      return;
+    }
+    debounceTimeout.current = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      triggerSearch(searchTerm);
+    }, 500);
+    // eslint-disable-next-line
+    return () => debounceTimeout.current && clearTimeout(debounceTimeout.current);
+  }, [searchTerm, triggerSearch]);
+
+  // Búsqueda inmediata con Enter
+  const handleSearchInput = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+      setDebouncedSearchTerm(searchTerm);
+      triggerSearch(searchTerm);
+    }
+  };
 
   // No frontend filtering needed - search is handled by backend
   const filteredEmployees = employees;
@@ -127,8 +141,10 @@ export const EmployeeList = ({
               type="text"
               placeholder={t('users.search.placeholder', 'Buscar por nombre, apellido o email...')}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchInput}
+              onKeyDown={handleSearchKeyDown}
               className="search-input"
+              autoFocus
             />
             {(isSearching || isLoading) && (
               <div className="search-loading">
