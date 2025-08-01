@@ -32,7 +32,7 @@ export class ClientFactory {
   /**
    * Crea o retorna el servicio de clientes
    */
-  createClientService() {
+  createClientService(t = null) {
     if (!ClientFactory._clientService) {
       if (!this.apiBaseUrl || !this.authToken) {
         throw new Error('ClientFactory must be initialized before creating services');
@@ -41,7 +41,7 @@ export class ClientFactory {
       const apiClient = ApiClient.getInstance();
       apiClient.initialize(this.apiBaseUrl, this.authToken);
       
-      ClientFactory._clientService = new ClientService(apiClient);
+      ClientFactory._clientService = new ClientService(apiClient, t);
     }
     
     return ClientFactory._clientService;

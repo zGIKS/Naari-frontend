@@ -184,7 +184,27 @@ const resources = {
         product_error_server: 'Error del servidor. Intenta nuevamente más tarde.',
         product_error_network: 'Error de conexión. Verifica tu conexión a internet.',
         product_error_general: 'Error al procesar la solicitud. Intenta nuevamente.',
-        products_list: 'Lista de Productos'
+        products_list: 'Lista de Productos',
+        new_branch: 'Nueva Sucursal',
+        edit_branch: 'Editar Sucursal',
+        branch_name: 'Nombre de la Sucursal',
+        branch_address: 'Dirección',
+        branch_phone: 'Teléfono',
+        branch_email: 'Email',
+        branch_name_placeholder: 'Ej: Sucursal Centro',
+        branch_address_placeholder: 'Ej: Av. Principal 123',
+        branch_phone_placeholder: 'Ej: +1234567890',
+        branch_email_placeholder: 'Ej: sucursal@empresa.com',
+        activate_branch: 'Activar Sucursal',
+        deactivate_branch: 'Desactivar Sucursal',
+        activate_branch_message: '¿Estás seguro que quieres activar esta sucursal?',
+        deactivate_branch_message: '¿Estás seguro que quieres desactivar esta sucursal?',
+        deactivate_branch_warning: 'Al desactivar esta sucursal, todos los usuarios asignados a ella también se desactivarán',
+        activate_branch_success: 'Sucursal activada. Los usuarios de esta sucursal han sido reactivados automáticamente',
+        deactivate_branch_success: 'Sucursal desactivada. Los usuarios de esta sucursal han sido desactivados automáticamente',
+        branch_active: 'Sucursal Activa',
+        branch_inactive: 'Sucursal Inactiva',
+        user_will_be_activated: 'El usuario será activado automáticamente al asignarlo a esta sucursal activa'
       },
       clients: {
         title: 'Gestión de Clientes',
@@ -213,7 +233,17 @@ const resources = {
           internet: 'Internet',
           walk_in: 'Visita directa',
           advertisement: 'Publicidad',
-          other: 'Otro'
+          other: 'Otro',
+          dni_placeholder: 'Ej: 12345678',
+          first_name_placeholder: 'Ej: Nombre',
+          last_name_placeholder: 'Ej: Apellido',
+          email_placeholder: 'Ej: correo@dominio.com',
+          phone_placeholder: 'Ej: 987654321',
+          address_placeholder: 'Ej: Av. Principal 123',
+          district_placeholder: 'Ej: Distrito',
+          province_placeholder: 'Ej: Provincia',
+          urbanization_placeholder: 'Ej: Urbanización',
+          ruc_placeholder: 'Ej: 20123456789'
         },
         list: {
           search_placeholder: 'Buscar por nombre, DNI o email...',
@@ -250,7 +280,25 @@ const resources = {
         error: {
           load_failed: 'Error al cargar clientes',
           create_failed: 'Error al crear cliente',
-          network: 'Error de conexión'
+          network: 'Error de conexión',
+          get_clients_failed: 'Error al obtener la lista de clientes',
+          missing_required_data: 'Faltan datos requeridos: DNI, nombres, apellidos y email son obligatorios',
+          search_failed: 'Error al buscar clientes',
+          dni_required: 'DNI es requerido',
+          name_required: 'Nombre es requerido',
+          lastname_required: 'Apellido es requerido',
+          email_required: 'Email es requerido',
+          email_format_invalid: 'Email no tiene formato válido',
+          dni_8_digits: 'DNI debe tener 8 dígitos',
+          ruc_11_digits: 'RUC debe tener 11 dígitos',
+          phone_9_digits: 'Teléfono debe tener al menos 9 dígitos',
+          invalid_data_check: 'Datos inválidos. Verifica la información ingresada.',
+          unauthorized_login_again: 'No tienes autorización. Inicia sesión nuevamente.',
+          no_permissions: 'No tienes permisos para realizar esta acción.',
+          client_already_exists: 'Ya existe un cliente con este DNI o email.',
+          server_error: 'Error del servidor. Intenta nuevamente más tarde.',
+          connection_error: 'Error de conexión. Verifica tu conexión a internet.',
+          unexpected_error: 'Error inesperado. Intenta nuevamente.'
         }
       },
       users: {
@@ -258,7 +306,9 @@ const resources = {
         subtitle: 'Administra usuarios y empleados del sistema',
         form: {
           title: 'Registrar Nuevo Empleado',
+          edit_title: 'Editar Empleado',
           subtitle: 'Complete la información del empleado y asigne rol y sucursal',
+          edit_subtitle: 'Modifica la información del empleado',
           basic_info: 'Información Básica',
           email: 'Email',
           first_name: 'Nombres',
@@ -266,10 +316,19 @@ const resources = {
           role: 'Rol',
           branch: 'Sucursal',
           password: 'Contraseña',
+          password_optional: 'Contraseña (opcional)',
+          password_placeholder: 'Mínimo 8 caracteres',
+          password_placeholder_edit: 'Dejar vacío para mantener actual',
           select_role: 'Seleccionar rol',
           select_branch: 'Seleccionar sucursal',
           password_help: 'Debe contener mayúscula, minúscula, número y símbolo especial',
-          create_employee: 'Crear Empleado'
+          create_employee: 'Crear Empleado',
+          update_employee: 'Actualizar Empleado',
+          role_readonly_self: 'No puedes cambiar tu propio rol',
+          role_readonly_admin: 'No puedes cambiar el rol de administradores',
+          first_name_placeholder: 'Ej: Nombre',
+          last_name_placeholder: 'Ej: Apellido',
+          email_placeholder: 'Ej: correo@dominio.com'
         },
         info: {
           manage_employees: 'Gestionar Empleados',
@@ -294,12 +353,70 @@ const resources = {
           password_requirements: 'Debe contener mayúscula, minúscula, número y símbolo'
         },
         success: {
-          created: 'Empleado registrado exitosamente'
+          created: 'Empleado registrado exitosamente',
+          updated: 'Empleado actualizado exitosamente',
+          activated: 'Empleado activado exitosamente',
+          deactivated: 'Empleado desactivado exitosamente'
         },
         error: {
           create_failed: 'Error al crear empleado',
+          update_failed: 'Error al actualizar empleado',
+          load_employees_failed: 'Error al cargar empleados',
           load_branches_failed: 'Error al cargar sucursales',
-          network: 'Error de conexión'
+          status_change_failed: 'Error al cambiar estado',
+          network: 'Error de conexión',
+          missing_required_data: 'Faltan datos requeridos: email, nombres, apellidos y rol son obligatorios',
+          cannot_create_admin: 'No se pueden crear administradores desde el frontend por seguridad',
+          password_min_8_chars: 'La contraseña debe tener al menos 8 caracteres',
+          missing_required_data_simple: 'Faltan datos requeridos',
+          profile_update_failed: 'Error al actualizar perfil',
+          permissions_load_failed: 'Error al obtener permisos',
+          employees_load_failed: 'Error al obtener empleados',
+          activate_failed: 'Error al activar empleado',
+          deactivate_failed: 'Error al desactivar empleado',
+          no_admin_permissions: 'Solo los administradores pueden cambiar roles de otros usuarios.',
+          no_admin_permissions_update: 'No tienes permisos de administrador para actualizar otros usuarios.',
+          endpoint_not_available: 'El endpoint de actualización de usuarios no está disponible.',
+          invalid_data_check: 'Datos inválidos. Verifica la información ingresada.',
+          unauthorized_login_again: 'No tienes autorización. Inicia sesión nuevamente.',
+          no_permissions: 'No tienes permisos para realizar esta acción.',
+          email_already_exists: 'Ya existe un usuario con este email.',
+          invalid_data_provided: 'Los datos proporcionados no son válidos.',
+          server_error: 'Error del servidor. Intenta nuevamente más tarde.',
+          connection_error: 'Error de conexión. Verifica tu conexión a internet.',
+          unexpected_error: 'Error inesperado. Intenta nuevamente.',
+          email_format_invalid: 'Email no tiene formato válido',
+          name_required: 'Nombre es requerido',
+          lastname_required: 'Apellido es requerido',
+          role_required_validation: 'Rol es requerido',
+          no_admin_role: 'No se puede asignar el rol de administrador.',
+          role_must_be_valid: 'Rol debe ser recepcionista o especialista.',
+          password_8_chars: 'Contraseña debe tener al menos 8 caracteres',
+          password_complexity: 'Contraseña debe contener mayúscula, minúscula, número y símbolo',
+          user_activated: 'Usuario activado exitosamente',
+          user_deactivated: 'Usuario desactivado exitosamente'
+        },
+        list: {
+          employees_list: 'Lista de Empleados',
+          employees_count: 'empleados',
+          no_employees: 'No hay empleados',
+          no_employees_desc: 'No se encontraron empleados con los filtros aplicados'
+        },
+        search: {
+          placeholder: 'Buscar por nombre, apellido o email...'
+        },
+        validation: {
+          email_required: 'Email es requerido',
+          email_invalid: 'Email no es válido',
+          first_name_required: 'Nombre es requerido',
+          last_name_required: 'Apellido es requerido',
+          role_required: 'Rol es requerido',
+          branch_required: 'Sucursal es requerida para este rol',
+          password_required: 'Contraseña es requerida',
+          password_min_length: 'Contraseña debe tener al menos 8 caracteres',
+          password_requirements: 'Debe contener mayúscula, minúscula, número y símbolo',
+          cannot_deactivate_self: 'No puedes desactivar tu propia cuenta',
+          cannot_deactivate_admin: 'No puedes desactivar administradores'
         }
       },
       common: {
@@ -311,7 +428,15 @@ const resources = {
         creating: 'Creando...',
         edit: 'Editar',
         close: 'Cerrar',
-        confirm: 'Confirmar'
+        confirm: 'Confirmar',
+        clear: 'Limpiar',
+        copied: '¡Copiado!',
+        copy_email: 'Copiar email',
+        active: 'Activo',
+        inactive: 'Inactivo',
+        activate: 'Activar',
+        deactivate: 'Desactivar',
+        update: 'Actualizar'
       },
       validation: {
         email_invalid: 'Email inválido',
@@ -319,7 +444,11 @@ const resources = {
         password_requirements: 'Debe contener mayúscula, minúscula, número y símbolo',
         first_name_required: 'Nombre requerido',
         last_name_required: 'Apellido requerido',
-        email_admin_only: 'Solo los administradores pueden modificar el email'
+        email_admin_only: 'Solo los administradores pueden modificar el email',
+        name_required: 'El nombre es requerido',
+        address_required: 'La dirección es requerida',
+        phone_required: 'El teléfono es requerido',
+        email_required: 'El email es requerido'
       }
     }
   },
@@ -505,7 +634,27 @@ const resources = {
         product_error_server: 'Server error. Please try again later.',
         product_error_network: 'Connection error. Please check your internet connection.',
         product_error_general: 'Error processing request. Please try again.',
-        products_list: 'Product List'
+        products_list: 'Product List',
+        new_branch: 'New Branch',
+        edit_branch: 'Edit Branch',
+        branch_name: 'Branch Name',
+        branch_address: 'Address',
+        branch_phone: 'Phone',
+        branch_email: 'Email',
+        branch_name_placeholder: 'Ex: Downtown Branch',
+        branch_address_placeholder: 'Ex: Main Ave 123',
+        branch_phone_placeholder: 'Ex: +1234567890',
+        branch_email_placeholder: 'Ex: branch@company.com',
+        activate_branch: 'Activate Branch',
+        deactivate_branch: 'Deactivate Branch',
+        activate_branch_message: 'Are you sure you want to activate this branch?',
+        deactivate_branch_message: 'Are you sure you want to deactivate this branch?',
+        deactivate_branch_warning: 'By deactivating this branch, all users assigned to it will also be deactivated',
+        activate_branch_success: 'Branch activated. Users from this branch have been automatically reactivated',
+        deactivate_branch_success: 'Branch deactivated. Users from this branch have been automatically deactivated',
+        branch_active: 'Active Branch',
+        branch_inactive: 'Inactive Branch',
+        user_will_be_activated: 'User will be automatically activated when assigned to this active branch'
       },
       clients: {
         title: 'Client Management',
@@ -534,7 +683,17 @@ const resources = {
           internet: 'Internet',
           walk_in: 'Walk-in',
           advertisement: 'Advertisement',
-          other: 'Other'
+          other: 'Other',
+          dni_placeholder: 'Ex: 12345678',
+          first_name_placeholder: 'Ex: First Name',
+          last_name_placeholder: 'Ex: Last Name',
+          email_placeholder: 'Ex: email@domain.com',
+          phone_placeholder: 'Ex: 987654321',
+          address_placeholder: 'Ex: Main Ave 123',
+          district_placeholder: 'Ex: District',
+          province_placeholder: 'Ex: Province',
+          urbanization_placeholder: 'Ex: Subdivision',
+          ruc_placeholder: 'Ex: 20123456789'
         },
         list: {
           search_placeholder: 'Search by name, ID or email...',
@@ -571,7 +730,25 @@ const resources = {
         error: {
           load_failed: 'Error loading clients',
           create_failed: 'Error creating client',
-          network: 'Connection error'
+          network: 'Connection error',
+          get_clients_failed: 'Error getting client list',
+          missing_required_data: 'Missing required data: ID, first name, last name and email are mandatory',
+          search_failed: 'Error searching clients',
+          dni_required: 'ID is required',
+          name_required: 'First name is required',
+          lastname_required: 'Last name is required',
+          email_required: 'Email is required',
+          email_format_invalid: 'Email format is not valid',
+          dni_8_digits: 'ID must have 8 digits',
+          ruc_11_digits: 'Tax ID must have 11 digits',
+          phone_9_digits: 'Phone must have at least 9 digits',
+          invalid_data_check: 'Invalid data. Please check the entered information.',
+          unauthorized_login_again: 'You are not authorized. Please login again.',
+          no_permissions: 'You do not have permissions to perform this action.',
+          client_already_exists: 'A client with this ID or email already exists.',
+          server_error: 'Server error. Please try again later.',
+          connection_error: 'Connection error. Please check your internet connection.',
+          unexpected_error: 'Unexpected error. Please try again.'
         }
       },
       users: {
@@ -579,7 +756,9 @@ const resources = {
         subtitle: 'Manage system users and employees',
         form: {
           title: 'Register New Employee',
+          edit_title: 'Edit Employee',
           subtitle: 'Complete employee information and assign role and branch',
+          edit_subtitle: 'Modify employee information',
           basic_info: 'Basic Information',
           email: 'Email',
           first_name: 'First Name',
@@ -587,10 +766,19 @@ const resources = {
           role: 'Role',
           branch: 'Branch',
           password: 'Password',
+          password_optional: 'Password ',
+          password_placeholder: 'Minimum 8 characters',
+          password_placeholder_edit: 'Leave empty to keep current',
           select_role: 'Select role',
           select_branch: 'Select branch',
           password_help: 'Must contain uppercase, lowercase, number and special character',
-          create_employee: 'Create Employee'
+          create_employee: 'Create Employee',
+          update_employee: 'Update Employee',
+          role_readonly_self: 'You cannot change your own role',
+          role_readonly_admin: 'You cannot change the role of administrators',
+          first_name_placeholder: 'Ex: First Name',
+          last_name_placeholder: 'Ex: Last Name',
+          email_placeholder: 'Ex: email@domain.com'
         },
         info: {
           manage_employees: 'Manage Employees',
@@ -615,12 +803,70 @@ const resources = {
           password_requirements: 'Must contain uppercase, lowercase, number and symbol'
         },
         success: {
-          created: 'Employee registered successfully'
+          created: 'Employee registered successfully',
+          updated: 'Employee updated successfully',
+          activated: 'Employee activated successfully',
+          deactivated: 'Employee deactivated successfully'
         },
         error: {
           create_failed: 'Error creating employee',
+          update_failed: 'Error updating employee',
+          load_employees_failed: 'Error loading employees',
           load_branches_failed: 'Error loading branches',
-          network: 'Connection error'
+          status_change_failed: 'Error changing status',
+          network: 'Connection error',
+          missing_required_data: 'Missing required data: email, first name, last name and role are mandatory',
+          cannot_create_admin: 'Cannot create administrators from frontend for security',
+          password_min_8_chars: 'Password must have at least 8 characters',
+          missing_required_data_simple: 'Missing required data',
+          profile_update_failed: 'Error updating profile',
+          permissions_load_failed: 'Error getting permissions',
+          employees_load_failed: 'Error getting employees',
+          activate_failed: 'Error activating employee',
+          deactivate_failed: 'Error deactivating employee',
+          no_admin_permissions: 'Only administrators can change roles of other users.',
+          no_admin_permissions_update: 'You do not have administrator permissions to update other users.',
+          endpoint_not_available: 'The user update endpoint is not available.',
+          invalid_data_check: 'Invalid data. Please check the entered information.',
+          unauthorized_login_again: 'You are not authorized. Please login again.',
+          no_permissions: 'You do not have permissions to perform this action.',
+          email_already_exists: 'A user with this email already exists.',
+          invalid_data_provided: 'The provided data is not valid.',
+          server_error: 'Server error. Please try again later.',
+          connection_error: 'Connection error. Please check your internet connection.',
+          unexpected_error: 'Unexpected error. Please try again.',
+          email_format_invalid: 'Email format is not valid',
+          name_required: 'First name is required',
+          lastname_required: 'Last name is required',
+          role_required_validation: 'Role is required',
+          no_admin_role: 'Cannot assign administrator role.',
+          role_must_be_valid: 'Role must be receptionist or specialist.',
+          password_8_chars: 'Password must have at least 8 characters',
+          password_complexity: 'Password must contain uppercase, lowercase, number and symbol',
+          user_activated: 'User activated successfully',
+          user_deactivated: 'User deactivated successfully'
+        },
+        list: {
+          employees_list: 'Employee List',
+          employees_count: 'employees',
+          no_employees: 'No employees',
+          no_employees_desc: 'No employees found with the applied filters'
+        },
+        search: {
+          placeholder: 'Search by name, last name or email...'
+        },
+        validation: {
+          email_required: 'Email is required',
+          email_invalid: 'Email is not valid',
+          first_name_required: 'First name is required',
+          last_name_required: 'Last name is required',
+          role_required: 'Role is required',
+          branch_required: 'Branch is required for this role',
+          password_required: 'Password is required',
+          password_min_length: 'Password must have at least 8 characters',
+          password_requirements: 'Must contain uppercase, lowercase, number and symbol',
+          cannot_deactivate_self: 'You cannot deactivate your own account',
+          cannot_deactivate_admin: 'You cannot deactivate administrators'
         }
       },
       common: {
@@ -632,7 +878,15 @@ const resources = {
         creating: 'Creating...',
         edit: 'Edit',
         close: 'Close',
-        confirm: 'Confirm'
+        confirm: 'Confirm',
+        clear: 'Clear',
+        copied: 'Copied!',
+        copy_email: 'Copy email',
+        active: 'Active',
+        inactive: 'Inactive',
+        activate: 'Activate',
+        deactivate: 'Deactivate',
+        update: 'Update'
       },
       validation: {
         email_invalid: 'Invalid email',
@@ -640,7 +894,11 @@ const resources = {
         password_requirements: 'Must contain uppercase, lowercase, number and symbol',
         first_name_required: 'First name required',
         last_name_required: 'Last name required',
-        email_admin_only: 'Only administrators can modify email'
+        email_admin_only: 'Only administrators can modify email',
+        name_required: 'Name is required',
+        address_required: 'Address is required',
+        phone_required: 'Phone is required',
+        email_required: 'Email is required'
       }
     }
   }

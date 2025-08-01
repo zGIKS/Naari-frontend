@@ -45,7 +45,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
 
     setIsLoadingEmployees(true);
     try {
-      const userService = userFactory.createUserService();
+      const userService = userFactory.createUserService(t);
       const response = await userService.getAllEmployees(searchQuery);
 
       if (response.success) {
@@ -66,7 +66,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
 
     setIsSubmitting(true);
     try {
-      const userService = userFactory.createUserService();
+      const userService = userFactory.createUserService(t);
       const response = await userService.createEmployee(employeeData);
 
       if (response.success) {
@@ -90,7 +90,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
 
     setIsSubmitting(true);
     try {
-      const userService = userFactory.createUserService();
+      const userService = userFactory.createUserService(t);
       const response = await userService.updateEmployee(editingEmployee.id, employeeData, editingEmployee);
 
       if (response.success) {
@@ -122,7 +122,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     if (!userFactory) return;
 
     try {
-      const userService = userFactory.createUserService();
+      const userService = userFactory.createUserService(t);
       const response = employee.isActive 
         ? await userService.deactivateEmployee(employee.id)
         : await userService.activateEmployee(employee.id);

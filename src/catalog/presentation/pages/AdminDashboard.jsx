@@ -80,11 +80,11 @@ export const AdminDashboard = () => {
 
     switch (activeTab) {
       case 'branches':
-        return <BranchManager catalogFactory={catalogFactory} />;
+        return <BranchManager catalogFactory={catalogFactory} userFactory={userFactory} />;
       case 'users':
         return <UserManager userFactory={userFactory} catalogFactory={catalogFactory} />;
       default:
-        return <BranchManager catalogFactory={catalogFactory} />;
+        return <BranchManager catalogFactory={catalogFactory} userFactory={userFactory} />;
     }
   };
 

@@ -173,7 +173,7 @@ export const EmployeeForm = ({
               value={formData.firstName || ''}
               onChange={handleChange}
               className={`form-input ${errors.firstName ? 'error' : ''}`}
-              placeholder="Ej: Nombre"
+              placeholder={t('users.form.first_name_placeholder', 'Ej: Nombre')}
               disabled={isLoading}
             />
             {errors.firstName && <span className="form-error">{errors.firstName}</span>}
@@ -190,7 +190,7 @@ export const EmployeeForm = ({
               value={formData.lastName || ''}
               onChange={handleChange}
               className={`form-input ${errors.lastName ? 'error' : ''}`}
-              placeholder="Ej: Apellido"
+              placeholder={t('users.form.last_name_placeholder', 'Ej: Apellido')}
               disabled={isLoading}
             />
             {errors.lastName && <span className="form-error">{errors.lastName}</span>}
@@ -208,7 +208,7 @@ export const EmployeeForm = ({
               value={formData.email || ''}
               onChange={handleChange}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              placeholder="Ej: correo@dominio.com"
+              placeholder={t('users.form.email_placeholder', 'Ej: correo@dominio.com')}
               disabled={isLoading}
             />
             {errors.email && <span className="form-error">{errors.email}</span>}
@@ -280,11 +280,28 @@ export const EmployeeForm = ({
                 <option value="">{t('users.form.select_branch', 'Seleccionar sucursal')}</option>
                 {branches.map((branch) => (
                   <option key={branch.id} value={branch.id}>
-                    {branch.name}
+                    {branch.name} {branch.isActive ? 
+                      `(${t('admin.branch_active', 'Sucursal Activa')})` : 
+                      `(${t('admin.branch_inactive', 'Sucursal Inactiva')})`
+                    }
                   </option>
                 ))}
               </select>
               {errors.branchId && <span className="form-error">{errors.branchId}</span>}
+              
+              {/* Mostrar mensaje cuando se selecciona una sucursal activa */}
+              {formData.branchId && (() => {
+                const selectedBranch = branches.find(b => b.id === formData.branchId);
+                return selectedBranch && selectedBranch.isActive ? (
+                  <div className="form-info success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22,4 12,14.01 9,11.01"/>
+                    </svg>
+                    <span>{t('admin.user_will_be_activated', 'El usuario será activado automáticamente al asignarlo a esta sucursal activa')}</span>
+                  </div>
+                ) : null;
+              })()}
             </div>
           )}
 

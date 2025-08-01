@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BranchForm } from './BranchForm';
 import { BranchList } from './BranchList';
-import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
+import { BranchStatusConfirmationModal } from '../../../shared/components/BranchStatusConfirmationModal';
+import Toast from '../../../shared/components/Toast';
 
 /**
  * BranchManager - Gestor de sucursales
  * Implementa el patrón Observer para reaccionar a cambios
  */
-export const BranchManager = ({ catalogFactory }) => {
+export const BranchManager = ({ catalogFactory, userFactory }) => {
   const { t } = useTranslation();
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,11 +18,10 @@ export const BranchManager = ({ catalogFactory }) => {
   const [error, setError] = useState(null);
   const [confirmationModal, setConfirmationModal] = useState({
     isOpen: false,
-    branchId: null,
-    branchName: '',
-    action: null, // 'activate' or 'deactivate'
-    activate: false
+    branch: null,
+    action: null // 'activate' or 'deactivate'
   });
+  const [toast, setToast] = useState(null);
 
   const branchService = catalogFactory.getBranchService();
 
@@ -114,34 +114,49 @@ export const BranchManager = ({ catalogFactory }) => {
 
     setConfirmationModal({
       isOpen: true,
-      branchId: id,
-      branchName: branch.name,
-      action: activate ? 'activate' : 'deactivate',
-      activate: activate
+      branch: branch,
+      action: activate ? 'activate' : 'deactivate'
     });
   };
 
   const handleConfirmToggleStatus = async () => {
-    const { branchId, activate } = confirmationModal;
-    const branch = branches.find(b => b.id === branchId);
+    const { branch, action } = confirmationModal;
+    const activate = action === 'activate';
     
     setConfirmationModal({ ...confirmationModal, isOpen: false });
 
     try {
-      await branchService.toggleBranchStatus(branchId, activate, branch);
+      await branchService.toggleBranchStatus(branch.id, activate, branch);
+      
+      // Mostrar mensaje de éxito
+      const successMessage = activate 
+        ? t('admin.activate_branch_success', 'Sucursal activada. Los usuarios de esta sucursal han sido reactivados automáticamente')
+        : t('admin.deactivate_branch_success', 'Sucursal desactivada. Los usuarios de esta sucursal han sido desactivados automáticamente');
+      
+      showToast('success', successMessage);
+      
+      // Refrescar lista de branches
+      await loadBranches();
+      
     } catch (error) {
-      setError(error.message);
+      showToast('error', error.message);
     }
   };
 
   const handleCancelToggleStatus = () => {
     setConfirmationModal({
       isOpen: false,
-      branchId: null,
-      branchName: '',
-      action: null,
-      activate: false
+      branch: null,
+      action: null
     });
+  };
+
+  const showToast = (type, message) => {
+    setToast({ type, message });
+  };
+
+  const closeToast = () => {
+    setToast(null);
   };
 
   return (
@@ -206,25 +221,21 @@ export const BranchManager = ({ catalogFactory }) => {
         )}
       </div>
 
-      <ConfirmationModal
+      <BranchStatusConfirmationModal
         isOpen={confirmationModal.isOpen}
         onClose={handleCancelToggleStatus}
         onConfirm={handleConfirmToggleStatus}
-        title={confirmationModal.action === 'activate' 
-          ? t('admin.activate_branch', 'Activar Sucursal')
-          : t('admin.deactivate_branch', 'Desactivar Sucursal')
-        }
-        message={confirmationModal.action === 'activate'
-          ? t('admin.activate_branch_message', `¿Estás seguro que quieres activar la sucursal "${confirmationModal.branchName}"?`)
-          : t('admin.deactivate_branch_message', `¿Estás seguro que quieres desactivar la sucursal "${confirmationModal.branchName}"?`)
-        }
-        confirmText={confirmationModal.action === 'activate' 
-          ? t('admin.activate', 'Activar')
-          : t('admin.deactivate', 'Desactivar')
-        }
-        cancelText={t('common.cancel', 'Cancelar')}
-        type={confirmationModal.action === 'deactivate' ? 'warning' : 'info'}
+        branch={confirmationModal.branch}
+        action={confirmationModal.action}
       />
+
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={closeToast}
+        />
+      )}
     </div>
   );
 };

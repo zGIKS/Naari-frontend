@@ -25,7 +25,7 @@ export const ClientManager = ({ clientFactory }) => {
 
     setIsLoading(true);
     try {
-      const clientService = clientFactory.createClientService();
+      const clientService = clientFactory.createClientService(t);
       const response = await clientService.getClients();
 
       if (response.success) {
@@ -46,7 +46,7 @@ export const ClientManager = ({ clientFactory }) => {
 
     setIsSubmitting(true);
     try {
-      const clientService = clientFactory.createClientService();
+      const clientService = clientFactory.createClientService(t);
       const response = await clientService.createClient(clientData);
 
       if (response.success) {

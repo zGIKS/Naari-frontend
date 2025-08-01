@@ -6,8 +6,9 @@ import { API_ENDPOINTS } from '../../../shared/config/ApiConfig.js';
  * UserService - Servicio para gestión de usuarios/empleados
  */
 export class UserService {
-  constructor(apiClient) {
+  constructor(apiClient, t = null) {
     this.apiClient = apiClient;
+    this.t = t || ((key, fallback) => fallback);
   }
 
   /**
@@ -21,7 +22,7 @@ export class UserService {
       if (!employee.isComplete()) {
         return {
           success: false,
-          error: 'Faltan datos requeridos: email, nombres, apellidos y rol son obligatorios'
+          error: this.t('users.error.missing_required_data', 'Faltan datos requeridos: email, nombres, apellidos y rol son obligatorios')
         };
       }
 
@@ -29,7 +30,7 @@ export class UserService {
       if (employee.role === 'administrator') {
         return {
           success: false,
-          error: 'No se pueden crear administradores desde el frontend por seguridad'
+          error: this.t('users.error.cannot_create_admin', 'No se pueden crear administradores desde el frontend por seguridad')
         };
       }
 
@@ -37,7 +38,7 @@ export class UserService {
       if (!employeeData.password || employeeData.password.length < 8) {
         return {
           success: false,
-          error: 'La contraseña debe tener al menos 8 caracteres'
+          error: this.t('users.error.password_min_8_chars', 'La contraseña debe tener al menos 8 caracteres')
         };
       }
 
@@ -55,7 +56,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al crear el empleado'
+        error: response.error || this.t('users.error.create_failed', 'Error al crear el empleado')
       };
     } catch (error) {
       console.error('Error creating employee:', error);
@@ -82,7 +83,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al obtener perfil de usuario'
+        error: response.error || this.t('users.error.profile_update_failed', 'Error al obtener perfil de usuario')
       };
     } catch (error) {
       console.error('Error getting current user:', error);
@@ -128,7 +129,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al actualizar perfil'
+        error: response.error || this.t('users.error.profile_update_failed', 'Error al actualizar perfil')
       };
     } catch (error) {
       console.error('Error updating user:', error);
@@ -155,7 +156,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al obtener permisos'
+        error: response.error || this.t('users.error.permissions_load_failed', 'Error al obtener permisos')
       };
     } catch (error) {
       console.error('Error getting user permissions:', error);
@@ -194,7 +195,7 @@ export class UserService {
     
     return {
       success: false,
-      error: response.error || 'Error al obtener empleados'
+      error: response.error || this.t('users.error.employees_load_failed', 'Error al obtener empleados')
     };
   }
 
@@ -358,7 +359,7 @@ export class UserService {
       if (!employee.isComplete()) {
         return {
           success: false,
-          error: 'Faltan datos requeridos'
+          error: this.t('users.error.missing_required_data_simple', 'Faltan datos requeridos')
         };
       }
 
@@ -423,7 +424,7 @@ export class UserService {
           console.log('UserService.updateEmployee - User is not admin, cannot change roles of other users');
           return {
             success: false,
-            error: 'Solo los administradores pueden cambiar roles de otros usuarios.'
+            error: this.t('users.error.no_admin_permissions', 'Solo los administradores pueden cambiar roles de otros usuarios.')
           };
         }
       } else if (isCurrentUser && employeeData.role) {
@@ -453,7 +454,7 @@ export class UserService {
         if (response.response?.status === 403) {
           return {
             success: false,
-            error: 'No tienes permisos de administrador para actualizar otros usuarios.'
+            error: this.t('users.error.no_admin_permissions_update', 'No tienes permisos de administrador para actualizar otros usuarios.')
           };
         }
         
@@ -461,7 +462,7 @@ export class UserService {
         if (response.response?.status === 404) {
           return {
             success: false,
-            error: 'El endpoint de actualización de usuarios no está disponible.'
+            error: this.t('users.error.endpoint_not_available', 'El endpoint de actualización de usuarios no está disponible.')
           };
         }
       }
@@ -496,7 +497,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al actualizar empleado'
+        error: response.error || this.t('users.error.update_failed', 'Error al actualizar empleado')
       };
     } catch (error) {
       console.error('Error updating employee:', error);
@@ -524,7 +525,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al activar empleado'
+        error: response.error || this.t('users.error.activate_failed', 'Error al activar empleado')
       };
     } catch (error) {
       console.error('Error activating employee:', error);
@@ -552,7 +553,7 @@ export class UserService {
       
       return {
         success: false,
-        error: response.error || 'Error al desactivar empleado'
+        error: response.error || this.t('users.error.deactivate_failed', 'Error al desactivar empleado')
       };
     } catch (error) {
       console.error('Error deactivating employee:', error);
@@ -571,31 +572,31 @@ export class UserService {
 
     // Validaciones requeridas
     if (!employeeData.email || employeeData.email.trim().length === 0) {
-      errors.push('Email es requerido');
+      errors.push(this.t('users.error.email_required', 'Email es requerido'));
     } else if (!this._isValidEmail(employeeData.email)) {
-      errors.push('Email no tiene formato válido');
+      errors.push(this.t('users.error.email_format_invalid', 'Email no tiene formato válido'));
     }
 
     if (!employeeData.firstName || employeeData.firstName.trim().length === 0) {
-      errors.push('Nombre es requerido');
+      errors.push(this.t('users.error.name_required', 'Nombre es requerido'));
     }
 
     if (!employeeData.lastName || employeeData.lastName.trim().length === 0) {
-      errors.push('Apellido es requerido');
+      errors.push(this.t('users.error.lastname_required', 'Apellido es requerido'));
     }
 
     if (!employeeData.role || employeeData.role.trim().length === 0) {
-      errors.push('Rol es requerido');
+      errors.push(this.t('users.error.role_required_validation', 'Rol es requerido'));
     } else if (employeeData.role === 'administrator') {
-      errors.push('No se puede asignar el rol de administrador.');
+      errors.push(this.t('users.error.no_admin_role', 'No se puede asignar el rol de administrador.'));
     } else if (!['receptionist', 'esthetician'].includes(employeeData.role)) {
-      errors.push('Rol debe ser recepcionista o especialista.');
+      errors.push(this.t('users.error.role_must_be_valid', 'Rol debe ser recepcionista o especialista.'));
     }
 
     if (!employeeData.password || employeeData.password.length < 8) {
-      errors.push('Contraseña debe tener al menos 8 caracteres');
+      errors.push(this.t('users.error.password_8_chars', 'Contraseña debe tener al menos 8 caracteres'));
     } else if (!this._isValidPassword(employeeData.password)) {
-      errors.push('Contraseña debe contener mayúscula, minúscula, número y símbolo');
+      errors.push(this.t('users.error.password_complexity', 'Contraseña debe contener mayúscula, minúscula, número y símbolo'));
     }
 
     return {
@@ -612,27 +613,27 @@ export class UserService {
       const status = error.response.status;
       switch (status) {
         case 400:
-          return 'Datos inválidos. Verifica la información ingresada.';
+          return this.t('users.error.invalid_data_check', 'Datos inválidos. Verifica la información ingresada.');
         case 401:
-          return 'No tienes autorización. Inicia sesión nuevamente.';
+          return this.t('users.error.unauthorized_login_again', 'No tienes autorización. Inicia sesión nuevamente.');
         case 403:
-          return 'No tienes permisos para realizar esta acción.';
+          return this.t('users.error.no_permissions', 'No tienes permisos para realizar esta acción.');
         case 409:
-          return 'Ya existe un usuario con este email.';
+          return this.t('users.error.email_already_exists', 'Ya existe un usuario con este email.');
         case 422:
-          return 'Los datos proporcionados no son válidos.';
+          return this.t('users.error.invalid_data_provided', 'Los datos proporcionados no son válidos.');
         case 500:
-          return 'Error del servidor. Intenta nuevamente más tarde.';
+          return this.t('users.error.server_error', 'Error del servidor. Intenta nuevamente más tarde.');
         default:
-          return 'Error de conexión. Verifica tu conexión a internet.';
+          return this.t('users.error.connection_error', 'Error de conexión. Verifica tu conexión a internet.');
       }
     }
     
     if (error.code === 'NETWORK_ERROR') {
-      return 'Error de conexión. Verifica tu conexión a internet.';
+      return this.t('users.error.connection_error', 'Error de conexión. Verifica tu conexión a internet.');
     }
     
-    return 'Error inesperado. Intenta nuevamente.';
+    return this.t('users.error.unexpected_error', 'Error inesperado. Intenta nuevamente.');
   }
 
   /**

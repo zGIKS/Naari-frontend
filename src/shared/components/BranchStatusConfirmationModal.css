@@ -1,0 +1,115 @@
+/* BranchStatusConfirmationModal Styles */
+.branch-status-modal {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.branch-info {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+}
+
+.branch-info h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.branch-details {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.confirmation-message {
+  margin-bottom: 1rem;
+}
+
+.confirmation-message p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.warning-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--warning-background, #fff3cd);
+  border: 1px solid var(--warning-border, #ffeaa7);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+  color: var(--warning-color, #f39c12);
+}
+
+.warning-text {
+  margin: 0;
+  color: var(--warning-text, #856404);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+
+/* Form info styles for EmployeeForm */
+.form-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.form-info.success {
+  background-color: var(--success-background, #d4edda);
+  color: var(--success-text, #155724);
+  border: 1px solid var(--success-border, #c3e6cb);
+}
+
+.form-info svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.form-info span {
+  flex: 1;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .warning-section {
+    background-color: rgba(243, 156, 18, 0.1);
+    border-color: rgba(243, 156, 18, 0.3);
+  }
+  
+  .warning-text {
+    color: #f39c12;
+  }
+  
+  .count-badge.warning {
+    background-color: rgba(243, 156, 18, 0.1);
+    color: #f39c12;
+    border-color: rgba(243, 156, 18, 0.3);
+  }
+  
+  .count-badge.info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border-color: rgba(52, 152, 219, 0.3);
+  }
+  
+  .form-info.success {
+    background-color: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border-color: rgba(39, 174, 96, 0.3);
+  }
+}

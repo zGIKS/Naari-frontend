@@ -4,8 +4,9 @@ import { Client } from '../../domain/entities/Client.js';
  * ClientService - Servicio para gestión de clientes
  */
 export class ClientService {
-  constructor(apiClient) {
+  constructor(apiClient, t = null) {
     this.apiClient = apiClient;
+    this.t = t || ((key, fallback) => fallback);
   }
 
   /**
@@ -24,7 +25,7 @@ export class ClientService {
       
       return {
         success: false,
-        error: 'Error al obtener la lista de clientes'
+        error: this.t('clients.error.get_clients_failed', 'Error al obtener la lista de clientes')
       };
     } catch (error) {
       console.error('Error getting clients:', error);
@@ -46,7 +47,7 @@ export class ClientService {
       if (!client.isComplete()) {
         return {
           success: false,
-          error: 'Faltan datos requeridos: DNI, nombres, apellidos y email son obligatorios'
+          error: this.t('clients.error.missing_required_data', 'Faltan datos requeridos: DNI, nombres, apellidos y email son obligatorios')
         };
       }
 
@@ -61,7 +62,7 @@ export class ClientService {
       
       return {
         success: false,
-        error: response.error || 'Error al crear el cliente'
+        error: response.error || this.t('clients.error.create_failed', 'Error al crear el cliente')
       };
     } catch (error) {
       console.error('Error creating client:', error);
@@ -103,7 +104,7 @@ export class ClientService {
       console.error('Error searching clients:', error);
       return {
         success: false,
-        error: 'Error al buscar clientes'
+        error: this.t('clients.error.search_failed', 'Error al buscar clientes')
       };
     }
   }
@@ -116,34 +117,34 @@ export class ClientService {
 
     // Validaciones requeridas
     if (!clientData.dni || clientData.dni.trim().length === 0) {
-      errors.push('DNI es requerido');
+      errors.push(this.t('clients.error.dni_required', 'DNI es requerido'));
     }
 
     if (!clientData.firstName || clientData.firstName.trim().length === 0) {
-      errors.push('Nombre es requerido');
+      errors.push(this.t('clients.error.name_required', 'Nombre es requerido'));
     }
 
     if (!clientData.lastName || clientData.lastName.trim().length === 0) {
-      errors.push('Apellido es requerido');
+      errors.push(this.t('clients.error.lastname_required', 'Apellido es requerido'));
     }
 
     if (!clientData.email || clientData.email.trim().length === 0) {
-      errors.push('Email es requerido');
+      errors.push(this.t('clients.error.email_required', 'Email es requerido'));
     } else if (!this._isValidEmail(clientData.email)) {
-      errors.push('Email no tiene formato válido');
+      errors.push(this.t('clients.error.email_format_invalid', 'Email no tiene formato válido'));
     }
 
     // Validaciones opcionales pero con formato
     if (clientData.dni && !this._isValidDNI(clientData.dni)) {
-      errors.push('DNI debe tener 8 dígitos');
+      errors.push(this.t('clients.error.dni_8_digits', 'DNI debe tener 8 dígitos'));
     }
 
     if (clientData.ruc && !this._isValidRUC(clientData.ruc)) {
-      errors.push('RUC debe tener 11 dígitos');
+      errors.push(this.t('clients.error.ruc_11_digits', 'RUC debe tener 11 dígitos'));
     }
 
     if (clientData.phone && !this._isValidPhone(clientData.phone)) {
-      errors.push('Teléfono debe tener al menos 9 dígitos');
+      errors.push(this.t('clients.error.phone_9_digits', 'Teléfono debe tener al menos 9 dígitos'));
     }
 
     return {
@@ -160,25 +161,25 @@ export class ClientService {
       const status = error.response.status;
       switch (status) {
         case 400:
-          return 'Datos inválidos. Verifica la información ingresada.';
+          return this.t('clients.error.invalid_data_check', 'Datos inválidos. Verifica la información ingresada.');
         case 401:
-          return 'No tienes autorización. Inicia sesión nuevamente.';
+          return this.t('clients.error.unauthorized_login_again', 'No tienes autorización. Inicia sesión nuevamente.');
         case 403:
-          return 'No tienes permisos para realizar esta acción.';
+          return this.t('clients.error.no_permissions', 'No tienes permisos para realizar esta acción.');
         case 409:
-          return 'Ya existe un cliente con este DNI o email.';
+          return this.t('clients.error.client_already_exists', 'Ya existe un cliente con este DNI o email.');
         case 500:
-          return 'Error del servidor. Intenta nuevamente más tarde.';
+          return this.t('clients.error.server_error', 'Error del servidor. Intenta nuevamente más tarde.');
         default:
-          return 'Error de conexión. Verifica tu conexión a internet.';
+          return this.t('clients.error.connection_error', 'Error de conexión. Verifica tu conexión a internet.');
       }
     }
     
     if (error.code === 'NETWORK_ERROR') {
-      return 'Error de conexión. Verifica tu conexión a internet.';
+      return this.t('clients.error.connection_error', 'Error de conexión. Verifica tu conexión a internet.');
     }
     
-    return 'Error inesperado. Intenta nuevamente.';
+    return this.t('clients.error.unexpected_error', 'Error inesperado. Intenta nuevamente.');
   }
 
   /**

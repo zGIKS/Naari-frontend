@@ -173,7 +173,7 @@ export const EmployeeList = ({
         <div className="results-count">
           <h3>{t('users.list.employees_list', 'Lista de Empleados')}</h3>
           <span className="count-badge">
-            {employees.length} empleados
+            {employees.length} {t('users.list.employees_count', 'empleados')}
           </span>
         </div>
       </div>

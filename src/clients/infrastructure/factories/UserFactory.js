@@ -32,7 +32,7 @@ export class UserFactory {
   /**
    * Crea o retorna el servicio de usuarios
    */
-  createUserService() {
+  createUserService(t = null) {
     if (!UserFactory._userService) {
       if (!this.apiBaseUrl || !this.authToken) {
         throw new Error('UserFactory must be initialized before creating services');
@@ -41,7 +41,7 @@ export class UserFactory {
       const apiClient = ApiClient.getInstance();
       apiClient.initialize(this.apiBaseUrl, this.authToken);
       
-      UserFactory._userService = new UserService(apiClient);
+      UserFactory._userService = new UserService(apiClient, t);
     }
     
     return UserFactory._userService;
