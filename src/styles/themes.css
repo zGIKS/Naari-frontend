@@ -1858,9 +1858,17 @@ body {
 }
 
 /* Form Styles */
-.client-form, .employee-form {
-  max-width: 800px;
-  margin: 0 auto;
+.client-form {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 2rem;
+}
+
+.employee-form {
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: 2rem;
 }
 
@@ -1879,8 +1887,8 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem 2rem;
 }
 
 .form-group {
@@ -1971,6 +1979,38 @@ body {
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid var(--border-color);
+}
+
+/* Responsive design for client form */
+@media (max-width: 1024px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .client-form {
+    padding: 1.5rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .form-input {
+    padding: 0.875rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-form {
+    padding: 1rem;
+  }
+  
+  .form-grid {
+    gap: 1rem;
+  }
 }
 
 /* List Styles */
