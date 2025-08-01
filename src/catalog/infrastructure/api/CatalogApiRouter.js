@@ -188,6 +188,19 @@ class ProductApiService extends BaseApiService {
       body: JSON.stringify(productData)
     });
   }
+
+  async update(id, productData) {
+    return this.makeRequest(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData)
+    });
+  }
+
+  async delete(id) {
+    return this.makeRequest(`/products/${id}`, {
+      method: 'DELETE'
+    });
+  }
 }
 
 /**

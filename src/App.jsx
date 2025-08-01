@@ -7,6 +7,8 @@ import DashboardPage from './iam/presentation/pages/DashboardPage';
 import SettingsPage from './shared/pages/SettingsPage';
 import ProfilePage from './shared/pages/ProfilePage';
 import { AdminDashboard } from './catalog/presentation/pages/AdminDashboard';
+import { CatalogPage } from './catalog/presentation/pages/CatalogPage';
+import { ClientPage } from './clients/presentation/pages/ClientPage';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -58,6 +60,24 @@ function App() {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/catalog/:section?" 
+            element={
+              <ProtectedRoute>
+                <CatalogPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/clients" 
+            element={
+              <ProtectedRoute>
+                <ClientPage />
               </ProtectedRoute>
             } 
           />

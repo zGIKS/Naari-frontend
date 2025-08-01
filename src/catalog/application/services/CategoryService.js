@@ -162,12 +162,9 @@ export class CategoryService {
       let result;
       if (activate) {
         result = await this.apiService.activate(categoryId);
-        category.activate();
       } else {
         result = await this.apiService.deactivate(categoryId);
-        category.deactivate();
       }
-
       const updatedCategory = Category.fromApiResponse(result.data || result);
       this.observer.notify('categoryStatusChanged', updatedCategory);
       return updatedCategory;

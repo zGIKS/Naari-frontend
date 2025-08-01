@@ -145,17 +145,98 @@ export class ProductService {
 
   async createProduct(productData) {
     try {
-      // Validate if strategy is set
-      if (this.validationStrategy && !this.validationStrategy.validate(productData)) {
-        throw new Error('Product validation failed');
+      // Crear instancia de Product para validación
+      const product = new Product(
+        null,
+        productData.name,
+        productData.description,
+        productData.brand,
+        productData.stock,
+        productData.purchasePrice,
+        productData.salePrice,
+        productData.lowStockAlert,
+        productData.expirationDate,
+        productData.branchId
+      );
+
+      // Validar usando la estrategia
+      const validationErrors = this.validationStrategy.validate(product);
+      if (validationErrors.length > 0) {
+        throw new Error(validationErrors.join(', '));
       }
       
-      const response = await this.apiService.create(productData);
-      const product = Product.fromApiResponse(response.data || response);
-      this.observer.notify('productCreated', product);
-      return product;
+      const response = await this.apiService.create(product.toApiPayload());
+      const createdProduct = Product.fromApiResponse(response.data || response);
+      this.observer.notify('productCreated', createdProduct);
+      
+      // Notificar si está en stock bajo
+      if (product.isLowStock()) {
+        this.observer.notify('lowStockAlert', product);
+      }
+      
+      return createdProduct;
     } catch (error) {
       this.observer.notify('productCreateFailed', error);
+      throw error;
+    }
+  }
+
+  async updateProduct(productId, productData) {
+    try {
+      // Crear instancia de Product para validación (sin branchId para update)
+      const product = new Product(
+        productId,
+        productData.name,
+        productData.description,
+        productData.brand,
+        productData.stock,
+        productData.purchasePrice,
+        productData.salePrice,
+        productData.lowStockAlert,
+        productData.expirationDate,
+        null // branchId no se puede cambiar en update
+      );
+
+      // Validar usando la estrategia (pero sin validar branchId)
+      if (!product.name || !product.brand || product.stock < 0 || product.purchasePrice < 0 || product.salePrice < 0) {
+        throw new Error('Datos de producto inválidos');
+      }
+
+      // Crear payload para update (sin branch_id)
+      const updatePayload = {
+        name: product.name,
+        description: product.description,
+        brand: product.brand,
+        stock: product.stock,
+        purchase_price: product.purchasePrice,
+        sale_price: product.salePrice,
+        low_stock_alert: product.lowStockAlert,
+        expiration_date: product.expirationDate.toISOString().split('T')[0]
+      };
+      
+      const response = await this.apiService.update(productId, updatePayload);
+      const updatedProduct = Product.fromApiResponse(response.data || response);
+      this.observer.notify('productUpdated', updatedProduct);
+      
+      // Notificar si está en stock bajo
+      if (updatedProduct.isLowStock()) {
+        this.observer.notify('lowStockAlert', updatedProduct);
+      }
+      
+      return updatedProduct;
+    } catch (error) {
+      this.observer.notify('productUpdateFailed', error);
+      throw error;
+    }
+  }
+
+  async deleteProduct(productId) {
+    try {
+      await this.apiService.delete(productId);
+      this.observer.notify('productDeleted', productId);
+      return { success: true };
+    } catch (error) {
+      this.observer.notify('productDeleteFailed', error);
       throw error;
     }
   }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
 
 /**
  * ProductManager - Gestor de productos
@@ -10,9 +11,34 @@ export const ProductManager = ({ catalogFactory }) => {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, productId: null, productName: '' });
 
   const productService = catalogFactory.getProductService();
   const branchService = catalogFactory.getBranchService();
+
+  // Observer simplificado para manejar solo errores ya que usamos actualización optimista
+  useEffect(() => {
+    const observer = {
+      productCreateFailed: (error) => {
+        setError(getErrorMessage(error));
+      },
+      productUpdateFailed: (error) => {
+        setError(getErrorMessage(error));
+      },
+      productDeleteFailed: (error) => {
+        setError(getErrorMessage(error));
+      }
+    };
+
+    productService.subscribe(observer);
+
+    return () => {
+      productService.unsubscribe(observer);
+    };
+  }, [productService]);
 
   useEffect(() => {
     loadBranches();
@@ -41,13 +67,112 @@ export const ProductManager = ({ catalogFactory }) => {
   };
 
   const handleSubmit = async (formData) => {
+    setSubmitLoading(true);
+    setError(null);
+    
     try {
-      await productService.createProduct(formData);
+      if (editingProduct) {
+        // Actualización optimista para edición
+        setProducts(prevProducts => 
+          prevProducts.map(prod => 
+            prod.id === editingProduct.id 
+              ? { 
+                  ...prod, 
+                  name: formData.name,
+                  description: formData.description,
+                  brand: formData.brand,
+                  stock: formData.stock,
+                  purchasePrice: formData.purchasePrice,
+                  salePrice: formData.salePrice,
+                  lowStockAlert: formData.lowStockAlert,
+                  expirationDate: new Date(formData.expirationDate)
+                }
+              : prod
+          )
+        );
+        await productService.updateProduct(editingProduct.id, formData);
+      } else {
+        await productService.createProduct(formData);
+      }
+      
+      // Recargar datos para asegurar consistencia
       await loadProducts();
       setShowForm(false);
+      setEditingProduct(null);
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('Error saving product:', error);
+      setError(getErrorMessage(error));
+      // Si falla, recargar datos para revertir cambios optimistas
+      if (editingProduct) {
+        await loadProducts();
+      }
+    } finally {
+      setSubmitLoading(false);
     }
+  };
+
+  const handleCreateProduct = () => {
+    setEditingProduct(null);
+    setShowForm(true);
+    setError(null);
+  };
+
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setShowForm(true);
+    setError(null);
+  };
+
+  const handleDeleteProduct = (productId, productName) => {
+    setConfirmDelete({
+      isOpen: true,
+      productId: productId,
+      productName: productName
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const { productId } = confirmDelete;
+    setConfirmDelete({ isOpen: false, productId: null, productName: '' });
+
+    // Actualización optimista - eliminar inmediatamente de la UI
+    const productToDelete = products.find(p => p.id === productId);
+    setProducts(prevProducts => prevProducts.filter(prod => prod.id !== productId));
+
+    try {
+      await productService.deleteProduct(productId);
+      // Recargar datos para asegurar consistencia
+      await loadProducts();
+    } catch (error) {
+      // Si falla, restaurar el producto eliminado
+      if (productToDelete) {
+        setProducts(prevProducts => [...prevProducts, productToDelete]);
+      }
+      setError(getErrorMessage(error));
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDelete({ isOpen: false, productId: null, productName: '' });
+  };
+
+  const getErrorMessage = (error) => {
+    if (error.status === 400) {
+      return t('admin.product_error_invalid_data', 'Datos inválidos. Verifica que todos los campos estén correctos.');
+    } else if (error.status === 401) {
+      return t('admin.product_error_unauthorized', 'No tienes autorización. Inicia sesión nuevamente.');
+    } else if (error.status === 403) {
+      return t('admin.product_error_forbidden', 'No tienes permisos para realizar esta acción.');
+    } else if (error.status === 404) {
+      return t('admin.product_error_not_found', 'Producto no encontrado.');
+    } else if (error.status === 409) {
+      return t('admin.product_error_conflict', 'Ya existe un producto con ese nombre.');
+    } else if (error.status === 500) {
+      return t('admin.product_error_server', 'Error del servidor. Intenta nuevamente más tarde.');
+    } else if (error.status === 0) {
+      return t('admin.product_error_network', 'Error de conexión. Verifica tu conexión a internet.');
+    }
+    return t('admin.product_error_general', 'Error al procesar la solicitud. Intenta nuevamente.');
   };
 
   return (
@@ -60,7 +185,7 @@ export const ProductManager = ({ catalogFactory }) => {
         <div className="header-actions">
           <button 
             className="btn btn-primary"
-            onClick={() => setShowForm(true)}
+            onClick={handleCreateProduct}
             disabled={loading}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -79,7 +204,7 @@ export const ProductManager = ({ catalogFactory }) => {
             <p>{t('common.loading', 'Cargando productos...')}</p>
           </div>
         ) : (
-          <div className="product-grid">
+          <div className="product-list">
             {products.length === 0 ? (
               <div className="empty-state">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
@@ -89,45 +214,105 @@ export const ProductManager = ({ catalogFactory }) => {
                 <p>{t('admin.no_products_message', 'Comienza registrando productos en tu inventario')}</p>
               </div>
             ) : (
-              products.map(product => (
-                <div key={product.id} className={`product-card ${product.isLowStock() ? 'low-stock' : ''}`}>
-                  <div className="product-header">
-                    <h4>{product.name}</h4>
-                    <span className="brand">{product.brand}</span>
-                  </div>
-                  <div className="product-info">
-                    <p>{product.description}</p>
-                    <div className="product-metrics">
-                      <div className="metric">
-                        <label>{t('admin.stock', 'Stock')}</label>
-                        <span className={product.isLowStock() ? 'low' : 'normal'}>
-                          {product.stock}
-                        </span>
-                      </div>
-                      <div className="metric">
-                        <label>{t('admin.sale_price', 'Precio Venta')}</label>
-                        <span>${product.salePrice}</span>
-                      </div>
-                      <div className="metric">
-                        <label>{t('admin.expiration', 'Vencimiento')}</label>
-                        <span className={product.isNearExpiration() ? 'warning' : 'normal'}>
-                          {product.expirationDate.toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  {product.isLowStock() && (
-                    <div className="alert alert-warning">
-                      {t('admin.low_stock_alert', 'Stock bajo')}
-                    </div>
-                  )}
-                  {product.isNearExpiration() && (
-                    <div className="alert alert-danger">
-                      {t('admin.near_expiration_alert', 'Próximo a vencer')}
-                    </div>
-                  )}
+              <>
+                <div className="list-header">
+                  <h3>{t('admin.products_list', 'Lista de Productos')} ({products.length})</h3>
                 </div>
-              ))
+                <div className="list-grid">
+                  {products.map(product => (
+                    <div key={product.id} className={`branch-card ${product.isLowStock() || product.isNearExpiration() ? 'warning' : 'active'}`}>
+                      <div className="card-header">
+                        <div className="branch-info">
+                          <h4>{product.name}</h4>
+                          <span className="status-badge brand">{product.brand}</span>
+                        </div>
+                        <div className="card-actions">
+                          <button
+                            onClick={() => handleEditProduct(product)}
+                            className="btn-icon edit-btn"
+                            title={t('common.edit', 'Editar')}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id, product.name)}
+                            className="btn-icon delete-btn"
+                            title={t('admin.delete', 'Eliminar')}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <polyline points="3,6 5,6 21,6"/>
+                              <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                              <line x1="10" y1="11" x2="10" y2="17"/>
+                              <line x1="14" y1="11" x2="14" y2="17"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="card-content">
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                          </svg>
+                          <span>{product.description}</span>
+                        </div>
+                        
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                          </svg>
+                          <span className={product.isLowStock() ? 'warning' : ''}>
+                            {t('admin.stock', 'Stock')}: {product.stock} {t('admin.units', 'unidades')}
+                            {product.isLowStock() && <span className="alert-text"> (Stock bajo)</span>}
+                          </span>
+                        </div>
+
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                          </svg>
+                          <span>${product.salePrice}</span>
+                        </div>
+
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                          <span className={product.isNearExpiration() ? 'warning' : ''}>
+                            {product.expirationDate.toLocaleDateString()}
+                            {product.isNearExpiration() && <span className="alert-text"> (Por vencer)</span>}
+                          </span>
+                        </div>
+
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9,22 9,12 15,12 15,22"/>
+                          </svg>
+                          <span>{branches.find(b => b.id === product.branchId)?.name}</span>
+                        </div>
+                      </div>
+
+                      <div className="card-footer">
+                        <small className="text-muted">
+                          {t('admin.created_at', 'Creado')}: {product.createdAt ? new Date(product.createdAt).toLocaleDateString() : 'N/A'}
+                        </small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}
@@ -138,7 +323,17 @@ export const ProductManager = ({ catalogFactory }) => {
           <div className="form-overlay" onClick={() => setShowForm(false)}></div>
           <div className="form-container">
             <div className="product-form">
-              <h3>{t('admin.new_product', 'Nuevo Producto')}</h3>
+              <h3>{editingProduct ? t('admin.edit_product', 'Editar Producto') : t('admin.new_product', 'Nuevo Producto')}</h3>
+              {error && (
+                <div className="error-message">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                  {error}
+                </div>
+              )}
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
@@ -157,60 +352,123 @@ export const ProductManager = ({ catalogFactory }) => {
                 <div className="form-row">
                   <div className="form-group">
                     <label>{t('admin.product_name', 'Nombre del Producto')}</label>
-                    <input name="name" type="text" className="form-input" required />
+                    <input 
+                      name="name" 
+                      type="text" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.name || ''}
+                      required 
+                    />
                   </div>
                   <div className="form-group">
                     <label>{t('admin.product_brand', 'Marca')}</label>
-                    <input name="brand" type="text" className="form-input" required />
+                    <input 
+                      name="brand" 
+                      type="text" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.brand || ''}
+                      required 
+                    />
                   </div>
                 </div>
                 <div className="form-group">
                   <label>{t('admin.product_description', 'Descripción')}</label>
-                  <textarea name="description" className="form-input"></textarea>
+                  <textarea 
+                    name="description" 
+                    className="form-input"
+                    defaultValue={editingProduct?.description || ''}
+                  ></textarea>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label>{t('admin.stock', 'Stock Inicial')}</label>
-                    <input name="stock" type="number" min="0" className="form-input" required />
+                    <label>{t('admin.stock', editingProduct ? 'Stock' : 'Stock Inicial')}</label>
+                    <input 
+                      name="stock" 
+                      type="number" 
+                      min="0" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.stock || ''}
+                      required 
+                    />
                   </div>
                   <div className="form-group">
                     <label>{t('admin.low_stock_alert', 'Alerta Stock Bajo')}</label>
-                    <input name="lowStockAlert" type="number" min="0" className="form-input" required />
+                    <input 
+                      name="lowStockAlert" 
+                      type="number" 
+                      min="0" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.lowStockAlert || ''}
+                      required 
+                    />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label>{t('admin.purchase_price', 'Precio Compra')}</label>
-                    <input name="purchasePrice" type="number" step="0.01" min="0" className="form-input" required />
+                    <input 
+                      name="purchasePrice" 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.purchasePrice || ''}
+                      required 
+                    />
                   </div>
                   <div className="form-group">
                     <label>{t('admin.sale_price', 'Precio Venta')}</label>
-                    <input name="salePrice" type="number" step="0.01" min="0" className="form-input" required />
+                    <input 
+                      name="salePrice" 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.salePrice || ''}
+                      required 
+                    />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label>{t('admin.expiration_date', 'Fecha de Vencimiento')}</label>
-                    <input name="expirationDate" type="date" className="form-input" required />
+                    <input 
+                      name="expirationDate" 
+                      type="date" 
+                      className="form-input" 
+                      defaultValue={editingProduct?.expirationDate ? 
+                        editingProduct.expirationDate.toISOString().split('T')[0] : ''
+                      }
+                      required 
+                    />
                   </div>
-                  <div className="form-group">
-                    <label>{t('admin.select_branch', 'Sucursal')}</label>
-                    <select name="branchId" className="form-input" required>
-                      <option value="">{t('admin.select_branch_option', 'Selecciona una sucursal')}</option>
-                      {branches.map(branch => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {!editingProduct && (
+                    <div className="form-group">
+                      <label>{t('admin.select_branch', 'Sucursal')}</label>
+                      <select name="branchId" className="form-input" required>
+                        <option value="">{t('admin.select_branch_option', 'Selecciona una sucursal')}</option>
+                        {branches.map(branch => (
+                          <option key={branch.id} value={branch.id}>
+                            {branch.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
                 <div className="form-actions">
-                  <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary">
+                  <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary" disabled={submitLoading}>
                     {t('common.cancel', 'Cancelar')}
                   </button>
-                  <button type="submit" className="btn btn-primary">
-                    {t('common.create', 'Crear')}
+                  <button type="submit" className="btn btn-primary" disabled={submitLoading}>
+                    {submitLoading ? (
+                      <>
+                        <div className="spinner-sm"></div>
+                        {editingProduct ? t('common.saving', 'Guardando...') : t('common.creating', 'Creando...')}
+                      </>
+                    ) : (
+                      editingProduct ? t('common.save', 'Guardar') : t('common.create', 'Crear')
+                    )}
                   </button>
                 </div>
               </form>
@@ -218,6 +476,17 @@ export const ProductManager = ({ catalogFactory }) => {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={confirmDelete.isOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title={t('admin.delete_product', 'Eliminar Producto')}
+        message={t('admin.confirm_delete_product', '¿Estás seguro de que quieres eliminar el producto "{{name}}"?', { name: confirmDelete.productName })}
+        confirmText={t('admin.delete', 'Eliminar')}
+        cancelText={t('common.cancel', 'Cancelar')}
+        type="danger"
+      />
     </div>
   );
 };

@@ -36,12 +36,26 @@ export class Category {
   }
 
   static fromApiResponse(data) {
+    // Acepta variantes de nombre y tipo para el campo activo
+    const rawActive =
+      data.active !== undefined ? data.active :
+      data.isActive !== undefined ? data.isActive :
+      data.is_active !== undefined ? data.is_active : undefined;
+
+    let isActive;
+    if (typeof rawActive === 'string') {
+      isActive = rawActive === 'true' || rawActive === '1';
+    } else if (typeof rawActive === 'number') {
+      isActive = rawActive === 1;
+    } else {
+      isActive = !!rawActive;
+    }
     return new Category(
       data.id,
       data.name,
       data.description,
       data.branch_id || data.BranchId,
-      data.active
+      isActive
     );
   }
 

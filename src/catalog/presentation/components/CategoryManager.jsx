@@ -28,22 +28,9 @@ export const CategoryManager = ({ catalogFactory }) => {
   const categoryService = catalogFactory.getCategoryService();
   const branchService = catalogFactory.getBranchService();
 
-  // Observer para reaccionar a eventos del servicio
+  // Observer simplificado para manejar solo errores ya que usamos actualización optimista
   useEffect(() => {
     const observer = {
-      categoryCreated: () => {
-        loadCategories();
-        setShowForm(false);
-        setEditingCategory(null);
-      },
-      categoryUpdated: () => {
-        loadCategories();
-        setShowForm(false);
-        setEditingCategory(null);
-      },
-      categoryStatusChanged: () => {
-        loadCategories();
-      },
       categoryCreateFailed: (error) => {
         setError(getErrorMessage(error));
       },
@@ -131,9 +118,28 @@ export const CategoryManager = ({ catalogFactory }) => {
     
     setConfirmationModal({ ...confirmationModal, isOpen: false });
 
+    // Actualización optimista del estado local
+    setCategories(prevCategories => 
+      prevCategories.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, isActive: activate }
+          : cat
+      )
+    );
+
     try {
       await categoryService.toggleCategoryStatus(categoryId, activate, category);
+      // Recargar datos desde el servidor para asegurar consistencia
+      await loadCategories();
     } catch (error) {
+      // Revertir el cambio optimista en caso de error
+      setCategories(prevCategories => 
+        prevCategories.map(cat => 
+          cat.id === categoryId 
+            ? { ...cat, isActive: !activate }
+            : cat
+        )
+      );
       setError(getErrorMessage(error));
     }
   };
@@ -154,16 +160,30 @@ export const CategoryManager = ({ catalogFactory }) => {
     
     try {
       if (editingCategory) {
+        // Actualización optimista para edición
+        setCategories(prevCategories => 
+          prevCategories.map(cat => 
+            cat.id === editingCategory.id 
+              ? { ...cat, name: formData.name, description: formData.description }
+              : cat
+          )
+        );
         await categoryService.updateCategory(editingCategory.id, formData);
       } else {
         await categoryService.createCategory(formData);
       }
+      
+      // Recargar datos para asegurar consistencia
       await loadCategories();
       setShowForm(false);
       setEditingCategory(null);
     } catch (error) {
       console.error('Error saving category:', error);
       setError(getErrorMessage(error));
+      // Si falla, recargar datos para revertir cambios optimistas
+      if (editingCategory) {
+        await loadCategories();
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -267,58 +287,81 @@ export const CategoryManager = ({ catalogFactory }) => {
                 <div className="list-header">
                   <h3>{t('admin.categories_list', 'Lista de Categorías')} ({getFilteredCategories().length})</h3>
                 </div>
-                <div className="category-grid">
+                <div className="list-grid">
                   {getFilteredCategories().map(category => (
-                  <div key={category.id} className={`category-card ${!category.isActive ? 'inactive' : ''}`}>
-                    <div className="category-header">
-                      <h4>{category.name}</h4>
-                      <span className={`status-badge ${category.isActive ? 'active' : 'inactive'}`}>
-                        {category.isActive ? 
-                          t('admin.category_status_active', 'Activa') : 
-                          t('admin.category_status_inactive', 'Inactiva')
-                        }
-                      </span>
-                    </div>
-                    <p>{category.description}</p>
-                    <div className="category-meta">
-                      <span className="branch-name">
-                        {branches.find(b => b.id === category.branchId)?.name}
-                      </span>
-                    </div>
-                    <div className="category-actions">
-                      <button
-                        onClick={() => handleEditCategory(category)}
-                        className="btn-icon edit-btn"
-                        title={t('admin.edit_category', 'Editar Categoría')}
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleToggleStatus(category.id, category.name, !category.isActive)}
-                        className={`btn-icon status-btn ${category.isActive ? 'deactivate' : 'activate'}`}
-                        title={category.isActive 
-                          ? t('admin.deactivate_category', 'Desactivar categoría')
-                          : t('admin.activate_category', 'Activar categoría')
-                        }
-                      >
-                        {category.isActive ? (
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <circle cx="12" cy="12" r="9"/>
-                            <line x1="15" y1="9" x2="9" y2="15"/>
-                            <line x1="9" y1="9" x2="15" y2="15"/>
+                    <div key={category.id} className={`branch-card ${category.isActive ? 'active' : 'inactive'}`}>
+                      <div className="card-header">
+                        <div className="branch-info">
+                          <h4>{category.name}</h4>
+                          <span className={`status-badge ${category.isActive ? 'active' : 'inactive'}`}>
+                            {category.isActive ? 
+                              t('admin.active', 'Activa') : 
+                              t('admin.inactive', 'Inactiva')
+                            }
+                          </span>
+                        </div>
+                        <div className="card-actions">
+                          <button
+                            onClick={() => handleEditCategory(category)}
+                            className="btn-icon edit-btn"
+                            title={t('common.edit', 'Editar')}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleToggleStatus(category.id, category.name, !category.isActive)}
+                            className={`btn-icon status-btn ${category.isActive ? 'deactivate' : 'activate'}`}
+                            title={category.isActive 
+                              ? t('admin.deactivate', 'Desactivar')
+                              : t('admin.activate', 'Activar')
+                            }
+                          >
+                            {category.isActive ? (
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <circle cx="12" cy="12" r="9"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                              </svg>
+                            ) : (
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <circle cx="12" cy="12" r="9"/>
+                                <polyline points="9,11 12,14 22,4"/>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="card-content">
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
                           </svg>
-                        ) : (
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <circle cx="12" cy="12" r="9"/>
-                            <polyline points="9,11 12,14 22,4"/>
+                          <span>{category.description}</span>
+                        </div>
+                        
+                        <div className="info-row">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9,22 9,12 15,12 15,22"/>
                           </svg>
-                        )}
-                      </button>
+                          <span>{branches.find(b => b.id === category.branchId)?.name}</span>
+                        </div>
+                      </div>
+
+                      <div className="card-footer">
+                        <small className="text-muted">
+                          {t('admin.created_at', 'Creada')}: {category.createdAt ? new Date(category.createdAt).toLocaleDateString() : ''}
+                        </small>
+                      </div>
                     </div>
-                  </div>
                   ))}
                 </div>
               </>
@@ -407,6 +450,8 @@ export const CategoryManager = ({ catalogFactory }) => {
 
       <ConfirmationModal
         isOpen={confirmationModal.isOpen}
+        onClose={handleCancelToggleStatus}
+        onConfirm={handleConfirmToggleStatus}
         title={confirmationModal.action === 'activate' ? 
           t('admin.activate_category', 'Activar categoría') : 
           t('admin.deactivate_category', 'Desactivar categoría')
@@ -415,13 +460,12 @@ export const CategoryManager = ({ catalogFactory }) => {
           t('admin.confirm_activate_category', '¿Estás seguro de que quieres activar la categoría "{{name}}"?', { name: confirmationModal.categoryName }) :
           t('admin.confirm_deactivate_category', '¿Estás seguro de que quieres desactivar la categoría "{{name}}"?', { name: confirmationModal.categoryName })
         }
-        onConfirm={handleConfirmToggleStatus}
-        onCancel={handleCancelToggleStatus}
         confirmText={confirmationModal.action === 'activate' ? 
           t('admin.activate_category', 'Activar') : 
           t('admin.deactivate_category', 'Desactivar')
         }
-        confirmButtonClass={confirmationModal.action === 'activate' ? 'btn-success' : 'btn-danger'}
+        cancelText={t('common.cancel', 'Cancelar')}
+        type={confirmationModal.action === 'activate' ? 'info' : 'warning'}
       />
     </div>
   );

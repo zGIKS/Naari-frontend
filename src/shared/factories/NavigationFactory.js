@@ -36,77 +36,13 @@ export class NavigationFactory {
         icon: 'ClientsIcon',
         label: 'navigation.clients',
         path: '/clients',
-        id: 'clients',
-        permission: 'clients:read',
-        subItems: [
-          {
-            label: 'Registrar cliente',
-            path: '/clients/register',
-            permission: 'clients:create'
-          },
-          {
-            label: 'Lista de clientes',
-            path: '/clients/list',
-            permission: 'clients:read'
-          }
-        ]
+        id: 'clients'
       },
       {
-        icon: 'UsersIcon',
-        label: 'navigation.users',
-        path: '/users',
-        id: 'users',
-        permission: 'users:read',
-        subItems: [
-          {
-            label: 'Registrar usuario',
-            path: '/users/register',
-            permission: 'users:create'
-          },
-          {
-            label: 'Lista de usuarios',
-            path: '/users/list',
-            permission: 'users:read'
-          }
-        ]
-      },
-      {
-        icon: 'ServicesIcon',
-        label: 'navigation.services',
-        path: '/services',
-        id: 'services',
-        permission: 'services:read',
-        subItems: [
-          {
-            label: 'Registrar servicio',
-            path: '/services/register',
-            permission: 'services:create'
-          },
-          {
-            label: 'Paquetes',
-            path: '/services/packages',
-            permission: 'services:read'
-          },
-          {
-            label: 'Precios por sucursal',
-            path: '/services/pricing',
-            permission: 'services:update'
-          }
-        ]
-      },
-      {
-        icon: 'ProductsIcon',
-        label: 'navigation.products',
-        path: '/products',
-        id: 'products',
-        permission: 'products:read',
-        subItems: [
-          {
-            label: 'Registrar producto',
-            path: '/products/register',
-            permission: 'products:create'
-          }
-        ]
+        icon: 'CatalogIcon',
+        label: 'navigation.catalog',
+        path: '/catalog',
+        id: 'catalog'
       },
       {
         icon: 'BranchesIcon',
@@ -167,7 +103,7 @@ export class NavigationFactory {
     return [
       {
         icon: 'DashboardIcon',
-        label: 'Dashboard',
+        label: 'navigation.dashboard',
         path: '/dashboard',
         id: 'dashboard'
       },
@@ -175,20 +111,7 @@ export class NavigationFactory {
         icon: 'ClientsIcon',
         label: 'navigation.clients',
         path: '/clients',
-        id: 'clients',
-        permission: 'clients:read',
-        subItems: [
-          {
-            label: 'Registrar cliente',
-            path: '/clients/register',
-            permission: 'clients:create'
-          },
-          {
-            label: 'Lista de clientes',
-            path: '/clients/list',
-            permission: 'clients:read'
-          }
-        ]
+        id: 'clients'
       },
       {
         icon: 'AppointmentsIcon',
@@ -213,19 +136,7 @@ export class NavigationFactory {
         icon: 'CatalogIcon',
         label: 'navigation.catalog',
         path: '/catalog',
-        id: 'catalog',
-        subItems: [
-          {
-            label: 'Ver servicios',
-            path: '/services/view',
-            permission: 'services:read'
-          },
-          {
-            label: 'Ver productos',
-            path: '/products/view',
-            permission: 'products:read'
-          }
-        ]
+        id: 'catalog'
       }
     ];
   }

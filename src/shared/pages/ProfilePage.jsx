@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { API_CONFIG, API_ENDPOINTS } from '../config/ApiConfig';
 import DashboardLayout from '../components/DashboardLayout';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 
 const EditIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -67,6 +68,11 @@ const ProfilePage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [emailChangeModal, setEmailChangeModal] = useState({
+    isOpen: false,
+    oldEmail: '',
+    newEmail: ''
+  });
 
   useEffect(() => {
     fetchProfile();
@@ -196,14 +202,24 @@ const ProfilePage = () => {
       if (editForm.first_name.trim()) updateData.first_name = editForm.first_name.trim();
       if (editForm.last_name.trim()) updateData.last_name = editForm.last_name.trim();
       
-      // Only admins can update email
-      if (editForm.email.trim() && isAdmin()) {
-        updateData.email = editForm.email.trim();
-      } else if (editForm.email.trim() && !isAdmin()) {
-        // Show error if non-admin tries to update email
-        setErrors({ general: t('validation.email_admin_only', 'Solo los administradores pueden modificar el email') });
-        setSaving(false);
-        return;
+      // Handle email changes with security confirmation
+      const emailChanged = editForm.email.trim() && editForm.email.trim() !== profile.email;
+      if (emailChanged) {
+        if (!isAdmin()) {
+          // Block non-admin email changes
+          setErrors({ general: t('validation.email_admin_only', 'Solo los administradores pueden modificar el email. Este es un evento de seguridad crítico.') });
+          setSaving(false);
+          return;
+        } else {
+          // Admin changing their own email - require confirmation
+          setEmailChangeModal({
+            isOpen: true,
+            oldEmail: profile.email,
+            newEmail: editForm.email.trim()
+          });
+          setSaving(false);
+          return;
+        }
       }
       
       if (editForm.password) updateData.password = editForm.password;
@@ -336,6 +352,79 @@ const ProfilePage = () => {
       password: ''
     });
     setErrors({});
+  };
+
+  const handleEmailChangeConfirm = async () => {
+    setSaving(true);
+    setEmailChangeModal({ ...emailChangeModal, isOpen: false });
+
+    try {
+      const authService = AuthServiceFactory.getInstance();
+      const token = sessionStorage.getItem('naari_token');
+      
+      const updateData = {
+        email: emailChangeModal.newEmail
+      };
+
+      // Add other non-email changes if any
+      if (editForm.first_name.trim()) updateData.first_name = editForm.first_name.trim();
+      if (editForm.last_name.trim()) updateData.last_name = editForm.last_name.trim();
+      if (editForm.password) updateData.password = editForm.password;
+
+      console.log('Critical Security Event: Admin email change', {
+        oldEmail: emailChangeModal.oldEmail,
+        newEmail: emailChangeModal.newEmail,
+        userId: profile.id,
+        timestamp: new Date().toISOString(),
+        action: 'admin_self_email_change'
+      });
+
+      const response = await fetch(`${API_CONFIG.API_BASE}${API_ENDPOINTS.USERS.ME}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setErrors({ general: 'Sesión expirada. Por favor, inicia sesión nuevamente.' });
+          setSaving(false);
+          return;
+        }
+        const error = await response.json().catch(() => ({ error: 'Error updating profile' }));
+        throw new Error(error.error || 'Error updating profile');
+      }
+
+      const updatedProfile = await response.json();
+      const profileData = updatedProfile.user || updatedProfile.data || updatedProfile;
+      
+      setProfile(profileData);
+      setEditingFields({});
+      setEditForm(prev => ({ ...prev, password: '' }));
+      setErrors({});
+      
+      // Show success message with security note
+      setErrors({ success: t('profile.email_changed_success', 'Email actualizado exitosamente. Este cambio ha sido registrado como evento de seguridad crítico.') });
+
+    } catch (error) {
+      console.error('Error updating email:', error);
+      setErrors({ general: error.message || 'Error al actualizar el email' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEmailChangeCancel = () => {
+    setEmailChangeModal({
+      isOpen: false,
+      oldEmail: '',
+      newEmail: ''
+    });
+    // Reset email field to original value
+    setEditForm(prev => ({ ...prev, email: profile.email }));
   };
 
   const profileContent = () => {

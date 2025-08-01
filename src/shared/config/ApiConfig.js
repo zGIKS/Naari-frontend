@@ -14,7 +14,9 @@ export const API_ENDPOINTS = {
   },
   
   USERS: {
-    ME: '/users/me'
+    ME: '/users/me',
+    BASE: '/users',
+    SIGNUP: '/users/signup'
   },
   
   PRODUCTS: {
