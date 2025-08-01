@@ -1,5 +1,6 @@
 import { Employee } from '../../domain/entities/Employee.js';
 import { JWTUtils } from '../../../shared/utils/jwtUtils.js';
+import { API_ENDPOINTS } from '../../../shared/config/ApiConfig.js';
 
 /**
  * UserService - Servicio para gestión de usuarios/empleados
@@ -40,7 +41,7 @@ export class UserService {
         };
       }
 
-      const response = await this.apiClient.postWithErrorHandling('/users/signup', {
+      const response = await this.apiClient.postWithErrorHandling(API_ENDPOINTS.USERS.SIGNUP, {
         ...employee.toApiFormat(),
         password: employeeData.password
       });
@@ -70,7 +71,7 @@ export class UserService {
    */
   async getCurrentUser() {
     try {
-      const response = await this.apiClient.getWithErrorHandling('/users/me');
+      const response = await this.apiClient.getWithErrorHandling(API_ENDPOINTS.USERS.ME);
       
       if (response.success) {
         return {
@@ -116,7 +117,7 @@ export class UserService {
         updateData.role = userData.role;
       }
 
-      const response = await this.apiClient.putWithErrorHandling('/users/me', updateData);
+      const response = await this.apiClient.putWithErrorHandling(API_ENDPOINTS.USERS.ME, updateData);
       
       if (response.success) {
         return {
@@ -143,7 +144,7 @@ export class UserService {
    */
   async getCurrentUserPermissions() {
     try {
-      const response = await this.apiClient.getWithErrorHandling('/users/me/permissions');
+      const response = await this.apiClient.getWithErrorHandling(`${API_ENDPOINTS.USERS.ME}/permissions`);
       
       if (response.success) {
         return {
@@ -169,19 +170,24 @@ export class UserService {
    * Obtiene lista de empleados con búsqueda opcional
    */
   async getAllEmployees(searchQuery = '') {
-    let url = '/users';
+    let url = API_ENDPOINTS.USERS.BASE;
     if (searchQuery && searchQuery.trim()) {
       url += `?q=${encodeURIComponent(searchQuery.trim())}`;
     }
     
+    console.log('UserService.getAllEmployees - Calling endpoint:', url);
     const response = await this.apiClient.getWithErrorHandling(url);
     
     if (response.success) {
       const employees = response.data.users || [];
+      const enrichedEmployees = employees.map(emp => this._enrichEmployeeWithRole(emp));
+      
+      console.log('UserService.getAllEmployees - Raw employees from backend:', employees);
+      console.log('UserService.getAllEmployees - Enriched employees with roles:', enrichedEmployees);
       
       return {
         success: true,
-        data: employees.map(emp => this._enrichEmployeeWithRole(emp)),
+        data: enrichedEmployees,
         total: response.data.total || employees.length
       };
     }
@@ -197,35 +203,48 @@ export class UserService {
    * Usa la misma lógica que SessionManager para determinar roles
    */
   _enrichEmployeeWithRole(employeeData) {
+    console.log('UserService._enrichEmployeeWithRole - Input data:', employeeData);
+    
     // Crear el empleado base
     const employee = Employee.fromApiResponse(employeeData);
+    console.log('UserService._enrichEmployeeWithRole - Base employee after fromApiResponse:', employee);
     
     // Aplicar la misma lógica que SessionManager para obtener roles
     try {
       const token = sessionStorage.getItem('naari_token');
       if (token) {
         const tokenInfo = JWTUtils.getTokenInfo(token);
+        console.log('UserService._enrichEmployeeWithRole - Token info:', tokenInfo);
         
         if (tokenInfo && tokenInfo.userId === employeeData.id) {
           // Si es el usuario actual, usar roles del JWT (igual que SessionManager)
           if (tokenInfo.roles && tokenInfo.roles.length > 0) {
             employee.role = tokenInfo.roles[0]; // Primer rol como principal
+            console.log('UserService._enrichEmployeeWithRole - Using JWT role for current user:', employee.role);
           } else {
             employee.role = 'user'; // fallback si no hay roles en el token
+            console.log('UserService._enrichEmployeeWithRole - No roles in JWT, using fallback: user');
           }
         } else {
           // Para otros usuarios, intentar determinar el rol por heurísticas
-          employee.role = this._inferRoleFromUserData(employeeData);
+          const inferredRole = this._inferRoleFromUserData(employeeData);
+          employee.role = inferredRole;
+          console.log('UserService._enrichEmployeeWithRole - Using inferred role for other user:', inferredRole);
         }
       } else {
         // Sin token, usar heurísticas
-        employee.role = this._inferRoleFromUserData(employeeData);
+        const inferredRole = this._inferRoleFromUserData(employeeData);
+        employee.role = inferredRole;
+        console.log('UserService._enrichEmployeeWithRole - No token, using inferred role:', inferredRole);
       }
     } catch (error) {
       console.debug('Could not extract role from token:', error);
-      employee.role = this._inferRoleFromUserData(employeeData);
+      const inferredRole = this._inferRoleFromUserData(employeeData);
+      employee.role = inferredRole;
+      console.log('UserService._enrichEmployeeWithRole - Token error, using inferred role:', inferredRole);
     }
     
+    console.log('UserService._enrichEmployeeWithRole - Final employee:', employee);
     return employee;
   }
 
@@ -233,6 +252,24 @@ export class UserService {
    * Infiere el rol basándose en los datos del usuario (heurísticas)
    */
   _inferRoleFromUserData(employeeData) {
+    console.log('UserService._inferRoleFromUserData - Input data:', employeeData);
+    
+    // PRIMERO: Si el empleado ya tiene un rol definido en el backend, usarlo
+    if (employeeData.role && employeeData.role.trim()) {
+      console.log('UserService._inferRoleFromUserData - Using backend role:', employeeData.role);
+      return employeeData.role;
+    }
+    
+    // SEGUNDO: Verificar si hay un rol temporal guardado para este empleado
+    const tempRoleKey = `temp_role_${employeeData.id}`;
+    const tempRole = sessionStorage.getItem(tempRoleKey);
+    if (tempRole) {
+      console.log('UserService._inferRoleFromUserData - Using temporary cached role:', tempRole);
+      return tempRole;
+    }
+    
+    console.log('UserService._inferRoleFromUserData - No backend role or temp role found, using heuristics');
+    
     // Heurísticas para determinar roles cuando no tenemos información del JWT
     const email = employeeData.email?.toLowerCase() || '';
     const fullName = employeeData.full_name?.toLowerCase() || '';
@@ -292,11 +329,15 @@ export class UserService {
     const emailHash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const roleIndex = emailHash % 2;
     
+    let finalRole;
     switch (roleIndex) {
-      case 0: return 'receptionist'; 
-      case 1: return 'esthetician';
-      default: return 'receptionist';
+      case 0: finalRole = 'receptionist'; break;
+      case 1: finalRole = 'esthetician'; break;
+      default: finalRole = 'receptionist'; break;
     }
+    
+    console.log('UserService._inferRoleFromUserData - Final inferred role:', finalRole);
+    return finalRole;
   }
 
   /**
@@ -357,21 +398,44 @@ export class UserService {
         updateData.branch_id = employeeData.branchId;
       }
 
-      // Incluir role solo si:
-      // 1. No es administrator (ni original ni nuevo)
-      // 2. No se está editando un admin existente
-      const isEditingAdmin = originalEmployee && originalEmployee.role === 'administrator';
+      // Lógica de roles mejorada:
+      // - Para /users/me: No enviar role (el usuario no puede cambiar su propio rol)
+      // - Para /users/{id}: Solo admin puede cambiar roles de otros usuarios
       
-      if (employeeData.role && 
-          employeeData.role !== 'administrator' && 
-          !isEditingAdmin) {
-        updateData.role = employeeData.role;
+      if (!isCurrentUser && employeeData.role) {
+        // Verificar si el usuario actual es administrador antes de permitir cambios de rol
+        const token = sessionStorage.getItem('naari_token');
+        let isAdmin = false;
+        
+        if (token) {
+          try {
+            const tokenInfo = JWTUtils.getTokenInfo(token);
+            isAdmin = tokenInfo && tokenInfo.roles && tokenInfo.roles.includes('administrator');
+          } catch (error) {
+            console.debug('Could not extract admin info from token:', error);
+          }
+        }
+        
+        if (isAdmin) {
+          updateData.role = employeeData.role;
+          console.log('UserService.updateEmployee - Including role for admin update:', employeeData.role);
+        } else {
+          console.log('UserService.updateEmployee - User is not admin, cannot change roles of other users');
+          return {
+            success: false,
+            error: 'Solo los administradores pueden cambiar roles de otros usuarios.'
+          };
+        }
+      } else if (isCurrentUser && employeeData.role) {
+        console.log('UserService.updateEmployee - NOT including role for self-update (security)');
       }
 
       console.log('UserService.updateEmployee:', {
         employeeId,
-        endpoint: isCurrentUser ? '/users/me' : `/users/${employeeId}`,
-        updateData
+        isCurrentUser,
+        endpoint: isCurrentUser ? API_ENDPOINTS.USERS.ME : `${API_ENDPOINTS.USERS.BASE}/${employeeId}`,
+        updateData,
+        originalEmployee: originalEmployee ? { id: originalEmployee.id, role: originalEmployee.role } : null
       });
 
       let response;
@@ -379,25 +443,54 @@ export class UserService {
       if (isCurrentUser) {
         // Usar endpoint /users/me para usuario actual
         console.log('Updating current user profile via /users/me', { employeeId, updateData });
-        response = await this.apiClient.putWithErrorHandling('/users/me', updateData);
+        response = await this.apiClient.putWithErrorHandling(API_ENDPOINTS.USERS.ME, updateData);
       } else {
-        // Intentar usar endpoint /users/:id para otros usuarios
-        console.log('Attempting to update other user via /users/:id', { employeeId, updateData });
-        response = await this.apiClient.putWithErrorHandling(`/users/${employeeId}`, updateData);
+        // Usar endpoint /users/:id para otros usuarios (Admin only)
+        console.log('Updating other user via /users/:id (Admin only)', { employeeId, updateData });
+        response = await this.apiClient.putWithErrorHandling(`${API_ENDPOINTS.USERS.BASE}/${employeeId}`, updateData);
+        
+        // Si el endpoint devuelve 403, el usuario no tiene permisos de admin
+        if (response.response?.status === 403) {
+          return {
+            success: false,
+            error: 'No tienes permisos de administrador para actualizar otros usuarios.'
+          };
+        }
         
         // Si el endpoint no existe, informar que no está disponible
         if (response.response?.status === 404) {
           return {
             success: false,
-            error: 'La actualización de otros empleados no está disponible. Solo puedes actualizar tu propio perfil.'
+            error: 'El endpoint de actualización de usuarios no está disponible.'
           };
         }
       }
       
+      console.log('UserService.updateEmployee - Backend response:', response);
+      console.log('UserService.updateEmployee - Response data:', response.data);
+      
       if (response.success) {
+        const updatedEmployee = Employee.fromApiResponse(response.data);
+        console.log('UserService.updateEmployee - Created employee object:', updatedEmployee);
+        
+        // Si el backend no devolvió el rol, pero lo enviamos, preservarlo
+        if (!response.data.role && updateData.role) {
+          console.log('UserService.updateEmployee - Backend did not return role, preserving sent role:', updateData.role);
+          updatedEmployee.role = updateData.role;
+          
+          // Guardar temporalmente en cache para usar en getAllEmployees
+          const tempRoleKey = `temp_role_${employeeId}`;
+          sessionStorage.setItem(tempRoleKey, updateData.role);
+          
+          // Limpiar después de 30 segundos
+          setTimeout(() => {
+            sessionStorage.removeItem(tempRoleKey);
+          }, 30000);
+        }
+        
         return {
           success: true,
-          data: Employee.fromApiResponse(response.data)
+          data: updatedEmployee
         };
       }
       
@@ -419,7 +512,7 @@ export class UserService {
    */
   async activateEmployee(employeeId) {
     try {
-      const response = await this.apiClient.patchWithErrorHandling(`/users/${employeeId}/activate`);
+      const response = await this.apiClient.patchWithErrorHandling(`${API_ENDPOINTS.USERS.BASE}/${employeeId}/activate`);
       
       if (response.success) {
         return {
@@ -447,7 +540,7 @@ export class UserService {
    */
   async deactivateEmployee(employeeId) {
     try {
-      const response = await this.apiClient.patchWithErrorHandling(`/users/${employeeId}/deactivate`);
+      const response = await this.apiClient.patchWithErrorHandling(`${API_ENDPOINTS.USERS.BASE}/${employeeId}/deactivate`);
       
       if (response.success) {
         return {

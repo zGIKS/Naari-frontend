@@ -96,7 +96,11 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
       if (response.success) {
         setShowForm(false);
         setEditingEmployee(null);
+        
+        // Forzar recarga completa de empleados para reflejar cambios del backend
+        console.log('Employee updated successfully, reloading employee list...');
         await loadEmployees();
+        
         showToast('success', t('users.success.updated', 'Empleado actualizado exitosamente'));
       } else {
         showToast('error', response.error || t('users.error.update_failed', 'Error al actualizar empleado'));
