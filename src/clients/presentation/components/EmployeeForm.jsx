@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Employee } from '../../domain/entities/Employee.js';
+import { useUserRole } from '../../../shared/hooks/useUserRole.js';
 
 /**
  * EmployeeForm - Formulario para crear empleados
@@ -13,15 +14,61 @@ export const EmployeeForm = ({
   branches = []
 }) => {
   const { t } = useTranslation();
+  const { isAdmin } = useUserRole();
   const [formData, setFormData] = useState(employee || Employee.empty());
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+
+  // Verificar si es el usuario actual editando su propio perfil
+  const isEditingOwnProfile = () => {
+    if (!employee) return false;
+    const token = sessionStorage.getItem('naari_token');
+    if (!token) return false;
+    
+    try {
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      return tokenData.userId === employee.id || String(tokenData.userId) === String(employee.id);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Verificar si se puede modificar el rol del empleado
+  const canEditRole = () => {
+    // Si no es admin, no puede editar roles de nadie
+    if (!isAdmin) return false;
+    
+    // Si es creación de nuevo empleado, admin puede asignar rol (excepto admin)
+    if (!employee) return true;
+    
+    // Admin no puede cambiar su propio rol
+    if (isEditingOwnProfile()) return false;
+    
+    // Admin no puede cambiar rol de otros admins
+    if (employee.role === 'administrator') return false;
+    
+    return true;
+  };
+
+  // Obtener roles disponibles según el contexto
+  const getAvailableRoles = () => {
+    // Solo permitir receptionist y esthetician (nunca administrator)
+    return [
+      { value: 'receptionist', label: t('roles.receptionist', 'Recepcionista') },
+      { value: 'esthetician', label: t('roles.esthetician', 'Especialista') }
+    ];
+  };
 
   // Update form data when employee prop changes
   useEffect(() => {
     if (employee) {
       setFormData({
-        ...employee,
+        id: employee.id,
+        email: employee.email || '',
+        firstName: employee.firstName || '',
+        lastName: employee.lastName || '',
+        role: employee.role || '',
+        branchId: employee.branchId || '',
         password: '' // Don't pre-fill password for editing
       });
     } else {
@@ -31,6 +78,7 @@ export const EmployeeForm = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -63,7 +111,8 @@ export const EmployeeForm = ({
       newErrors.lastName = t('users.validation.last_name_required', 'Apellido es requerido');
     }
 
-    if (!formData.role?.trim()) {
+    // Solo validar rol si se puede editar
+    if (canEditRole() && !formData.role?.trim()) {
       newErrors.role = t('users.validation.role_required', 'Rol es requerido');
     }
 
@@ -89,8 +138,20 @@ export const EmployeeForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Asegurar que el rol se mantenga si no se puede editar
+    const finalFormData = { ...formData };
+    if (!canEditRole() && employee) {
+      finalFormData.role = employee.role;
+    }
+    
+    console.log('EmployeeForm.handleSubmit:', {
+      isEditing: !!employee,
+      employeeId: employee?.id,
+      finalFormData
+    });
+    
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit(finalFormData);
     }
   };
 
@@ -112,7 +173,7 @@ export const EmployeeForm = ({
               value={formData.firstName || ''}
               onChange={handleChange}
               className={`form-input ${errors.firstName ? 'error' : ''}`}
-              placeholder="Juan Carlos"
+              placeholder="Ej: Nombre"
               disabled={isLoading}
             />
             {errors.firstName && <span className="form-error">{errors.firstName}</span>}
@@ -129,7 +190,7 @@ export const EmployeeForm = ({
               value={formData.lastName || ''}
               onChange={handleChange}
               className={`form-input ${errors.lastName ? 'error' : ''}`}
-              placeholder="Pérez García"
+              placeholder="Ej: Apellido"
               disabled={isLoading}
             />
             {errors.lastName && <span className="form-error">{errors.lastName}</span>}
@@ -147,30 +208,60 @@ export const EmployeeForm = ({
               value={formData.email || ''}
               onChange={handleChange}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              placeholder="empleado@empresa.com"
+              placeholder="Ej: correo@dominio.com"
               disabled={isLoading}
             />
             {errors.email && <span className="form-error">{errors.email}</span>}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="role" className="form-label required">
-              {t('users.form.role', 'Rol')}
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role || ''}
-              onChange={handleChange}
-              className={`form-input ${errors.role ? 'error' : ''}`}
-              disabled={isLoading}
-            >
-              <option value="">{t('users.form.select_role', 'Seleccionar rol')}</option>
-              <option value="receptionist">{t('roles.receptionist', 'Recepcionista')}</option>
-              <option value="esthetician">{t('roles.esthetician', 'Especialista')}</option>
-            </select>
-            {errors.role && <span className="form-error">{errors.role}</span>}
-          </div>
+          {/* Mostrar campo de rol editable según las nuevas reglas */}
+          {canEditRole() && (
+            <div className="form-group">
+              <label htmlFor="role" className="form-label required">
+                {t('users.form.role', 'Rol')}
+              </label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role || ''}
+                onChange={handleChange}
+                className={`form-input ${errors.role ? 'error' : ''}`}
+                disabled={isLoading}
+              >
+                {!employee && (
+                  <option value="">{t('users.form.select_role', 'Seleccionar rol')}</option>
+                )}
+                {getAvailableRoles().map(role => (
+                  <option key={role.value} value={role.value}>
+                    {role.label}
+                  </option>
+                ))}
+              </select>
+              {errors.role && <span className="form-error">{errors.role}</span>}
+            </div>
+          )}
+
+          {/* Mostrar rol actual como texto readonly cuando no se puede editar */}
+          {!canEditRole() && employee && (
+            <div className="form-group">
+              <label className="form-label">
+                {t('users.form.role', 'Rol')}
+              </label>
+              <div className="form-input-readonly">
+                {t(`roles.${formData.role}`, 
+                  formData.role === 'receptionist' ? 'Recepcionista' : 
+                  formData.role === 'esthetician' ? 'Especialista' : 
+                  'Administrador'
+                )}
+                <small className="form-help">
+                  {isEditingOwnProfile() 
+                    ? t('users.form.role_readonly_self', 'No puedes cambiar tu propio rol')
+                    : t('users.form.role_readonly_admin', 'No puedes cambiar el rol de administradores')
+                  }
+                </small>
+              </div>
+            </div>
+          )}
 
           {/* Fila 3: Sucursal y Contraseña */}
           {formData.role && formData.role !== 'administrator' && (
@@ -200,7 +291,7 @@ export const EmployeeForm = ({
           <div className="form-group">
             <label htmlFor="password" className={`form-label ${!employee ? 'required' : ''}`}>
               {employee 
-                ? t('users.form.password_optional', 'Contraseña (opcional)')
+                ? t('users.form.password_optional', 'Contraseña ')
                 : t('users.form.password', 'Contraseña')
               }
             </label>
@@ -213,7 +304,7 @@ export const EmployeeForm = ({
                 onChange={handleChange}
                 className={`form-input ${errors.password ? 'error' : ''}`}
                 placeholder={employee 
-                  ? t('users.form.password_placeholder_edit', 'Dejar vacío para mantener actual')
+                  ? t('users.form.password_placeholder_edit', 'Opcional')
                   : t('users.form.password_placeholder', 'Mínimo 8 caracteres')
                 }
                 disabled={isLoading}

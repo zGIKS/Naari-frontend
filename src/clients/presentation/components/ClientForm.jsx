@@ -93,7 +93,7 @@ export const ClientForm = ({
               value={formData.dni || ''}
               onChange={handleChange}
               className={`form-input ${errors.dni ? 'error' : ''}`}
-              placeholder="12345678"
+              placeholder="Ej: 12345678"
               maxLength="8"
               disabled={isLoading}
             />
@@ -111,7 +111,7 @@ export const ClientForm = ({
               value={formData.firstName || ''}
               onChange={handleChange}
               className={`form-input ${errors.firstName ? 'error' : ''}`}
-              placeholder="Juan Carlos"
+              placeholder="Ej: Nombre"
               disabled={isLoading}
             />
             {errors.firstName && <span className="form-error">{errors.firstName}</span>}
@@ -128,7 +128,7 @@ export const ClientForm = ({
               value={formData.lastName || ''}
               onChange={handleChange}
               className={`form-input ${errors.lastName ? 'error' : ''}`}
-              placeholder="Pérez García"
+              placeholder="Ej: Apellido"
               disabled={isLoading}
             />
             {errors.lastName && <span className="form-error">{errors.lastName}</span>}
@@ -145,7 +145,7 @@ export const ClientForm = ({
               value={formData.email || ''}
               onChange={handleChange}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              placeholder="cliente@email.com"
+              placeholder="Ej: correo@dominio.com"
               disabled={isLoading}
             />
             {errors.email && <span className="form-error">{errors.email}</span>}
@@ -162,7 +162,7 @@ export const ClientForm = ({
               value={formData.phone || ''}
               onChange={handleChange}
               className={`form-input ${errors.phone ? 'error' : ''}`}
-              placeholder="987654321"
+              placeholder="Ej: 987654321"
               disabled={isLoading}
             />
             {errors.phone && <span className="form-error">{errors.phone}</span>}
@@ -200,7 +200,7 @@ export const ClientForm = ({
               value={formData.address || ''}
               onChange={handleChange}
               className="form-input"
-              placeholder="Av. Principal 123"
+              placeholder="Ej: Av. Principal 123"
               disabled={isLoading}
             />
           </div>
@@ -216,7 +216,7 @@ export const ClientForm = ({
               value={formData.district || ''}
               onChange={handleChange}
               className="form-input"
-              placeholder="San Isidro"
+              placeholder="Ej: Distrito"
               disabled={isLoading}
             />
           </div>
@@ -232,7 +232,7 @@ export const ClientForm = ({
               value={formData.province || ''}
               onChange={handleChange}
               className="form-input"
-              placeholder="Lima"
+              placeholder="Ej: Provincia"
               disabled={isLoading}
             />
           </div>
@@ -248,7 +248,7 @@ export const ClientForm = ({
               value={formData.urbanization || ''}
               onChange={handleChange}
               className="form-input"
-              placeholder="Los Jardines"
+              placeholder="Ej: Urbanización"
               disabled={isLoading}
             />
           </div>
@@ -270,7 +270,7 @@ export const ClientForm = ({
               value={formData.ruc || ''}
               onChange={handleChange}
               className={`form-input ${errors.ruc ? 'error' : ''}`}
-              placeholder="20123456789"
+              placeholder="Ej: 20123456789"
               maxLength="11"
               disabled={isLoading}
             />

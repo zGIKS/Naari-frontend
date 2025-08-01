@@ -24,6 +24,14 @@ export class UserService {
         };
       }
 
+      // Validar que no se intente crear un administrador desde el frontend
+      if (employee.role === 'administrator') {
+        return {
+          success: false,
+          error: 'No se pueden crear administradores desde el frontend por seguridad'
+        };
+      }
+
       // Validar contraseña
       if (!employeeData.password || employeeData.password.length < 8) {
         return {
@@ -231,18 +239,8 @@ export class UserService {
     const firstName = employeeData.first_name?.toLowerCase() || '';
     const lastName = employeeData.last_name?.toLowerCase() || '';
     
-    // ADMINISTRATOR - Detectar administradores
-    if (
-      email.includes('admin') || 
-      fullName.includes('admin') ||
-      firstName.includes('admin') ||
-      lastName.includes('admin') ||
-      email.includes('director') ||
-      email.includes('gerente') ||
-      email.includes('jefe')
-    ) {
-      return 'administrator';
-    }
+    // ADMINISTRATOR - Los administradores no se crean desde el frontend
+    // Solo se infieren roles de recepcionista o especialista
     
     // RECEPTIONIST - Detectar recepcionistas
     if (
@@ -289,15 +287,14 @@ export class UserService {
       return 'receptionist';
     }
     
-    // Si no se puede determinar con certeza, usar distribución balanceada
-    // Basarse en el hash del email para consistencia
+    // Si no se puede determinar con certeza, usar solo roles no-admin
+    // Basarse en el hash del email para consistencia entre receptionist y esthetician
     const emailHash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const roleIndex = emailHash % 3;
+    const roleIndex = emailHash % 2;
     
     switch (roleIndex) {
-      case 0: return 'administrator';
-      case 1: return 'receptionist'; 
-      case 2: return 'esthetician';
+      case 0: return 'receptionist'; 
+      case 1: return 'esthetician';
       default: return 'receptionist';
     }
   }
@@ -313,7 +310,7 @@ export class UserService {
    * Actualiza un empleado
    * Si es el usuario actual, usa /users/me, sino intenta usar /users/:id
    */
-  async updateEmployee(employeeId, employeeData) {
+  async updateEmployee(employeeId, employeeData, originalEmployee = null) {
     try {
       const employee = new Employee(employeeData);
       
@@ -343,24 +340,39 @@ export class UserService {
       }
 
       // Preparar datos de actualización
-      const updateData = {
-        email: employeeData.email,
-        first_name: employeeData.firstName,
-        last_name: employeeData.lastName
-      };
+      const updateData = {};
+
+      // Siempre incluir campos básicos (el backend maneja la comparación)
+      updateData.email = employeeData.email;
+      updateData.first_name = employeeData.firstName;
+      updateData.last_name = employeeData.lastName;
 
       // Solo incluir password si se proporcionó
       if (employeeData.password && employeeData.password.trim()) {
         updateData.password = employeeData.password;
       }
 
-      // Incluir branch_id y role solo si están disponibles
+      // Incluir branch_id si está disponible
       if (employeeData.branchId) {
         updateData.branch_id = employeeData.branchId;
       }
-      if (employeeData.role) {
+
+      // Incluir role solo si:
+      // 1. No es administrator (ni original ni nuevo)
+      // 2. No se está editando un admin existente
+      const isEditingAdmin = originalEmployee && originalEmployee.role === 'administrator';
+      
+      if (employeeData.role && 
+          employeeData.role !== 'administrator' && 
+          !isEditingAdmin) {
         updateData.role = employeeData.role;
       }
+
+      console.log('UserService.updateEmployee:', {
+        employeeId,
+        endpoint: isCurrentUser ? '/users/me' : `/users/${employeeId}`,
+        updateData
+      });
 
       let response;
 
@@ -481,8 +493,10 @@ export class UserService {
 
     if (!employeeData.role || employeeData.role.trim().length === 0) {
       errors.push('Rol es requerido');
+    } else if (employeeData.role === 'administrator') {
+      errors.push('No se puede asignar el rol de administrador.');
     } else if (!['receptionist', 'esthetician'].includes(employeeData.role)) {
-      errors.push('Rol debe ser recepcionista o especialista');
+      errors.push('Rol debe ser recepcionista o especialista.');
     }
 
     if (!employeeData.password || employeeData.password.length < 8) {

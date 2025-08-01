@@ -91,7 +91,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     setIsSubmitting(true);
     try {
       const userService = userFactory.createUserService();
-      const response = await userService.updateEmployee(editingEmployee.id, employeeData);
+      const response = await userService.updateEmployee(editingEmployee.id, employeeData, editingEmployee);
 
       if (response.success) {
         setShowForm(false);
