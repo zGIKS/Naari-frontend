@@ -212,6 +212,8 @@ const resources = {
         form: {
           title: 'Registrar Nuevo Cliente',
           subtitle: 'Completa la información del cliente',
+          edit_title: 'Editar Cliente',
+          edit_subtitle: 'Modifica la información del cliente',
           personal_info: 'Información Personal',
           address_info: 'Información de Dirección',
           additional_info: 'Información Adicional',
@@ -253,23 +255,33 @@ const resources = {
           ruc_placeholder: 'Ej: 20123456789'
         },
         list: {
+          clients_list: 'Lista de Clientes',
+          clients_count: 'clientes',
           search_placeholder: 'Buscar por nombre, DNI o email...',
-          no_results: 'No se encontraron clientes',
+          no_results: 'No se encontraron clientes con la búsqueda actual',
           no_results_message: 'Intenta con otros términos de búsqueda',
-          no_clients: 'No hay clientes registrados',
+          no_clients: 'No hay clientes',
           no_clients_message: 'Comienza registrando tu primer cliente',
           name: 'Nombre',
+          full_name: 'Nombre Completo',
           dni: 'DNI',
           email: 'Email',
           phone: 'Teléfono',
           age: 'Edad',
           registered: 'Registrado',
+          registration_date: 'Fecha de Registro',
           actions: 'Acciones',
           select: 'Seleccionar',
           showing_results: 'Mostrando {{count}} de {{total}} clientes'
         },
+        search: {
+          placeholder: 'Buscar por nombre, DNI, email o teléfono...'
+        },
         actions: {
-          new_client: 'Nuevo Cliente'
+          new_client: 'Nuevo Cliente',
+          edit_client: 'Editar Cliente',
+          view_client: 'Ver Cliente',
+          delete_client: 'Eliminar Cliente'
         },
         validation: {
           dni_required: 'DNI es requerido',
@@ -282,11 +294,16 @@ const resources = {
           phone_invalid: 'Teléfono debe tener al menos 9 dígitos'
         },
         success: {
-          created: 'Cliente registrado exitosamente'
+          created: 'Cliente registrado exitosamente',
+          updated: 'Cliente actualizado exitosamente'
         },
         error: {
           load_failed: 'Error al cargar clientes',
           create_failed: 'Error al crear cliente',
+          update_failed: 'Error al actualizar cliente',
+          get_client_failed: 'Error al obtener el cliente',
+          no_client_data: 'No se encontraron datos del cliente',
+          not_found: 'Cliente no encontrado',
           network: 'Error de conexión',
           get_clients_failed: 'Error al obtener la lista de clientes',
           missing_required_data: 'Faltan datos requeridos: DNI, nombres, apellidos y email son obligatorios',
@@ -303,6 +320,10 @@ const resources = {
           unauthorized_login_again: 'No tienes autorización. Inicia sesión nuevamente.',
           no_permissions: 'No tienes permisos para realizar esta acción.',
           client_already_exists: 'Ya existe un cliente con este DNI o email.',
+          dni_already_exists: 'Ya existe un cliente con este DNI.',
+          ruc_already_exists: 'Ya existe un cliente con este RUC.',
+          email_already_exists: 'Ya existe un cliente con este email.',
+          phone_already_exists: 'Ya existe un cliente con este teléfono.',
           server_error: 'Error del servidor. Intenta nuevamente más tarde.',
           connection_error: 'Error de conexión. Verifica tu conexión a internet.',
           unexpected_error: 'Error inesperado. Intenta nuevamente.'
@@ -443,7 +464,10 @@ const resources = {
         inactive: 'Inactivo',
         activate: 'Activar',
         deactivate: 'Desactivar',
-        update: 'Actualizar'
+        update: 'Actualizar',
+        back: 'Volver',
+        refresh: 'Actualizar',
+        search: 'Buscar...'
       },
       validation: {
         email_invalid: 'Email inválido',
@@ -669,6 +693,8 @@ const resources = {
         form: {
           title: 'Register New Client',
           subtitle: 'Complete the client information',
+          edit_title: 'Edit Client',
+          edit_subtitle: 'Modify the client information',
           personal_info: 'Personal Information',
           address_info: 'Address Information',
           additional_info: 'Additional Information',
@@ -710,23 +736,33 @@ const resources = {
           ruc_placeholder: 'Ex: 20123456789'
         },
         list: {
+          clients_list: 'Client List',
+          clients_count: 'clients',
           search_placeholder: 'Search by name, ID or email...',
-          no_results: 'No clients found',
+          no_results: 'No clients found with current search',
           no_results_message: 'Try different search terms',
-          no_clients: 'No clients registered',
+          no_clients: 'No clients',
           no_clients_message: 'Start by registering your first client',
           name: 'Name',
+          full_name: 'Full Name',
           dni: 'ID',
           email: 'Email',
           phone: 'Phone',
           age: 'Age',
           registered: 'Registered',
+          registration_date: 'Registration Date',
           actions: 'Actions',
           select: 'Select',
           showing_results: 'Showing {{count}} of {{total}} clients'
         },
+        search: {
+          placeholder: 'Search by name, ID, email or phone...'
+        },
         actions: {
-          new_client: 'New Client'
+          new_client: 'New Client',
+          edit_client: 'Edit Client',
+          view_client: 'View Client',
+          delete_client: 'Delete Client'
         },
         validation: {
           dni_required: 'ID number is required',
@@ -739,11 +775,16 @@ const resources = {
           phone_invalid: 'Phone must have at least 9 digits'
         },
         success: {
-          created: 'Client registered successfully'
+          created: 'Client registered successfully',
+          updated: 'Client updated successfully'
         },
         error: {
           load_failed: 'Error loading clients',
           create_failed: 'Error creating client',
+          update_failed: 'Error updating client',
+          get_client_failed: 'Error getting client',
+          no_client_data: 'No client data found',
+          not_found: 'Client not found',
           network: 'Connection error',
           get_clients_failed: 'Error getting client list',
           missing_required_data: 'Missing required data: ID, first name, last name and email are mandatory',
@@ -760,6 +801,10 @@ const resources = {
           unauthorized_login_again: 'You are not authorized. Please login again.',
           no_permissions: 'You do not have permissions to perform this action.',
           client_already_exists: 'A client with this ID or email already exists.',
+          dni_already_exists: 'A client with this ID already exists.',
+          ruc_already_exists: 'A client with this Tax ID already exists.',
+          email_already_exists: 'A client with this email already exists.',
+          phone_already_exists: 'A client with this phone already exists.',
           server_error: 'Server error. Please try again later.',
           connection_error: 'Connection error. Please check your internet connection.',
           unexpected_error: 'Unexpected error. Please try again.'
@@ -900,7 +945,10 @@ const resources = {
         inactive: 'Inactive',
         activate: 'Activate',
         deactivate: 'Deactivate',
-        update: 'Update'
+        update: 'Update',
+        back: 'Back',
+        refresh: 'Refresh',
+        search: 'Search...'
       },
       validation: {
         email_invalid: 'Invalid email',

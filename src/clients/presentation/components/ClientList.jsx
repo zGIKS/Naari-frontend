@@ -108,12 +108,12 @@ export const ClientList = ({
           <table className="excel-table">
             <thead>
               <tr>
-                <th>Nombre Completo</th>
-                <th>DNI</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Fecha de Registro</th>
-                <th>Acciones</th>
+                <th>{t('clients.list.full_name', 'Nombre Completo')}</th>
+                <th>{t('clients.list.dni', 'DNI')}</th>
+                <th>{t('clients.list.phone', 'Teléfono')}</th>
+                <th>{t('clients.list.email', 'Email')}</th>
+                <th>{t('clients.list.registration_date', 'Fecha de Registro')}</th>
+                <th>{t('clients.list.actions', 'Acciones')}</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@ export const ClientList = ({
                     <button
                       onClick={() => handleEdit(client)}
                       className="edit-btn"
-                      title="Editar cliente"
+                      title={t('clients.actions.edit_client', 'Editar cliente')}
                       type="button"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

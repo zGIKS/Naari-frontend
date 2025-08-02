@@ -61,6 +61,14 @@ export class ClientService {
         };
       }
       
+      // Si hay un response con status code, usar el manejo de errores específico
+      if (response.response) {
+        return {
+          success: false,
+          error: this._handleError(response.response)
+        };
+      }
+      
       return {
         success: false,
         error: response.error || this.t('clients.error.create_failed', 'Error al crear el cliente')
@@ -95,6 +103,14 @@ export class ClientService {
         return {
           success: true,
           data: Client.fromApiResponse(response.data)
+        };
+      }
+      
+      // Si hay un response con status code, usar el manejo de errores específico
+      if (response.response) {
+        return {
+          success: false,
+          error: this._handleError(response.response)
         };
       }
       
@@ -194,9 +210,12 @@ export class ClientService {
   /**
    * Maneja errores de la API
    */
-  _handleError(error) {
-    if (error.response) {
-      const status = error.response.status;
+  _handleError(errorOrResponse) {
+    // Si es un response directo (desde el ApiClient), usar directamente
+    const response = errorOrResponse.status ? errorOrResponse : errorOrResponse.response;
+    
+    if (response) {
+      const status = response.status;
       switch (status) {
         case 400:
           return this.t('clients.error.invalid_data_check', 'Datos inválidos. Verifica la información ingresada.');
@@ -205,6 +224,17 @@ export class ClientService {
         case 403:
           return this.t('clients.error.no_permissions', 'No tienes permisos para realizar esta acción.');
         case 409:
+          // Intentar obtener el mensaje específico del backend
+          const errorMessage = response.data?.message || '';
+          if (errorMessage.includes('DNI')) {
+            return this.t('clients.error.dni_already_exists', 'Ya existe un cliente con este DNI.');
+          } else if (errorMessage.includes('RUC')) {
+            return this.t('clients.error.ruc_already_exists', 'Ya existe un cliente con este RUC.');
+          } else if (errorMessage.includes('email')) {
+            return this.t('clients.error.email_already_exists', 'Ya existe un cliente con este email.');
+          } else if (errorMessage.includes('phone')) {
+            return this.t('clients.error.phone_already_exists', 'Ya existe un cliente con este teléfono.');
+          }
           return this.t('clients.error.client_already_exists', 'Ya existe un cliente con este DNI o email.');
         case 500:
           return this.t('clients.error.server_error', 'Error del servidor. Intenta nuevamente más tarde.');
@@ -213,7 +243,7 @@ export class ClientService {
       }
     }
     
-    if (error.code === 'NETWORK_ERROR') {
+    if (errorOrResponse.code === 'NETWORK_ERROR') {
       return this.t('clients.error.connection_error', 'Error de conexión. Verifica tu conexión a internet.');
     }
     
