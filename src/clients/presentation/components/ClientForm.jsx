@@ -164,16 +164,13 @@ export const ClientForm = ({
     <form onSubmit={handleSubmit} className="client-form">
       {/* Sección unificada de búsqueda de datos */}
       <div className="form-section" style={{ marginBottom: '1.5rem' }}>
-        <h3>Búsqueda Automática de Datos</h3>
-        <p style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#666' }}>
-          Busque por DNI (RENIEC) o RUC (SUNAT) para autocompletar los datos del formulario
-        </p>
+        <h3>{t('clients.form.autocomplete_section', 'Autocompletado Opcional de Datos')}</h3>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
           {/* Búsqueda por DNI */}
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Buscar por DNI en RENIEC
+              {t('clients.form.dni_optional_label', 'DNI (Opcional: buscar en RENIEC)')}
             </label>
             <div style={{ position: 'relative' }}>
               <input
@@ -181,8 +178,16 @@ export const ClientForm = ({
                 name="dni"
                 value={formData.dni || ''}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (formData.dni && formData.dni.length === 8 && !dniSearchLoading) {
+                      handleDniSearch();
+                    }
+                  }
+                }}
                 className={`form-input ${errors.dni ? 'error' : ''}`}
-                placeholder="Ingrese DNI (8 dígitos)"
+                placeholder={t('clients.form.dni_autocomplete_placeholder', 'DNI (8 dígitos) - Enter para autocompletar')}
                 maxLength="8"
                 disabled={isLoading || dniSearchLoading}
                 style={{ 
@@ -249,7 +254,7 @@ export const ClientForm = ({
           {/* Búsqueda por RUC */}
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Buscar por RUC en SUNAT
+              {t('clients.form.ruc_optional_label', 'RUC (Opcional: buscar en SUNAT)')}
             </label>
             <div style={{ position: 'relative' }}>
               <input
@@ -257,8 +262,16 @@ export const ClientForm = ({
                 name="ruc"
                 value={formData.ruc || ''}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (formData.ruc && formData.ruc.length === 11 && !rucSearchLoading) {
+                      handleRucSearch();
+                    }
+                  }
+                }}
                 className={`form-input ${errors.ruc ? 'error' : ''}`}
-                placeholder="Ingrese RUC (11 dígitos)"
+                placeholder={t('clients.form.ruc_autocomplete_placeholder', 'RUC (11 dígitos) - Enter para autocompletar')}
                 maxLength="11"
                 disabled={isLoading || rucSearchLoading}
                 style={{ 
@@ -321,6 +334,18 @@ export const ClientForm = ({
             {errors.ruc && <span className="form-error">{errors.ruc}</span>}
             {rucSearchError && <span className="form-error">{rucSearchError}</span>}
           </div>
+        </div>
+        
+        <div style={{ 
+          marginTop: '1rem', 
+          padding: '0.75rem 1rem', 
+          backgroundColor: '#f0f9ff', 
+          border: '1px solid #bae6fd', 
+          borderRadius: '6px',
+          fontSize: '0.85rem',
+          color: '#0369a1'
+        }}>
+          <strong>Nota:</strong> {t('clients.form.autocomplete_note', 'Los campos DNI y RUC se guardarán con el cliente independientemente de si utiliza el autocompletado o los escribe manualmente.')}
         </div>
       </div>
 
@@ -407,13 +432,16 @@ export const ClientForm = ({
               value={formData.birthDate || ''}
               onChange={handleChange}
               className="form-input"
+              placeholder={t('clients.form.birth_date_placeholder', 'dd/mm/aaaa')}
               disabled={isLoading}
             />
           </div>
         </div>
       </div>
 
-      {/* Dirección */}
+
+
+      {/* Información de Dirección */}
       <div className="form-section">
         <h3>{t('clients.form.address_info', 'Información de Dirección')}</h3>
         <div className="form-grid">
@@ -484,29 +512,131 @@ export const ClientForm = ({
       </div>
 
       {/* Información Adicional */}
-      {/* Información Adicional */}
       <div className="form-section">
         <h3>{t('clients.form.additional_info', 'Información Adicional')}</h3>
         <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="knownFrom" className="form-label">
-              {t('clients.form.known_from', 'Cómo nos conoció')}</label>
-            <select
-              id="knownFrom"
-              name="knownFrom"
-              value={formData.knownFrom || ''}
-              onChange={handleChange}
-              className="form-input"
-              disabled={isLoading}
-            >
-              <option value="">{t('clients.form.select_option', 'Seleccionar opción')}</option>
-              <option value="Referral">{t('clients.form.referral', 'Referido')}</option>
-              <option value="Social Media">{t('clients.form.social_media', 'Redes Sociales')}</option>
-              <option value="Internet">{t('clients.form.internet', 'Internet')}</option>
-              <option value="Walk-in">{t('clients.form.walk_in', 'Visita directa')}</option>
-              <option value="Advertisement">{t('clients.form.advertisement', 'Publicidad')}</option>
-              <option value="Other">{t('clients.form.other', 'Otro')}</option>
-            </select>
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+            <label className="form-label">{t('clients.form.known_from', 'Cómo nos conoció')}</label>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '1rem',
+              marginTop: '0.5rem'
+            }}>
+              {[
+                { 
+                  value: 'Referral', 
+                  label: t('clients.form.referral', 'Referido'), 
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                  )
+                },
+                { 
+                  value: 'Social Media', 
+                  label: t('clients.form.social_media', 'Redes Sociales'), 
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                      <line x1="8" y1="21" x2="16" y2="21"/>
+                      <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                  )
+                },
+                { 
+                  value: 'Internet', 
+                  label: t('clients.form.internet', 'Internet'), 
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="2" y1="12" x2="22" y2="12"/>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                  )
+                },
+                { 
+                  value: 'Walk-in', 
+                  label: t('clients.form.walk_in', 'Visita directa'), 
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                      <polyline points="9,22 9,12 15,12 15,22"/>
+                    </svg>
+                  )
+                },
+                { 
+                  value: 'Advertisement', 
+                  label: t('clients.form.advertisement', 'Publicidad'), 
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  )
+                },
+                { 
+                  value: 'Other', 
+                  label: t('clients.form.other', 'Otro'), 
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14,2 14,8 20,8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10,9 9,9 8,9"/>
+                    </svg>
+                  )
+                }
+              ].map((option) => (
+                <label
+                  key={option.value}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '1rem',
+                    border: formData.knownFrom === option.value ? '2px solid #3b82f6' : '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    backgroundColor: formData.knownFrom === option.value ? '#eff6ff' : '#ffffff',
+                    fontSize: '0.9rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (formData.knownFrom !== option.value) {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.backgroundColor = '#f9fafb';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (formData.knownFrom !== option.value) {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#ffffff';
+                    }
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="knownFrom"
+                    value={option.value}
+                    checked={formData.knownFrom === option.value}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    style={{ display: 'none' }}
+                  />
+                  <span style={{ 
+                    color: formData.knownFrom === option.value ? '#3b82f6' : '#6b7280',
+                    transition: 'color 0.2s ease'
+                  }}>
+                    {option.icon}
+                  </span>
+                  <span style={{ fontWeight: '500' }}>{option.label}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       </div>

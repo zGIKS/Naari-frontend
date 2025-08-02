@@ -49,7 +49,7 @@ export const CreateClientPage = () => {
         
         // Redirigir a la lista de clientes después de un breve delay
         setTimeout(() => {
-          navigate('/clients');
+          navigate('/clients', { state: { refreshClients: true } });
         }, 1500);
       } else {
         showToast('error', response.error || t('clients.error.create_failed', 'Error al crear cliente'));
@@ -63,7 +63,7 @@ export const CreateClientPage = () => {
   };
 
   const handleCancel = () => {
-    navigate('/clients');
+    navigate('/clients', { state: {} });
   };
 
   if (!clientFactory) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import './ClientList.css';
 
 /**
  * ClientList - Lista de clientes con búsqueda y acciones

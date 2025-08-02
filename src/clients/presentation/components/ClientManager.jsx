@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ClientList } from './ClientList';
 import Toast from '../../../shared/components/Toast';
+import './ClientManager.css';
 
 /**
  * ClientManager - Componente principal para gestión de clientes
@@ -10,6 +11,7 @@ import Toast from '../../../shared/components/Toast';
 export const ClientManager = ({ clientFactory }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [clients, setClients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState(null);
@@ -18,6 +20,15 @@ export const ClientManager = ({ clientFactory }) => {
   useEffect(() => {
     loadClients();
   }, [clientFactory]);
+
+  // Detectar cuando se regresa de crear un cliente y recargar la lista
+  useEffect(() => {
+    if (location.state?.refreshClients) {
+      loadClients();
+      // Limpiar el estado para evitar recargas innecesarias
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   const loadClients = async () => {
     if (!clientFactory) return;
