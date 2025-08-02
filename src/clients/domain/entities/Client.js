@@ -103,12 +103,22 @@ export class Client {
    * Crea una instancia de Client desde datos de API
    */
   static fromApiResponse(data) {
+    // Si el API devuelve full_name, dividirlo en firstName y lastName
+    let firstName = data.first_name || '';
+    let lastName = data.last_name || '';
+    
+    if (data.full_name && !firstName && !lastName) {
+      const nameParts = data.full_name.trim().split(' ');
+      firstName = nameParts[0] || '';
+      lastName = nameParts.slice(1).join(' ') || '';
+    }
+
     return new Client({
       id: data.id,
       dni: data.dni,
       email: data.email,
-      firstName: data.first_name,
-      lastName: data.last_name,
+      firstName: firstName,
+      lastName: lastName,
       phone: data.phone,
       birthDate: data.birth_date,
       address: data.address,

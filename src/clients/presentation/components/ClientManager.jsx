@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ClientList } from './ClientList';
 import Toast from '../../../shared/components/Toast';
 import './ClientManager.css';
 
@@ -10,7 +11,44 @@ import './ClientManager.css';
 export const ClientManager = ({ clientFactory }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [clients, setClients] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // Cargar clientes al montar el componente
+  useEffect(() => {
+    loadClients();
+  }, [clientFactory]);
+
+  // Detectar cuando se regresa de crear un cliente y recargar la lista
+  useEffect(() => {
+    if (location.state?.refreshClients) {
+      loadClients();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
+
+  const loadClients = useCallback(async () => {
+    if (!clientFactory) return;
+
+    setIsLoading(true);
+    try {
+      const clientService = clientFactory.createClientService(t);
+      const response = await clientService.getClients();
+
+      if (response.success) {
+        setClients(response.data);
+      } else {
+        showToast('error', response.error || t('clients.error.load_failed', 'Error al cargar clientes'));
+      }
+    } catch (error) {
+      console.error('Error loading clients:', error);
+      showToast('error', t('clients.error.network', 'Error de conexión'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [clientFactory]);
 
   const showToast = (type, message) => {
     setToast({ type, message });
@@ -24,6 +62,11 @@ export const ClientManager = ({ clientFactory }) => {
   const handleCreateNewClient = () => {
     navigate('/clients/create');
   };
+
+  const handleSearch = useCallback(async (searchTerm) => {
+    // La búsqueda se maneja localmente en ClientList por ahora
+    // En el futuro se puede implementar búsqueda en el backend
+  }, []);
 
   return (
     <div className="client-manager">
@@ -50,11 +93,12 @@ export const ClientManager = ({ clientFactory }) => {
       </div>
 
       <div className="manager-content">
-        {/* Lista de clientes eliminada */}
-        <div className="empty-content">
-          <h3>{t('clients.list.removed', 'Lista de clientes no disponible')}</h3>
-          <p>{t('clients.list.removed_message', 'La funcionalidad de lista ha sido deshabilitada')}</p>
-        </div>
+        <ClientList
+          clients={clients}
+          isLoading={isLoading}
+          onSearch={handleSearch}
+          onRefresh={loadClients}
+        />
       </div>
 
       {toast && (

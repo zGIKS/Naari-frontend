@@ -1,203 +1,180 @@
-/* ClientList Styles */
-.client-list {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
+/* ClientList Excel Style - Tabla de ancho completo estilo Excel */
+.client-list-excel {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: var(--color-background);
 }
 
-.client-list-header {
+/* Results Summary */
+.results-summary {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.results-count {
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
-.search-container {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
+.results-count h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text, #111827);
 }
 
-.search-container svg {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 3rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  background: white;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.search-input::placeholder {
-  color: #9ca3af;
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .list-actions {
   display: flex;
   gap: 0.5rem;
+  justify-content: flex-end;
+  align-self: flex-end;
 }
 
-.list-actions .btn {
+.btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: white;
-  color: #6b7280;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.list-actions .btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  color: #374151;
+.btn-secondary {
+  background: var(--color-background, white);
+  color: var(--color-text-secondary, #6b7280);
+  border: 1px solid var(--color-border, #d1d5db);
 }
 
-.list-actions .btn svg {
-  width: 18px;
-  height: 18px;
+.btn-secondary:hover {
+  background: var(--color-background-hover, #f9fafb);
+  color: var(--color-text, #111827);
 }
 
-/* Table Styles */
-.client-table-container {
+/* Excel Table Container - Ancho completo */
+.excel-table-container {
+  width: 100%;
   overflow-x: auto;
+  background: var(--color-surface, white);
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.client-table {
+/* Excel Table Styles - Como Excel */
+.excel-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  margin: 0;
+  background: var(--color-surface, white);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
-.client-table thead {
-  background: #f9fafb;
-}
-
-.client-table th {
-  padding: 1rem;
-  text-align: left;
+.excel-table thead th {
+  background: var(--color-background, #f9fafb);
+  color: var(--color-text, #111827);
   font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 2px solid var(--color-border, #d1d5db);
+  border-right: 1px solid var(--color-border, #e5e7eb);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-.client-table th.sortable {
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.2s ease;
-  position: relative;
+.excel-table thead th:last-child {
+  border-right: none;
 }
 
-.client-table th.sortable:hover {
-  background-color: #f3f4f6;
+.excel-table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
 }
 
-.client-table th.sortable svg {
-  color: #9ca3af;
-  transition: color 0.2s ease;
+.excel-table tbody tr:hover {
+  background: var(--color-background-hover, #f9fafb);
 }
 
-.client-table tbody tr {
-  transition: background-color 0.2s ease;
-}
-
-.client-table tbody tr:hover {
-  background-color: #f9fafb;
-}
-
-.client-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: top;
-}
-
-.client-table tbody tr:last-child td {
+.excel-table tbody tr:last-child {
   border-bottom: none;
 }
 
-/* Client Row Styles */
-.client-name {
-  font-weight: 500;
+.excel-table td {
+  padding: 0.75rem 0.5rem;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  border-right: 1px solid var(--color-border, #e5e7eb);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.client-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+.excel-table td:last-child {
+  border-right: none;
 }
 
-.client-info .name {
-  color: #111827;
+/* Column specific styles - Más compactas */
+.name-cell {
   font-weight: 600;
+  color: var(--color-text, #111827);
+  width: 25%;
+  max-width: 200px;
 }
 
-.client-info .known-from {
-  font-size: 0.75rem;
-  color: #6b7280;
-  background: #f3f4f6;
-  padding: 0.125rem 0.5rem;
-  border-radius: 12px;
-  width: fit-content;
+.dni-cell {
+  font-family: 'Monaco', 'Consolas', monospace;
+  color: var(--color-text-secondary, #6b7280);
+  width: 15%;
+  max-width: 100px;
 }
 
-.email {
-  color: var(--accent-color);
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+.phone-cell {
+  font-family: 'Monaco', 'Consolas', monospace;
+  color: var(--color-text-secondary, #6b7280);
+  width: 20%;
+  max-width: 120px;
+}
+
+.email-cell {
+  color: var(--color-primary, #3b82f6);
+  width: 25%;
+  max-width: 180px;
+  font-family: 'Monaco', 'Consolas', monospace;
   font-size: 0.85rem;
 }
 
-/* Empty State */
-.client-list-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: #6b7280;
-}
-
-.client-list-empty svg {
-  margin-bottom: 1rem;
-  color: #d1d5db;
-}
-
-.client-list-empty h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 0.5rem 0;
-}
-
-.client-list-empty p {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin: 0;
+.date-cell {
+  color: var(--color-text-secondary, #6b7280);
+  width: 15%;
+  max-width: 100px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 0.85rem;
 }
 
 /* Loading State */
@@ -210,128 +187,141 @@
   text-align: center;
 }
 
-.client-list-loading .spinner {
+.spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
+  border: 4px solid var(--color-border, #d1d5db);
+  border-top: 4px solid var(--color-primary, #3b82f6);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
-.client-list-loading p {
-  color: #6b7280;
-  font-size: 1rem;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--color-surface, white);
+  border-radius: 0.5rem;
+  border: 2px dashed var(--color-border, #d1d5db);
+}
+
+.empty-state svg {
+  color: var(--color-text-secondary, #6b7280);
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text, #111827);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.empty-state p {
   margin: 0;
-}
-
-/* Footer */
-.client-list-footer {
-  padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-}
-
-.results-count {
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-
-/* Action Buttons */
-.btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8rem;
-  border-radius: 6px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-sm.btn-primary {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-sm.btn-primary:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 0.9rem;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .client-list-header {
+@media (max-width: 1024px) {
+  .results-summary {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 1rem;
-  }
-  
-  .search-container {
-    max-width: none;
   }
   
   .list-actions {
     justify-content: center;
-  }
-  
-  .client-table-container {
-    overflow-x: scroll;
-  }
-  
-  .client-table {
-    min-width: 600px;
-  }
-  
-  .client-table th,
-  .client-table td {
-    padding: 0.75rem 0.5rem;
-  }
-  
-  .client-info .name {
-    font-size: 0.9rem;
-  }
-  
-  .client-info .known-from {
-    font-size: 0.7rem;
+    align-self: center;
   }
 }
 
-@media (max-width: 480px) {
-  .client-list {
-    margin: 0 -1rem;
+@media (max-width: 768px) {
+  .excel-table-container {
     border-radius: 0;
     border-left: none;
     border-right: none;
   }
   
-  .client-list-header {
-    padding: 1rem;
-  }
-  
-  .client-list-footer {
-    padding: 1rem;
-  }
-  
-  .client-table th,
-  .client-table td {
+  .excel-table th,
+  .excel-table td {
     padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
   }
   
-  .search-input {
-    padding: 0.625rem 0.75rem 0.625rem 2.5rem;
-    font-size: 0.85rem;
+  .name-cell {
+    width: 30%;
+    max-width: 150px;
   }
   
-  .search-container svg {
-    left: 0.75rem;
-    width: 16px;
-    height: 16px;
+  .dni-cell {
+    width: 15%;
+    max-width: 80px;
+  }
+  
+  .phone-cell {
+    width: 20%;
+    max-width: 100px;
+  }
+  
+  .email-cell {
+    width: 25%;
+    max-width: 120px;
+  }
+  
+  .date-cell {
+    width: 10%;
+    max-width: 80px;
   }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@media (max-width: 640px) {
+  .results-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .excel-table th,
+  .excel-table td {
+    padding: 0.375rem 0.125rem;
+    font-size: 0.7rem;
+  }
+  
+  /* Hide date column on very small screens */
+  .excel-table th:nth-child(5),
+  .excel-table td:nth-child(5) {
+    display: none;
+  }
+  
+  .name-cell {
+    width: 35%;
+    max-width: 120px;
+  }
+  
+  .dni-cell {
+    width: 20%;
+    max-width: 70px;
+  }
+  
+  .phone-cell {
+    width: 25%;
+    max-width: 90px;
+  }
+  
+  .email-cell {
+    width: 20%;
+    max-width: 100px;
+  }
 }
