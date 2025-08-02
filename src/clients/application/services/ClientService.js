@@ -36,6 +36,7 @@ export class ClientService {
     }
   }
 
+
   /**
    * Registra un nuevo cliente
    */
@@ -66,6 +67,43 @@ export class ClientService {
       };
     } catch (error) {
       console.error('Error creating client:', error);
+      return {
+        success: false,
+        error: this._handleError(error)
+      };
+    }
+  }
+
+  /**
+   * Actualiza un cliente existente
+   */
+  async updateClient(id, clientData) {
+    try {
+      const client = new Client(clientData);
+      
+      // Validar datos requeridos
+      if (!client.isComplete()) {
+        return {
+          success: false,
+          error: this.t('clients.error.missing_required_data', 'Faltan datos requeridos: DNI, nombres, apellidos y email son obligatorios')
+        };
+      }
+
+      const response = await this.apiClient.putWithErrorHandling(`/clients/${id}`, client.toApiFormat());
+      
+      if (response.success) {
+        return {
+          success: true,
+          data: Client.fromApiResponse(response.data)
+        };
+      }
+      
+      return {
+        success: false,
+        error: response.error || this.t('clients.error.update_failed', 'Error al actualizar el cliente')
+      };
+    } catch (error) {
+      console.error('Error updating client:', error);
       return {
         success: false,
         error: this._handleError(error)

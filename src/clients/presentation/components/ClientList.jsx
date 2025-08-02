@@ -10,7 +10,8 @@ export const ClientList = ({
   clients = [], 
   isLoading = false, 
   onSearch = null,
-  onRefresh = null
+  onRefresh = null,
+  onEdit = null
 }) => {
   const { t } = useTranslation();
   const [filteredClients, setFilteredClients] = useState(clients);
@@ -39,6 +40,12 @@ export const ClientList = ({
     setFilteredClients(filtered);
     
     console.log('Búsqueda:', searchTerm, 'Resultados:', filtered.length);
+  };
+
+  const handleEdit = (client) => {
+    if (onEdit) {
+      onEdit(client);
+    }
   };
 
   if (isLoading) {
@@ -106,6 +113,7 @@ export const ClientList = ({
                 <th>Teléfono</th>
                 <th>Email</th>
                 <th>Fecha de Registro</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -123,6 +131,19 @@ export const ClientList = ({
                         day: '2-digit'
                       }) : '-'
                     }
+                  </td>
+                  <td className="actions-cell">
+                    <button
+                      onClick={() => handleEdit(client)}
+                      className="edit-btn"
+                      title="Editar cliente"
+                      type="button"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
                   </td>
                 </tr>
               ))}

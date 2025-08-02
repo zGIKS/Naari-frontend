@@ -10,6 +10,7 @@ import { AdminDashboard } from './catalog/presentation/pages/AdminDashboard';
 import { CatalogPage } from './catalog/presentation/pages/CatalogPage';
 import { ClientPage } from './clients/presentation/pages/ClientPage';
 import { CreateClientPage } from './clients/presentation/pages/CreateClientPage';
+import { EditClientPage } from './clients/presentation/pages/EditClientPage';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -88,6 +89,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreateClientPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/clients/edit" 
+            element={
+              <ProtectedRoute>
+                <EditClientPage />
               </ProtectedRoute>
             } 
           />

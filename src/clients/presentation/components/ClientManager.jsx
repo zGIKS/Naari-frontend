@@ -68,6 +68,15 @@ export const ClientManager = ({ clientFactory }) => {
     // En el futuro se puede implementar búsqueda en el backend
   }, []);
 
+  const handleEditClient = useCallback((client) => {
+    navigate('/clients/edit', { 
+      state: { 
+        client: client,
+        returnTo: '/clients' 
+      }
+    });
+  }, [navigate]);
+
   return (
     <div className="client-manager">
       <div className="manager-header">
@@ -98,6 +107,7 @@ export const ClientManager = ({ clientFactory }) => {
           isLoading={isLoading}
           onSearch={handleSearch}
           onRefresh={loadClients}
+          onEdit={handleEditClient}
         />
       </div>
 
