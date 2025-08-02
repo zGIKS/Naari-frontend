@@ -21,10 +21,10 @@ export class NavigationFactory {
   static createAdministratorNavigation(permissions) {
     return [
       {
-        icon: 'DashboardIcon',
-        label: 'navigation.dashboard',
-        path: '/dashboard',
-        id: 'dashboard'
+        icon: 'CalendarIcon',
+        label: 'navigation.Calendar',
+        path: '/Calendar',
+        id: 'Calendar'
       },
       {
         icon: 'AdminIcon',
@@ -102,10 +102,10 @@ export class NavigationFactory {
   static createReceptionistNavigation(permissions) {
     return [
       {
-        icon: 'DashboardIcon',
-        label: 'navigation.dashboard',
-        path: '/dashboard',
-        id: 'dashboard'
+        icon: 'CalendarIcon',
+        label: 'navigation.Calendar',
+        path: '/Calendar',
+        id: 'Calendar'
       },
       {
         icon: 'ClientsIcon',
@@ -144,10 +144,10 @@ export class NavigationFactory {
   static createEstheticianNavigation(permissions) {
     return [
       {
-        icon: 'DashboardIcon',
-        label: 'navigation.dashboard',
-        path: '/dashboard',
-        id: 'dashboard'
+        icon: 'CalendarIcon',
+        label: 'navigation.Calendar',
+        path: '/Calendar',
+        id: 'Calendar'
       },
       {
         icon: 'AgendaIcon',

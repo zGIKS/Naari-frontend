@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
-import DashboardLayout from '../components/DashboardLayout';
+import CalendarLayout from '../components/CalendarLayout';
 
 const SunIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -37,7 +37,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="settings-page">
         <div className="settings-header">
           <h1>{t('settings.title', 'Configuraciones')}</h1>
@@ -122,7 +122,7 @@ const SettingsPage = () => {
 
         </div>
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import DashboardLayout from '../../../shared/components/DashboardLayout';
+import CalendarLayout from '../../../shared/components/CalendarLayout';
 import { BranchManager } from '../components/BranchManager';
 import { UserManager } from '../../../clients/presentation/components/UserManager';
 import { CatalogFactory } from '../../infrastructure/factories/CatalogFactory';
@@ -10,10 +10,10 @@ import { API_CONFIG } from '../../../shared/config/ApiConfig';
 
 
 /**
- * AdminDashboard - Panel principal de administración
+ * AdminCalendar - Panel principal de administración
  * Implementa el patrón State para manejar las pestañas
  */
-export const AdminDashboard = () => {
+export const AdminCalendar = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -90,21 +90,21 @@ export const AdminDashboard = () => {
 
   if (!catalogFactory || !userFactory) {
     return (
-      <DashboardLayout>
+      <CalendarLayout>
         <div className="admin-loading">
           <div className="spinner"></div>
           <p>{t('common.loading', 'Cargando...')}</p>
         </div>
-      </DashboardLayout>
+      </CalendarLayout>
     );
   }
 
   return (
-    <DashboardLayout>
-      <div className="admin-dashboard">
+    <CalendarLayout>
+      <div className="admin-Calendar">
         <div className="admin-header">
-          <h1>{t('admin.dashboard_title', 'Panel de Administración')}</h1>
-          <p>{t('admin.dashboard_subtitle', 'Gestiona sucursales y empleados del sistema')}</p>
+          <h1>{t('admin.Calendar_title', 'Panel de Administración')}</h1>
+          <p>{t('admin.Calendar_subtitle', 'Gestiona sucursales y empleados del sistema')}</p>
         </div>
 
         <nav className="admin-nav">
@@ -124,6 +124,6 @@ export const AdminDashboard = () => {
           {renderActiveComponent()}
         </div>
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };

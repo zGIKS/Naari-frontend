@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import DashboardLayout from '../../../shared/components/DashboardLayout';
+import CalendarLayout from '../../../shared/components/CalendarLayout';
 import { CategoryManager } from '../components/CategoryManager';
 import { ProductManager } from '../components/ProductManager';
 import { ServiceManager } from '../components/ServiceManager';
@@ -66,17 +66,17 @@ export const CatalogPage = () => {
 
   if (!catalogFactory) {
     return (
-      <DashboardLayout>
+      <CalendarLayout>
         <div className="catalog-loading">
           <div className="spinner"></div>
           <p>{t('common.loading', 'Cargando...')}</p>
         </div>
-      </DashboardLayout>
+      </CalendarLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="catalog-page">
         <div className="catalog-header">
           <h1>{t('navigation.catalog', 'Catálogo')}</h1>
@@ -92,6 +92,6 @@ export const CatalogPage = () => {
           {renderActiveComponent()}
         </div>
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };

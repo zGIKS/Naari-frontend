@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ClientForm } from '../components/ClientForm';
-import DashboardLayout from '../../../shared/components/DashboardLayout';
+import CalendarLayout from '../../../shared/components/CalendarLayout';
 import Toast from '../../../shared/components/Toast';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
@@ -83,30 +83,30 @@ export const EditClientPage = () => {
 
   if (!clientFactory || isLoading) {
     return (
-      <DashboardLayout>
+      <CalendarLayout>
         <div className="edit-client-page-loading">
           <div className="spinner"></div>
           <p>{t('common.loading', 'Cargando...')}</p>
         </div>
-      </DashboardLayout>
+      </CalendarLayout>
     );
   }
 
   if (!client) {
     return (
-      <DashboardLayout>
+      <CalendarLayout>
         <div className="edit-client-page-error">
           <h3>{t('clients.error.not_found', 'Cliente no encontrado')}</h3>
           <button onClick={handleCancel} className="btn btn-primary">
             {t('common.back', 'Volver')}
           </button>
         </div>
-      </DashboardLayout>
+      </CalendarLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="edit-client-page">
         <div className="page-header" style={{
           marginBottom: '2rem',
@@ -199,6 +199,6 @@ export const EditClientPage = () => {
           />
         )}
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };

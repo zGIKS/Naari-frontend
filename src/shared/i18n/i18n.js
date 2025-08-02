@@ -22,9 +22,9 @@ const resources = {
         title: 'Bienvenido a Naari',
         message: 'Bienvenido, {{name}}'
       },
-      dashboard: {
-        title: 'Panel de Control',
-        welcome: 'Bienvenido a tu panel de control'
+      Calendar: {
+        title: 'Calendario',
+        welcome: 'Bienvenido a tu Calendario'
       },
       theme: {
         toggle: 'Cambiar tema',
@@ -68,7 +68,7 @@ const resources = {
         loading: 'Cargando...'
       },
       navigation: {
-        dashboard: 'Panel de Control',
+        Calendar: 'Calendario',
         admin: 'Panel de Administración',
         clients: 'Clientes',
         users: 'Usuarios',
@@ -99,8 +99,8 @@ const resources = {
         'language.interface.description': 'Cambia el idioma de todos los textos de la aplicación'
       },
       admin: {
-        dashboard_title: 'Panel de Administración',
-        dashboard_subtitle: 'Gestiona sucursales y empleados del sistema',
+        Calendar_title: 'Panel de Administración',
+        Calendar_subtitle: 'Gestiona sucursales y empleados del sistema',
         branches: 'Sucursales',
         users: 'Empleados',
         catalog: 'Catálogo',
@@ -503,9 +503,9 @@ const resources = {
         title: 'Welcome to Naari',
         message: 'Welcome, {{name}}'
       },
-      dashboard: {
-        title: 'Dashboard',
-        welcome: 'Welcome to your dashboard'
+      Calendar: {
+        title: 'Calendar',
+        welcome: 'Welcome to your Calendar'
       },
       theme: {
         toggle: 'Toggle theme',
@@ -549,7 +549,7 @@ const resources = {
         loading: 'Loading...'
       },
       navigation: {
-        dashboard: 'Dashboard',
+        Calendar: 'Calendar',
         admin: 'Admin Panel',
         clients: 'Clients',
         users: 'Users',
@@ -580,8 +580,8 @@ const resources = {
         'language.interface.description': 'Change the language of all app texts'
       },
       admin: {
-        dashboard_title: 'Administration Panel',
-        dashboard_subtitle: 'Manage branches and system employees',
+        Calendar_title: 'Administration Panel',
+        Calendar_subtitle: 'Manage branches and system employees',
         branches: 'Branches',
         users: 'Employees',
         catalog: 'Catalog',

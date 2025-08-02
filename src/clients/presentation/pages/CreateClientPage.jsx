@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ClientForm } from '../components/ClientForm';
-import DashboardLayout from '../../../shared/components/DashboardLayout';
+import CalendarLayout from '../../../shared/components/CalendarLayout';
 import Toast from '../../../shared/components/Toast';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
@@ -68,17 +68,17 @@ export const CreateClientPage = () => {
 
   if (!clientFactory) {
     return (
-      <DashboardLayout>
+      <CalendarLayout>
         <div className="create-client-page-loading">
           <div className="spinner"></div>
           <p>{t('common.loading', 'Cargando...')}</p>
         </div>
-      </DashboardLayout>
+      </CalendarLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="create-client-page">
         <div className="page-header" style={{
           marginBottom: '2rem',
@@ -169,6 +169,6 @@ export const CreateClientPage = () => {
           />
         )}
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };

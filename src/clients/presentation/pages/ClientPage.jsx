@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import DashboardLayout from '../../../shared/components/DashboardLayout';
+import CalendarLayout from '../../../shared/components/CalendarLayout';
 import { ClientManager } from '../components/ClientManager';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
@@ -24,20 +24,20 @@ export const ClientPage = () => {
 
   if (!clientFactory) {
     return (
-      <DashboardLayout>
+      <CalendarLayout>
         <div className="client-page-loading">
           <div className="spinner"></div>
           <p>{t('common.loading', 'Cargando...')}</p>
         </div>
-      </DashboardLayout>
+      </CalendarLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="client-page">
         <ClientManager clientFactory={clientFactory} />
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };

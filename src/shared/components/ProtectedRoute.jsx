@@ -58,7 +58,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
         <div className="access-denied-content">
           <h2>Acceso Denegado</h2>
           <p>No tienes permisos de administrador para acceder a esta sección.</p>
-          <Navigate to="/dashboard" replace />
+          <Navigate to="/Calendar" replace />
         </div>
       </div>
     );

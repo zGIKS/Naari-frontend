@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { API_CONFIG, API_ENDPOINTS } from '../config/ApiConfig';
-import DashboardLayout from '../components/DashboardLayout';
+import CalendarLayout from '../components/CalendarLayout';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 
@@ -672,11 +672,11 @@ const ProfilePage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="profile-page-content">
         {profileContent()}
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };
 

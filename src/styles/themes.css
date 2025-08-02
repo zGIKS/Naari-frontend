@@ -782,49 +782,49 @@ body {
   transform: none;
 }
 
-/* Dashboard Layout */
-.dashboard-layout {
+/* Calendar Layout */
+.Calendar-layout {
   min-height: 100vh;
   width: 100%;
   background: var(--bg-primary);
   color: var(--text-primary);
 }
 
-.dashboard-content-wrapper {
+.Calendar-content-wrapper {
   display: flex;
   width: 100%;
   padding-top: 70px;
   min-height: calc(100vh - 70px);
 }
 
-.dashboard-main {
+.Calendar-main {
   flex: 1;
   transition: var(--transition);
   overflow-x: hidden;
 }
 
-.dashboard-main.with-sidebar {
+.Calendar-main.with-sidebar {
   margin-left: 280px;
 }
 
-.dashboard-main.full-width {
+.Calendar-main.full-width {
   margin-left: 0;
 }
 
-.dashboard-main-content {
+.Calendar-main-content {
   padding: 2rem;
   width: 100%;
   margin: 0;
 }
 
-.dashboard-welcome h1 {
+.Calendar-welcome h1 {
   margin: 0 0 1rem 0;
   color: var(--text-primary);
   font-size: 2.5rem;
   font-weight: 700;
 }
 
-.dashboard-welcome h2 {
+.Calendar-welcome h2 {
   color: var(--accent-color);
   margin: 0;
   font-size: 1.25rem;
@@ -1088,11 +1088,11 @@ body {
     transform: translateX(0);
   }
 
-  .dashboard-main.with-sidebar {
+  .Calendar-main.with-sidebar {
     margin-left: 0;
   }
 
-  .dashboard-main-content {
+  .Calendar-main-content {
     padding: 1rem;
   }
   
@@ -1109,7 +1109,7 @@ body {
     font-size: 1.75rem;
   }
   
-  .dashboard-welcome h1 {
+  .Calendar-welcome h1 {
     font-size: 2rem;
   }
   
@@ -1612,8 +1612,8 @@ body {
   animation: spin 1s linear infinite;
 }
 
-/* Admin Dashboard Styles */
-.admin-dashboard {
+/* Admin Calendar Styles */
+.admin-Calendar {
   width: 100%;
   margin: 0;
   padding: 0;

@@ -36,7 +36,7 @@ const LoginForm = ({ onLoginSuccess }) => {
       const result = await authService.login(email, password);
       
       if (result.success && result.user) {
-        window.location.href = '/dashboard';
+        window.location.href = '/Calendar';
       } else {
         // Mapear errores específicos de sesión
         const errorKey = {

@@ -3,10 +3,10 @@ import { ThemeProvider } from './shared/contexts/ThemeContext';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import PublicRoute from './shared/components/PublicRoute';
 import LoginPage from './iam/presentation/pages/LoginPage';
-import DashboardPage from './iam/presentation/pages/DashboardPage';
+import CalendarPage from './iam/presentation/pages/CalendarPage';
 import SettingsPage from './shared/pages/SettingsPage';
 import ProfilePage from './shared/pages/ProfilePage';
-import { AdminDashboard } from './catalog/presentation/pages/AdminDashboard';
+import { AdminCalendar } from './catalog/presentation/pages/CalendarDashboard';
 import { CatalogPage } from './catalog/presentation/pages/CatalogPage';
 import { ClientPage } from './clients/presentation/pages/ClientPage';
 import { CreateClientPage } from './clients/presentation/pages/CreateClientPage';
@@ -31,10 +31,10 @@ function App() {
           
           {/* Rutas protegidas - requieren autenticación */}
           <Route 
-            path="/dashboard" 
+            path="/Calendar" 
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <CalendarPage />
               </ProtectedRoute>
             } 
           />
@@ -61,7 +61,7 @@ function App() {
             path="/admin" 
             element={
               <ProtectedRoute requireAdmin={true}>
-                <AdminDashboard />
+                <AdminCalendar />
               </ProtectedRoute>
             } 
           />
@@ -134,7 +134,7 @@ function App() {
           />
           
           {/* Redirección por defecto */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/Calendar" replace />} />
           
           {/* Ruta 404 - también protegida */}
           <Route 
