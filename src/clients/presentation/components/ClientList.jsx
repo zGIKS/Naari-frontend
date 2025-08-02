@@ -21,27 +21,24 @@ export const ClientList = ({
   }, [clients]);
 
   const handleSearch = async (searchTerm) => {
-    if (onSearch) {
-      // Si hay función de búsqueda externa, usarla
-      await onSearch(searchTerm);
-    } else {
-      // Filtrado local como fallback
-      if (!searchTerm.trim()) {
-        setFilteredClients(clients);
-        return;
-      }
-      
-      const term = searchTerm.toLowerCase();
-      const filtered = clients.filter(client => {
-        return (
-          (client.fullName && client.fullName.toLowerCase().includes(term)) ||
-          (client.dni && client.dni.toLowerCase().includes(term)) ||
-          (client.email && client.email.toLowerCase().includes(term)) ||
-          (client.phone && client.phone.toLowerCase().includes(term))
-        );
-      });
-      setFilteredClients(filtered);
+    // Búsqueda local siempre (no depende del padre)
+    if (!searchTerm.trim()) {
+      setFilteredClients(clients);
+      return;
     }
+    
+    const term = searchTerm.toLowerCase();
+    const filtered = clients.filter(client => {
+      return (
+        (client.fullName && client.fullName.toLowerCase().includes(term)) ||
+        (client.dni && client.dni.toLowerCase().includes(term)) ||
+        (client.email && client.email.toLowerCase().includes(term)) ||
+        (client.phone && client.phone.toLowerCase().includes(term))
+      );
+    });
+    setFilteredClients(filtered);
+    
+    console.log('Búsqueda:', searchTerm, 'Resultados:', filtered.length);
   };
 
   if (isLoading) {
