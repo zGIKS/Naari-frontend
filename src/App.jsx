@@ -9,6 +9,7 @@ import ProfilePage from './shared/pages/ProfilePage';
 import { AdminDashboard } from './catalog/presentation/pages/AdminDashboard';
 import { CatalogPage } from './catalog/presentation/pages/CatalogPage';
 import { ClientPage } from './clients/presentation/pages/ClientPage';
+import { CreateClientPage } from './clients/presentation/pages/CreateClientPage';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -78,6 +79,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ClientPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/clients/create" 
+            element={
+              <ProtectedRoute>
+                <CreateClientPage />
               </ProtectedRoute>
             } 
           />
