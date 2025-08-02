@@ -162,39 +162,166 @@ export const ClientForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="client-form">
-      {/* Buscador de DNI arriba de Información Personal */}
-      <div className="form-section" style={{ marginBottom: '1rem' }}>
+      {/* Sección unificada de búsqueda de datos */}
+      <div className="form-section" style={{ marginBottom: '1.5rem' }}>
         <h3>Búsqueda Automática de Datos</h3>
-        <p>Busque por DNI en RENIEC para autocompletar los datos personales</p>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <input
-            type="text"
-            name="dni"
-            value={formData.dni || ''}
-            onChange={handleChange}
-            className={`form-input ${errors.dni ? 'error' : ''}`}
-            placeholder="Ingrese DNI (8 dígitos)"
-            maxLength="8"
-            disabled={isLoading || dniSearchLoading}
-            style={{ width: '180px' }}
-          />
-          <button
-            type="button"
-            onClick={handleDniSearch}
-            disabled={dniSearchLoading || !(formData.dni && formData.dni.length === 8)}
-            className="btn btn-secondary"
-            style={{ minWidth: '100px' }}
-          >
-            {dniSearchLoading ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            )}
-            Buscar
-          </button>
-          {dniSearchError && <span className="form-error">{dniSearchError}</span>}
+        <p style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#666' }}>
+          Busque por DNI (RENIEC) o RUC (SUNAT) para autocompletar los datos del formulario
+        </p>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          {/* Búsqueda por DNI */}
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+              Buscar por DNI en RENIEC
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                name="dni"
+                value={formData.dni || ''}
+                onChange={handleChange}
+                className={`form-input ${errors.dni ? 'error' : ''}`}
+                placeholder="Ingrese DNI (8 dígitos)"
+                maxLength="8"
+                disabled={isLoading || dniSearchLoading}
+                style={{ 
+                  paddingRight: '45px',
+                  width: '100%'
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleDniSearch}
+                disabled={dniSearchLoading || !(formData.dni && formData.dni.length === 8)}
+                title="Buscar información por DNI"
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: dniSearchLoading || !(formData.dni && formData.dni.length === 8) ? 'not-allowed' : 'pointer',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: dniSearchLoading || !(formData.dni && formData.dni.length === 8) ? '#ccc' : '#666',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!dniSearchLoading && formData.dni && formData.dni.length === 8) {
+                    e.target.style.color = '#333';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!dniSearchLoading && formData.dni && formData.dni.length === 8) {
+                    e.target.style.color = '#666';
+                  }
+                }}
+              >
+                {dniSearchLoading ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" strokeOpacity=".3"/>
+                    <path d="M12 2v4"/>
+                    <path d="M12 18v4"/>
+                    <path d="M4.93 4.93l2.83 2.83"/>
+                    <path d="M16.24 16.24l2.83 2.83"/>
+                    <path d="M2 12h4"/>
+                    <path d="M18 12h4"/>
+                    <path d="M4.93 19.07l2.83-2.83"/>
+                    <path d="M16.24 7.76l2.83-2.83"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+            {errors.dni && <span className="form-error">{errors.dni}</span>}
+            {dniSearchError && <span className="form-error">{dniSearchError}</span>}
+          </div>
+
+          {/* Búsqueda por RUC */}
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+              Buscar por RUC en SUNAT
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                name="ruc"
+                value={formData.ruc || ''}
+                onChange={handleChange}
+                className={`form-input ${errors.ruc ? 'error' : ''}`}
+                placeholder="Ingrese RUC (11 dígitos)"
+                maxLength="11"
+                disabled={isLoading || rucSearchLoading}
+                style={{ 
+                  paddingRight: '45px',
+                  width: '100%'
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleRucSearch}
+                disabled={rucSearchLoading || !(formData.ruc && formData.ruc.length === 11)}
+                title="Buscar información por RUC"
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: rucSearchLoading || !(formData.ruc && formData.ruc.length === 11) ? 'not-allowed' : 'pointer',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: rucSearchLoading || !(formData.ruc && formData.ruc.length === 11) ? '#ccc' : '#666',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!rucSearchLoading && formData.ruc && formData.ruc.length === 11) {
+                    e.target.style.color = '#333';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!rucSearchLoading && formData.ruc && formData.ruc.length === 11) {
+                    e.target.style.color = '#666';
+                  }
+                }}
+              >
+                {rucSearchLoading ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" strokeOpacity=".3"/>
+                    <path d="M12 2v4"/>
+                    <path d="M12 18v4"/>
+                    <path d="M4.93 4.93l2.83 2.83"/>
+                    <path d="M16.24 16.24l2.83 2.83"/>
+                    <path d="M2 12h4"/>
+                    <path d="M18 12h4"/>
+                    <path d="M4.93 19.07l2.83-2.83"/>
+                    <path d="M16.24 7.76l2.83-2.83"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+            {errors.ruc && <span className="form-error">{errors.ruc}</span>}
+            {rucSearchError && <span className="form-error">{rucSearchError}</span>}
+          </div>
         </div>
-        <small>El DNI autocompleta nombres, apellidos, fecha de nacimiento y dirección si están disponibles en RENIEC</small>
       </div>
 
       {/* Información Personal */}
@@ -357,50 +484,13 @@ export const ClientForm = ({
       </div>
 
       {/* Información Adicional */}
+      {/* Información Adicional */}
       <div className="form-section">
         <h3>{t('clients.form.additional_info', 'Información Adicional')}</h3>
         <div className="form-grid">
           <div className="form-group">
-            <label htmlFor="ruc" className="form-label">
-              {t('clients.form.ruc', 'RUC')}
-            </label>
-            <p className="form-helper-text">Buscar en SUNAT para autocompletar dirección</p>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-              <input
-                type="text"
-                id="ruc"
-                name="ruc"
-                value={formData.ruc || ''}
-                onChange={handleChange}
-                className={`form-input ${errors.ruc ? 'error' : ''}`}
-                placeholder={t('clients.form.ruc_placeholder', 'Ingrese RUC de 11 dígitos')}
-                maxLength="11"
-                disabled={isLoading}
-                style={{ flex: 1 }}
-              />
-              <button
-                type="button"
-                onClick={handleRucSearch}
-                disabled={rucSearchLoading || !(formData.ruc && formData.ruc.length === 11)}
-                className="btn btn-secondary"
-                title="Buscar información por RUC"
-                style={{ minWidth: '40px', padding: '0.5rem' }}
-              >
-                {rucSearchLoading ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                )}
-              </button>
-            </div>
-            {errors.ruc && <span className="form-error">{errors.ruc}</span>}
-            {rucSearchError && <span className="form-error">{rucSearchError}</span>}
-          </div>
-
-          <div className="form-group">
             <label htmlFor="knownFrom" className="form-label">
-              {t('clients.form.known_from', 'Cómo nos conoció')}
-            </label>
+              {t('clients.form.known_from', 'Cómo nos conoció')}</label>
             <select
               id="knownFrom"
               name="knownFrom"
