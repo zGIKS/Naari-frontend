@@ -74,6 +74,31 @@
   margin-top: 0;
 }
 
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--bg-primary, white);
+  border-radius: 12px;
+  border: 2px dashed var(--border-color, #e5e7eb);
+}
+
+.empty-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary, #111827);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.empty-content p {
+  margin: 0;
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.9rem;
+}
+
 .client-manager-loading {
   display: flex;
   flex-direction: column;
