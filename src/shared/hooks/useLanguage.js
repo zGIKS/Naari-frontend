@@ -27,11 +27,19 @@ export const useLanguage = () => {
   const loadUserLanguagePreference = async (service) => {
     try {
       setLoading(true);
+      console.log('Loading user language preference...');
+      
       const preferences = await service.getUserPreferences();
       const language = preferences.language || 'es';
       
-      // Cambiar idioma en i18n
-      await i18n.changeLanguage(language);
+      console.log('User language preference loaded:', language);
+      console.log('Current i18n language:', i18n.language);
+      
+      // Cambiar idioma en i18n solo si es diferente
+      if (i18n.language !== language) {
+        console.log(`Changing language from ${i18n.language} to ${language}`);
+        await i18n.changeLanguage(language);
+      }
       
       // Sincronizar con localStorage para fallback
       localStorage.setItem('naari_language', language);
@@ -39,6 +47,7 @@ export const useLanguage = () => {
       console.error('Error loading user language preference:', error);
       // Fallback a localStorage
       const savedLanguage = localStorage.getItem('naari_language') || 'es';
+      console.log('Using fallback language:', savedLanguage);
       await i18n.changeLanguage(savedLanguage);
     } finally {
       setLoading(false);
@@ -47,7 +56,14 @@ export const useLanguage = () => {
 
   // Cambiar idioma
   const changeLanguage = async (newLanguage) => {
+    if (newLanguage === i18n.language) {
+      // Si ya es el idioma actual, no hacer nada
+      return;
+    }
+
     try {
+      setLoading(true);
+      
       // Cambiar inmediatamente en i18n
       await i18n.changeLanguage(newLanguage);
       
@@ -58,13 +74,16 @@ export const useLanguage = () => {
       if (preferencesService) {
         try {
           await preferencesService.updateLanguage(newLanguage);
+          console.log(`Language updated to ${newLanguage} on server`);
         } catch (error) {
-          console.error('Error updating language preference:', error);
+          console.error('Error updating language preference on server:', error);
           // El idioma ya se cambió localmente, no revertir para mejor UX
         }
       }
     } catch (error) {
       console.error('Error changing language:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

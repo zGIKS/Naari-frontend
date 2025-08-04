@@ -479,6 +479,32 @@ body {
   border-color: var(--accent-color);
 }
 
+.language-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.language-option:disabled:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+/* Settings Loading Indicator */
+.settings-loading {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.settings-loading .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 /* Toggle Switch */
 .toggle-switch {
   position: relative;

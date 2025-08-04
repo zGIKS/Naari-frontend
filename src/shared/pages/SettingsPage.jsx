@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../hooks/useLanguage';
 import CalendarLayout from '../components/CalendarLayout';
 
 const SunIcon = () => (
@@ -24,16 +25,14 @@ const GlobeIcon = () => (
 );
 
 const SettingsPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const { currentLanguage, changeLanguage, loading: languageLoading } = useLanguage();
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'es' ? 'en' : 'es';
-    i18n.changeLanguage(newLang).then(() => {
-      localStorage.setItem('naari_language', newLang);
-      // Forzar re-render completo
-      window.location.reload();
-    });
+  const handleLanguageChange = (newLanguage) => {
+    if (newLanguage !== currentLanguage) {
+      changeLanguage(newLanguage);
+    }
   };
 
   return (
@@ -102,20 +101,27 @@ const SettingsPage = () => {
               <div className="settings-option-control">
                 <div className="language-selector">
                   <button
-                    onClick={toggleLanguage}
-                    className={`language-option ${i18n.language === 'es' ? 'active' : ''}`}
+                    onClick={() => handleLanguageChange('es')}
+                    className={`language-option ${currentLanguage === 'es' ? 'active' : ''}`}
+                    disabled={languageLoading}
                   >
                     <GlobeIcon />
                     <span>Español</span>
                   </button>
                   <button
-                    onClick={toggleLanguage}
-                    className={`language-option ${i18n.language === 'en' ? 'active' : ''}`}
+                    onClick={() => handleLanguageChange('en')}
+                    className={`language-option ${currentLanguage === 'en' ? 'active' : ''}`}
+                    disabled={languageLoading}
                   >
                     <GlobeIcon />
                     <span>English</span>
                   </button>
                 </div>
+                {languageLoading && (
+                  <div className="settings-loading">
+                    <div className="spinner"></div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
