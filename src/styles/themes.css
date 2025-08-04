@@ -1926,6 +1926,62 @@ body {
   overflow: hidden;
 }
 
+/* Profile Form Specific Styles */
+.profile-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+.profile-form .form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-form .form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Estilos específicos para diferentes tipos de campos en profile */
+.profile-form .form-field input[type="email"] {
+  font-size: 0.95rem;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  letter-spacing: 0.3px;
+}
+
+.profile-form .form-field.full-width input[type="password"] {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+/* Mejorar placeholders en profile */
+.profile-form .form-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* Responsive design for profile form */
+@media (max-width: 768px) {
+  .profile-form .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .profile-form .form-field.full-width {
+    grid-column: 1;
+  }
+  
+  /* En móviles, todos los campos usan el mismo estilo de fuente */
+  .profile-form .form-field input {
+    font-size: 1rem;
+    font-family: inherit;
+    letter-spacing: normal;
+  }
+}
+
 /* Form Styles */
 .client-form {
   width: 100%;
@@ -2926,6 +2982,93 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+/* Branch Form Specific Styles */
+.branch-form {
+  padding: 2rem;
+}
+
+.branch-form h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.375rem;
+}
+
+.branch-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+.branch-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.branch-form .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.branch-form .form-group label {
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Estilos específicos para diferentes tipos de campos */
+.branch-form .form-group input[type="tel"] {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+.branch-form .form-group input[type="email"] {
+  font-size: 0.95rem;
+}
+
+.branch-form .form-group.full-width input {
+  font-size: 1rem;
+}
+
+/* Mejorar la apariencia visual de los placeholders */
+.branch-form .form-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.branch-form .form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Responsive design for branch form */
+@media (max-width: 768px) {
+  .branch-form .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .branch-form {
+    padding: 1.5rem;
+  }
+
+  .branch-form .form-group.full-width {
+    grid-column: 1;
+  }
+  
+  /* En móviles, todos los campos usan el mismo tamaño de fuente */
+  .branch-form .form-group input {
+    font-size: 1rem;
+  }
+}
+
 /* Product Form Specific Styles */
 .product-form {
   padding: 2rem;
@@ -3467,15 +3610,20 @@ body {
 
 .employee-form-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem 2rem;
   margin-bottom: 2rem;
+  align-items: start;
 }
 
 .employee-form-grid .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.employee-form-grid .form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .employee-form-grid .form-label {
@@ -3499,6 +3647,34 @@ body {
   font-size: 1rem;
   transition: var(--transition);
   box-sizing: border-box;
+}
+
+/* Estilos específicos para diferentes tipos de campos */
+.employee-form-grid .form-group input[type="email"] {
+  font-size: 0.95rem;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  letter-spacing: 0.3px;
+}
+
+.employee-form-grid .form-group.full-width input[type="password"] {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.employee-form-grid .form-group select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  appearance: none;
+}
+
+/* Mejorar placeholders */
+.employee-form-grid .form-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-style: italic;
 }
 
 .employee-form-grid .form-input:focus {
@@ -3527,6 +3703,26 @@ body {
   font-size: 0.8rem;
   margin-top: 0.25rem;
   line-height: 1.3;
+}
+
+.employee-form-grid .form-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.employee-form-grid .form-info.success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: rgb(21, 128, 61);
+}
+
+.employee-form-grid .form-info svg {
+  flex-shrink: 0;
 }
 
 .form-input-readonly {
@@ -3592,6 +3788,18 @@ body {
   .employee-form-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
+  }
+
+  .employee-form-grid .form-group.full-width {
+    grid-column: 1;
+  }
+  
+  /* En móviles, todos los campos usan el mismo estilo de fuente */
+  .employee-form-grid .form-group input,
+  .employee-form-grid .form-group select {
+    font-size: 1rem;
+    font-family: inherit;
+    letter-spacing: normal;
   }
   
   .employee-form-grid .form-input {

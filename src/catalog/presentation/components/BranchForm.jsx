@@ -102,68 +102,73 @@ export const BranchForm = ({ branch, onSubmit, onCancel }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="form-content">
-        <div className="form-group">
-          <label htmlFor="name" className="form-label">
-            {t('admin.branch_name', 'Nombre de la Sucursal')} *
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            className={`form-input ${errors.name ? 'error' : ''}`}
-            placeholder={t('admin.branch_name_placeholder', 'Ej: Sucursal Centro')}
-            disabled={submitting}
-          />
-          {errors.name && <span className="error-text">{errors.name}</span>}
-        </div>
+        <div className="form-grid">
+          {/* Fila 1: Nombre y Teléfono (campos más cortos) */}
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">
+              {t('admin.branch_name', 'Nombre de la Sucursal')} *
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              className={`form-input ${errors.name ? 'error' : ''}`}
+              placeholder={t('admin.branch_name_placeholder', 'Ej: Sucursal Centro')}
+              disabled={submitting}
+            />
+            {errors.name && <span className="error-text">{errors.name}</span>}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="address" className="form-label">
-            {t('admin.branch_address', 'Dirección')} *
-          </label>
-          <input
-            id="address"
-            type="text"
-            value={formData.address}
-            onChange={(e) => handleChange('address', e.target.value)}
-            className={`form-input ${errors.address ? 'error' : ''}`}
-            placeholder={t('admin.branch_address_placeholder', 'Ej: Av. Principal 123')}
-            disabled={submitting}
-          />
-          {errors.address && <span className="error-text">{errors.address}</span>}
-        </div>
+          <div className="form-group">
+            <label htmlFor="phone" className="form-label">
+              {t('admin.branch_phone', 'Teléfono')} *
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              className={`form-input ${errors.phone ? 'error' : ''}`}
+              placeholder={t('admin.branch_phone_placeholder', 'Ej: +1234567890')}
+              disabled={submitting}
+            />
+            {errors.phone && <span className="error-text">{errors.phone}</span>}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="phone" className="form-label">
-            {t('admin.branch_phone', 'Teléfono')} *
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => handleChange('phone', e.target.value)}
-            className={`form-input ${errors.phone ? 'error' : ''}`}
-            placeholder={t('admin.branch_phone_placeholder', 'Ej: +1234567890')}
-            disabled={submitting}
-          />
-          {errors.phone && <span className="error-text">{errors.phone}</span>}
-        </div>
+          {/* Fila 2: Dirección (ancho completo por ser campo largo) */}
+          <div className="form-group full-width">
+            <label htmlFor="address" className="form-label">
+              {t('admin.branch_address', 'Dirección')} *
+            </label>
+            <input
+              id="address"
+              type="text"
+              value={formData.address}
+              onChange={(e) => handleChange('address', e.target.value)}
+              className={`form-input ${errors.address ? 'error' : ''}`}
+              placeholder={t('admin.branch_address_placeholder', 'Ej: Av. Principal 123, Edificio Torres del Sol, Piso 2')}
+              disabled={submitting}
+            />
+            {errors.address && <span className="error-text">{errors.address}</span>}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            {t('admin.branch_email', 'Email')} *
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => handleChange('email', e.target.value)}
-            className={`form-input ${errors.email ? 'error' : ''}`}
-            placeholder={t('admin.branch_email_placeholder', 'Ej: sucursal@empresa.com')}
-            disabled={submitting}
-          />
-          {errors.email && <span className="error-text">{errors.email}</span>}
+          {/* Fila 3: Email (ancho completo por ser campo medio-largo) */}
+          <div className="form-group full-width">
+            <label htmlFor="email" className="form-label">
+              {t('admin.branch_email', 'Email')} *
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleChange('email', e.target.value)}
+              className={`form-input ${errors.email ? 'error' : ''}`}
+              placeholder={t('admin.branch_email_placeholder', 'Ej: sucursal.centro@empresa.com')}
+              disabled={submitting}
+            />
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
         </div>
 
         <div className="form-actions">

@@ -497,6 +497,7 @@ const ProfilePage = () => {
               <h2>{t('profile.personal_info', 'Información Personal')}</h2>
               
               <div className="form-grid">
+                {/* Fila 1: Nombre y Apellido (campos medios que van bien juntos) */}
                 <div className="form-field">
                   <label>{t('profile.first_name', 'Nombre')}</label>
                   <div className="form-field-content">
@@ -509,7 +510,7 @@ const ProfilePage = () => {
                           onBlur={(e) => handleFieldBlur('first_name', e)}
                           onKeyDown={e => handleFieldKeyPress(e, 'first_name')}
                           className={errors.first_name ? 'form-input error' : 'form-input'}
-                          placeholder={t('profile.first_name_placeholder', 'Ingresa tu nombre')}
+                          placeholder={t('profile.first_name_placeholder', 'Ej: María José')}
                           autoFocus
                         />
                         {errors.first_name && <span className="error-text">{errors.first_name}</span>}
@@ -544,7 +545,7 @@ const ProfilePage = () => {
                           onBlur={(e) => handleFieldBlur('last_name', e)}
                           onKeyDown={e => handleFieldKeyPress(e, 'last_name')}
                           className={errors.last_name ? 'form-input error' : 'form-input'}
-                          placeholder={t('profile.last_name_placeholder', 'Ingresa tu apellido')}
+                          placeholder={t('profile.last_name_placeholder', 'Ej: García Rodríguez')}
                           autoFocus
                         />
                         {errors.last_name && <span className="error-text">{errors.last_name}</span>}
@@ -568,7 +569,8 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="form-field">
+              {/* Fila 2: Email (ancho completo por ser campo largo y crítico) */}
+              <div className="form-field full-width">
                 <label>
                   {t('profile.email', 'Correo electrónico')}
                   {!isAdmin() && (
@@ -587,7 +589,7 @@ const ProfilePage = () => {
                         onBlur={(e) => handleFieldBlur('email', e)}
                         onKeyDown={e => handleFieldKeyPress(e, 'email')}
                         className={errors.email ? 'form-input error' : 'form-input'}
-                        placeholder={t('profile.email_placeholder', 'correo@ejemplo.com')}
+                        placeholder={t('profile.email_placeholder', 'Ej: maria.garcia@empresa.com')}
                         autoFocus
                       />
                       {errors.email && <span className="error-text">{errors.email}</span>}
@@ -620,7 +622,8 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="form-field">
+              {/* Fila 3: Contraseña (ancho completo para dar importancia visual) */}
+              <div className="form-field full-width">
                 <label>{t('profile.password', 'Contraseña')}</label>
                 <div className="form-field-content">
                   {editingFields.password ? (
@@ -633,7 +636,7 @@ const ProfilePage = () => {
                           onBlur={(e) => handleFieldBlur('password', e)}
                           onKeyDown={e => handleFieldKeyPress(e, 'password')}
                           className={errors.password ? 'form-input error' : 'form-input'}
-                          placeholder={t('profile.password_placeholder', 'Nueva contraseña')}
+                          placeholder={t('profile.password_placeholder', 'Mínimo 8 caracteres con mayúscula, número y símbolo')}
                           autoFocus
                         />
                         <button

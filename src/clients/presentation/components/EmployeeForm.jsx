@@ -161,7 +161,7 @@ export const EmployeeForm = ({
         <h3>{t('users.form.basic_info', 'Información Básica')}</h3>
         
         <div className="employee-form-grid">
-          {/* Fila 1: Nombres y Apellidos */}
+          {/* Fila 1: Nombres y Apellidos (campos medios que van bien juntos) */}
           <div className="form-group">
             <label htmlFor="firstName" className="form-label required">
               {t('users.form.first_name', 'Nombres')}
@@ -173,7 +173,7 @@ export const EmployeeForm = ({
               value={formData.firstName || ''}
               onChange={handleChange}
               className={`form-input ${errors.firstName ? 'error' : ''}`}
-              placeholder={t('users.form.first_name_placeholder', 'Ej: Nombre')}
+              placeholder={t('users.form.first_name_placeholder', 'Ej: María José')}
               disabled={isLoading}
             />
             {errors.firstName && <span className="form-error">{errors.firstName}</span>}
@@ -190,14 +190,14 @@ export const EmployeeForm = ({
               value={formData.lastName || ''}
               onChange={handleChange}
               className={`form-input ${errors.lastName ? 'error' : ''}`}
-              placeholder={t('users.form.last_name_placeholder', 'Ej: Apellido')}
+              placeholder={t('users.form.last_name_placeholder', 'Ej: García Rodríguez')}
               disabled={isLoading}
             />
             {errors.lastName && <span className="form-error">{errors.lastName}</span>}
           </div>
 
-          {/* Fila 2: Email y Rol */}
-          <div className="form-group">
+          {/* Fila 2: Email (ancho completo por ser campo largo) */}
+          <div className="form-group full-width">
             <label htmlFor="email" className="form-label required">
               {t('users.form.email', 'Email')}
             </label>
@@ -208,14 +208,14 @@ export const EmployeeForm = ({
               value={formData.email || ''}
               onChange={handleChange}
               className={`form-input ${errors.email ? 'error' : ''}`}
-              placeholder={t('users.form.email_placeholder', 'Ej: correo@dominio.com')}
+              placeholder={t('users.form.email_placeholder', 'Ej: maria.garcia@empresa.com')}
               disabled={isLoading}
             />
             {errors.email && <span className="form-error">{errors.email}</span>}
           </div>
 
-          {/* Mostrar campo de rol editable según las nuevas reglas */}
-          {canEditRole() && (
+          {/* Fila 3: Rol y Sucursal (campos relacionados) */}
+          {canEditRole() ? (
             <div className="form-group">
               <label htmlFor="role" className="form-label required">
                 {t('users.form.role', 'Rol')}
@@ -239,31 +239,29 @@ export const EmployeeForm = ({
               </select>
               {errors.role && <span className="form-error">{errors.role}</span>}
             </div>
-          )}
-
-          {/* Mostrar rol actual como texto readonly cuando no se puede editar */}
-          {!canEditRole() && employee && (
-            <div className="form-group">
-              <label className="form-label">
-                {t('users.form.role', 'Rol')}
-              </label>
-              <div className="form-input-readonly">
-                {t(`roles.${formData.role}`, 
-                  formData.role === 'receptionist' ? 'Recepcionista' : 
-                  formData.role === 'esthetician' ? 'Especialista' : 
-                  'Administrador'
-                )}
-                <small className="form-help">
-                  {isEditingOwnProfile() 
-                    ? t('users.form.role_readonly_self', 'No puedes cambiar tu propio rol')
-                    : t('users.form.role_readonly_admin', 'No puedes cambiar el rol de administradores')
-                  }
-                </small>
+          ) : (
+            employee && (
+              <div className="form-group">
+                <label className="form-label">
+                  {t('users.form.role', 'Rol')}
+                </label>
+                <div className="form-input-readonly">
+                  {t(`roles.${formData.role}`, 
+                    formData.role === 'receptionist' ? 'Recepcionista' : 
+                    formData.role === 'esthetician' ? 'Especialista' : 
+                    'Administrador'
+                  )}
+                  <small className="form-help">
+                    {isEditingOwnProfile() 
+                      ? t('users.form.role_readonly_self', 'No puedes cambiar tu propio rol')
+                      : t('users.form.role_readonly_admin', 'No puedes cambiar el rol de administradores')
+                    }
+                  </small>
+                </div>
               </div>
-            </div>
+            )
           )}
 
-          {/* Fila 3: Sucursal y Contraseña */}
           {formData.role && formData.role !== 'administrator' && (
             <div className="form-group">
               <label htmlFor="branchId" className="form-label required">
@@ -281,8 +279,8 @@ export const EmployeeForm = ({
                 {branches.map((branch) => (
                   <option key={branch.id} value={branch.id}>
                     {branch.name} {branch.isActive ? 
-                      `(${t('admin.branch_active', 'Sucursal Activa')})` : 
-                      `(${t('admin.branch_inactive', 'Sucursal Inactiva')})`
+                      `(${t('admin.branch_active', 'Activa')})` : 
+                      `(${t('admin.branch_inactive', 'Inactiva')})`
                     }
                   </option>
                 ))}
@@ -305,10 +303,11 @@ export const EmployeeForm = ({
             </div>
           )}
 
-          <div className="form-group">
+          {/* Fila 4: Contraseña (ancho completo para dar importancia visual) */}
+          <div className="form-group full-width">
             <label htmlFor="password" className={`form-label ${!employee ? 'required' : ''}`}>
               {employee 
-                ? t('users.form.password_optional', 'Contraseña ')
+                ? t('users.form.password_optional', 'Contraseña (Opcional)')
                 : t('users.form.password', 'Contraseña')
               }
             </label>
@@ -321,8 +320,8 @@ export const EmployeeForm = ({
                 onChange={handleChange}
                 className={`form-input ${errors.password ? 'error' : ''}`}
                 placeholder={employee 
-                  ? t('users.form.password_placeholder_edit', 'Opcional')
-                  : t('users.form.password_placeholder', 'Mínimo 8 caracteres')
+                  ? t('users.form.password_placeholder_edit', 'Dejar vacío para mantener la actual')
+                  : t('users.form.password_placeholder', 'Mínimo 8 caracteres con mayúscula, número y símbolo')
                 }
                 disabled={isLoading}
               />
