@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * NewProductPage - Página para crear/editar productos
@@ -8,8 +8,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 export const NewProductPage = ({ catalogFactory }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { id } = useParams(); // Para edición
-  const isEditing = Boolean(id);
+  const location = useLocation();
+  const productFromState = location.state?.product;
+  const isEditing = Boolean(productFromState);
   
   const [branches, setBranches] = useState([]);
   const [error, setError] = useState(null);
@@ -21,10 +22,10 @@ export const NewProductPage = ({ catalogFactory }) => {
 
   useEffect(() => {
     loadBranches();
-    if (isEditing) {
-      loadProduct();
+    if (isEditing && productFromState) {
+      setEditingProduct(productFromState);
     }
-  }, [id]);
+  }, [productFromState, isEditing]);
 
   const loadBranches = async () => {
     try {
@@ -35,15 +36,6 @@ export const NewProductPage = ({ catalogFactory }) => {
     }
   };
 
-  const loadProduct = async () => {
-    try {
-      const product = await productService.getProductById(id);
-      setEditingProduct(product);
-    } catch (error) {
-      console.error('Error loading product:', error);
-      setError('Error al cargar el producto');
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,8 +56,8 @@ export const NewProductPage = ({ catalogFactory }) => {
         branchId: formData.get('branchId')
       };
 
-      if (isEditing) {
-        await productService.updateProduct(id, productData);
+      if (isEditing && editingProduct) {
+        await productService.updateProduct(editingProduct.id, productData);
       } else {
         await productService.createProduct(productData);
       }
@@ -121,88 +113,90 @@ export const NewProductPage = ({ catalogFactory }) => {
 
   return (
     <div className="create-client-page">
-      <div className="page-header" style={{
-        marginBottom: '2rem',
-        borderBottom: '1px solid #e5e7eb',
-        paddingBottom: '1.5rem'
-      }}>
-        <div className="header-content">
-          <button 
-            onClick={handleBack}
-            className="btn btn-ghost"
-            style={{ 
-              marginBottom: '1rem', 
-              padding: '0.5rem 0.75rem',
-              background: 'transparent',
-              border: '1px solid #e5e7eb',
-              borderRadius: '6px',
-              color: '#666',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              transition: 'all 0.2s ease',
-              width: 'fit-content'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#f9fafb';
-              e.target.style.borderColor = '#d1d5db';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'transparent';
-              e.target.style.borderColor = '#e5e7eb';
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5"/>
-              <path d="M12 19l-7-7 7-7"/>
-            </svg>
-            Volver al catálogo
-          </button>
-          
-          <div style={{ marginBottom: '0.5rem' }}>
-            <h1 style={{ 
-              fontSize: '1.875rem', 
-              fontWeight: '700', 
-              color: '#111827',
-              margin: '0 0 0.5rem 0',
-              lineHeight: '1.2'
+        <div className="page-header" style={{
+          marginBottom: '2rem',
+          borderBottom: '1px solid var(--border-color)',
+          paddingBottom: '1.5rem',
+          padding: '0 2rem 1.5rem 2rem'
+        }}>
+          <div className="header-content">
+            <button 
+              onClick={handleBack}
+              className="btn btn-secondary"
+              style={{ 
+                marginBottom: '1.5rem', 
+                padding: '0.5rem 0.75rem',
+                background: 'transparent',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                transition: 'all 0.2s ease',
+                width: 'fit-content'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'var(--bg-tertiary)';
+                e.target.style.color = 'var(--text-primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = 'var(--text-secondary)';
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              Volver al catálogo
+            </button>
+            
+            <div style={{ 
+              marginBottom: '1rem'
             }}>
-              {isEditing ? t('admin.edit_product', 'Editar Producto') : t('admin.new_product', 'Nuevo Producto')}
-            </h1>
-            <p style={{ 
-              fontSize: '1rem', 
-              color: '#6b7280',
-              margin: '0',
-              lineHeight: '1.5'
-            }}>
-              {isEditing ? 'Modifica los datos del producto' : 'Completa la información del nuevo producto'}
-            </p>
+              <h1 style={{ 
+                fontSize: '2.25rem', 
+                fontWeight: '700', 
+                color: 'var(--text-primary)',
+                margin: '0 0 0.75rem 0',
+                lineHeight: '1.2'
+              }}>
+                {isEditing ? t('admin.edit_product', 'Editar Producto') : t('admin.new_product', 'Nuevo Producto')}
+              </h1>
+              <p style={{ 
+                fontSize: '1.1rem', 
+                color: 'var(--text-secondary)',
+                margin: '0',
+                lineHeight: '1.5'
+              }}>
+                {isEditing ? 'Modifica los datos del producto' : 'Completa la información del nuevo producto'}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="page-content">
-        <div className="form-container" style={{ 
-          width: '100%',
-          maxWidth: 'none',
-          margin: '0',
-          padding: '0',
-          background: 'transparent',
-          borderRadius: '0',
-          boxShadow: 'none'
-        }}>
+        <div className="page-content">
+          <div className="form-container" style={{ 
+            width: '100%',
+            margin: '0',
+            padding: '2rem',
+            background: 'var(--bg-primary)',
+            borderRadius: '0',
+            boxShadow: 'none'
+          }}>
           <form onSubmit={handleSubmit} className="client-form">
             {error && (
               <div className="error-message" style={{
                 marginBottom: '1.5rem',
                 padding: '1rem',
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
+                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                border: '1px solid var(--error-color)',
                 borderRadius: '8px',
-                color: '#dc2626',
+                color: 'var(--error-color)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem'
@@ -230,7 +224,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     type="text"
                     className="form-input"
                     defaultValue={editingProduct?.name || ''}
-                    placeholder="Ej: Crema hidratante"
+                    placeholder={t('admin.product_name_placeholder', 'Ej: Crema Hidratante Anti-edad')}
                     required
                     disabled={submitLoading}
                   />
@@ -245,7 +239,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     type="text"
                     className="form-input"
                     defaultValue={editingProduct?.brand || ''}
-                    placeholder="Ej: L'Oréal"
+                    placeholder={t('admin.product_brand_placeholder', 'Ej: L\'Oreal')}
                     required
                     disabled={submitLoading}
                   />
@@ -280,7 +274,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     className="form-input"
                     rows="3"
                     defaultValue={editingProduct?.description || ''}
-                    placeholder="Describe las características del producto..."
+                    placeholder={t('admin.product_description_placeholder', 'Describe las características y beneficios del producto...')}
                     disabled={submitLoading}
                   />
                 </div>
@@ -303,7 +297,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     min="0"
                     className="form-input"
                     defaultValue={editingProduct?.purchasePrice || ''}
-                    placeholder="0.00"
+                    placeholder={t('admin.purchase_price_placeholder', 'Ej: 50.00')}
                     required
                     disabled={submitLoading}
                   />
@@ -320,7 +314,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     min="0"
                     className="form-input"
                     defaultValue={editingProduct?.salePrice || ''}
-                    placeholder="0.00"
+                    placeholder={t('admin.sale_price_placeholder', 'Ej: 75.00')}
                     required
                     disabled={submitLoading}
                   />
@@ -336,7 +330,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     min="0"
                     className="form-input"
                     defaultValue={editingProduct?.stock || ''}
-                    placeholder="0"
+                    placeholder={t('admin.stock_placeholder', 'Ej: 25')}
                     required
                     disabled={submitLoading}
                   />
@@ -352,7 +346,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     min="0"
                     className="form-input"
                     defaultValue={editingProduct?.lowStockAlert || ''}
-                    placeholder="5"
+                    placeholder={t('admin.low_stock_alert_placeholder', 'Ej: 5')}
                     required
                     disabled={submitLoading}
                   />
@@ -361,14 +355,13 @@ export const NewProductPage = ({ catalogFactory }) => {
                   <label htmlFor="expirationDate" className="form-label required">
                     {t('admin.expiration_date', 'Fecha de Vencimiento')}
                   </label>
-                  <input
+                                    <input
                     id="expirationDate"
                     name="expirationDate"
                     type="date"
                     className="form-input"
-                    defaultValue={editingProduct?.expirationDate ? editingProduct.expirationDate.toISOString().split('T')[0] : ''}
-                    required
-                    disabled={submitLoading}
+                    defaultValue={editingProduct?.expirationDate || ''}
+                    placeholder={t('admin.expiration_date_placeholder', 'Ej: 2024-12-31')}
                   />
                 </div>
               </div>
@@ -390,8 +383,8 @@ export const NewProductPage = ({ catalogFactory }) => {
               </button>
             </div>
           </form>
+          </div>
         </div>
-      </div>
     </div>
   );
 };

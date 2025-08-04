@@ -50,7 +50,9 @@ export const ProductManager = ({ catalogFactory }) => {
   };
 
   const handleEditProduct = (product) => {
-    navigate(`/catalog/products/edit/${product.id}`);
+    navigate('/catalog/products/edit', {
+      state: { product }
+    });
   };
 
   const handleDeleteProduct = (productId, productName) => {

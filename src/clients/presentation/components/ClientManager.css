@@ -81,21 +81,21 @@
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
-  background: var(--bg-primary, white);
+  background: var(--bg-primary);
   border-radius: 12px;
-  border: 2px dashed var(--border-color, #e5e7eb);
+  border: 2px dashed var(--border-color);
 }
 
 .empty-content h3 {
   margin: 0 0 0.5rem 0;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   font-size: 1.25rem;
   font-weight: 600;
 }
 
 .empty-content p {
   margin: 0;
-  color: var(--text-secondary, #6b7280);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 

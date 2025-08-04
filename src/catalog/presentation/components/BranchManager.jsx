@@ -193,21 +193,16 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
         </div>
       )}
 
-      {showForm && (
-        <div className="form-modal">
-          <div className="form-overlay" onClick={handleCancel}></div>
-          <div className="form-container">
+      <div className="manager-content">
+        {showForm ? (
+          <div className="form-section">
             <BranchForm
               branch={editingBranch}
               onSubmit={handleSubmit}
               onCancel={handleCancel}
             />
           </div>
-        </div>
-      )}
-
-      <div className="manager-content">
-        {loading ? (
+        ) : loading ? (
           <div className="loading-state">
             <div className="spinner"></div>
             <p>{t('common.loading', 'Cargando sucursales...')}</p>

@@ -18,6 +18,12 @@ export class ApiRouter {
     };
   }
   
+  static get USER_PREFERENCES() {
+    return {
+      BASE: this.buildUrl(API_ENDPOINTS.USER_PREFERENCES.BASE)
+    };
+  }
+  
   static get PRODUCTS() {
     return {
       BASE: this.buildUrl(API_ENDPOINTS.PRODUCTS.BASE),

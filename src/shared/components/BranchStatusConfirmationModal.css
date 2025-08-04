@@ -38,20 +38,20 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  background-color: var(--warning-background, #fff3cd);
-  border: 1px solid var(--warning-border, #ffeaa7);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   margin-bottom: 1rem;
 }
 
 .warning-icon {
   flex-shrink: 0;
-  color: var(--warning-color, #f39c12);
+  color: var(--error-color);
 }
 
 .warning-text {
   margin: 0;
-  color: var(--warning-text, #856404);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   line-height: 1.4;
 }
@@ -70,9 +70,9 @@
 }
 
 .form-info.success {
-  background-color: var(--success-background, #d4edda);
-  color: var(--success-text, #155724);
-  border: 1px solid var(--success-border, #c3e6cb);
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .form-info svg {
@@ -82,34 +82,4 @@
 
 .form-info span {
   flex: 1;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .warning-section {
-    background-color: rgba(243, 156, 18, 0.1);
-    border-color: rgba(243, 156, 18, 0.3);
-  }
-  
-  .warning-text {
-    color: #f39c12;
-  }
-  
-  .count-badge.warning {
-    background-color: rgba(243, 156, 18, 0.1);
-    color: #f39c12;
-    border-color: rgba(243, 156, 18, 0.3);
-  }
-  
-  .count-badge.info {
-    background-color: rgba(52, 152, 219, 0.1);
-    color: #3498db;
-    border-color: rgba(52, 152, 219, 0.3);
-  }
-  
-  .form-info.success {
-    background-color: rgba(39, 174, 96, 0.1);
-    color: #27ae60;
-    border-color: rgba(39, 174, 96, 0.3);
-  }
 }

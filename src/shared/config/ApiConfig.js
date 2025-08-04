@@ -19,6 +19,10 @@ export const API_ENDPOINTS = {
     SIGNUP: '/users/signup'
   },
   
+  USER_PREFERENCES: {
+    BASE: '/user/preferences'
+  },
+  
   PRODUCTS: {
     BASE: '/products',
     CATEGORIES: '/products/categories'

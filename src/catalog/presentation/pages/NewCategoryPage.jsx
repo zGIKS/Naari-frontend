@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * NewCategoryPage - Página para crear/editar categorías
@@ -9,9 +9,8 @@ export const NewCategoryPage = ({ catalogFactory }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams(); // Para edición
-  const isEditing = Boolean(id);
   const categoryFromState = location.state?.category;
+  const isEditing = Boolean(categoryFromState);
   
   const [branches, setBranches] = useState([]);
   const [error, setError] = useState(null);
@@ -36,7 +35,7 @@ export const NewCategoryPage = ({ catalogFactory }) => {
         branchId: categoryFromState.branchId
       });
     }
-  }, [id, categoryFromState, isEditing]);
+  }, [categoryFromState, isEditing]);
 
   const loadBranches = async () => {
     try {
@@ -62,8 +61,8 @@ export const NewCategoryPage = ({ catalogFactory }) => {
     setSubmitLoading(true);
 
     try {
-      if (isEditing) {
-        await categoryService.updateCategory(id, formData);
+      if (isEditing && editingCategory) {
+        await categoryService.updateCategory(editingCategory.id, formData);
       } else {
         await categoryService.createCategory(formData);
       }
@@ -112,20 +111,21 @@ export const NewCategoryPage = ({ catalogFactory }) => {
     <div className="create-client-page">
       <div className="page-header" style={{
         marginBottom: '2rem',
-        borderBottom: '1px solid #e5e7eb',
-        paddingBottom: '1.5rem'
+        borderBottom: '1px solid var(--border-color)',
+        paddingBottom: '1.5rem',
+        padding: '0 2rem 1.5rem 2rem'
       }}>
         <div className="header-content">
           <button 
             onClick={handleBack}
-            className="btn btn-ghost"
+            className="btn btn-secondary"
             style={{ 
-              marginBottom: '1rem', 
+              marginBottom: '1.5rem', 
               padding: '0.5rem 0.75rem',
               background: 'transparent',
-              border: '1px solid #e5e7eb',
+              border: '1px solid var(--border-color)',
               borderRadius: '6px',
-              color: '#666',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -136,62 +136,63 @@ export const NewCategoryPage = ({ catalogFactory }) => {
               width: 'fit-content'
             }}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#f9fafb';
-              e.target.style.borderColor = '#d1d5db';
+              e.target.style.backgroundColor = 'var(--bg-tertiary)';
+              e.target.style.color = 'var(--text-primary)';
             }}
             onMouseLeave={(e) => {
               e.target.style.backgroundColor = 'transparent';
-              e.target.style.borderColor = '#e5e7eb';
+              e.target.style.color = 'var(--text-secondary)';
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5"/>
-              <path d="M12 19l-7-7 7-7"/>
-            </svg>
-            Volver al catálogo
-          </button>
-          
-          <div style={{ marginBottom: '0.5rem' }}>
-            <h1 style={{ 
-              fontSize: '1.875rem', 
-              fontWeight: '700', 
-              color: '#111827',
-              margin: '0 0 0.5rem 0',
-              lineHeight: '1.2'
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              {t('common.back_to_catalog', 'Volver al catálogo')}
+            </button>
+            
+            <div style={{ 
+              marginBottom: '1rem'
             }}>
-              {isEditing ? t('admin.edit_category', 'Editar Categoría') : t('admin.new_category', 'Nueva Categoría')}
-            </h1>
-            <p style={{ 
-              fontSize: '1rem', 
-              color: '#6b7280',
-              margin: '0',
-              lineHeight: '1.5'
-            }}>
-              {isEditing ? 'Modifica los datos de la categoría' : 'Completa la información de la nueva categoría'}
-            </p>
+              <h1 style={{ 
+                fontSize: '2.25rem', 
+                fontWeight: '700', 
+                color: 'var(--text-primary)',
+                margin: '0 0 0.75rem 0',
+                lineHeight: '1.2'
+              }}>
+                {isEditing ? t('admin.edit_category', 'Editar Categoría') : t('admin.new_category', 'Nueva Categoría')}
+              </h1>
+              <p style={{ 
+                fontSize: '1.1rem', 
+                color: 'var(--text-secondary)',
+                margin: '0',
+                lineHeight: '1.5'
+              }}>
+                {isEditing ? t('admin.edit_category_subtitle', 'Modifica los datos de la categoría') : t('admin.new_category_subtitle', 'Completa la información de la nueva categoría')}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="page-content">
-        <div className="form-container" style={{ 
-          width: '100%',
-          maxWidth: 'none',
-          margin: '0',
-          padding: '0',
-          background: 'transparent',
-          borderRadius: '0',
-          boxShadow: 'none'
-        }}>
+        <div className="page-content">
+          <div className="form-container" style={{ 
+            width: '100%',
+            margin: '0',
+            padding: '2rem',
+            background: 'var(--bg-primary)',
+            borderRadius: '0',
+            boxShadow: 'none'
+          }}>
           <form onSubmit={handleSubmit} className="client-form">
             {error && (
               <div className="error-message" style={{
                 marginBottom: '1.5rem',
                 padding: '1rem',
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
+                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                border: '1px solid var(--error-color)',
                 borderRadius: '8px',
-                color: '#dc2626',
+                color: 'var(--error-color)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem'
@@ -220,7 +221,7 @@ export const NewCategoryPage = ({ catalogFactory }) => {
                     className="form-input"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Ej: Tratamientos Faciales"
+                    placeholder={t('admin.category_name_placeholder', 'Ej: Tratamientos Faciales')}
                     required
                     disabled={submitLoading}
                   />
@@ -259,7 +260,7 @@ export const NewCategoryPage = ({ catalogFactory }) => {
                     rows="3"
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder="Describe brevemente esta categoría..."
+                    placeholder={t('admin.category_description_placeholder', 'Describe brevemente esta categoría...')}
                     disabled={submitLoading}
                   />
                 </div>
@@ -282,8 +283,8 @@ export const NewCategoryPage = ({ catalogFactory }) => {
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
-    </div>
   );
 };

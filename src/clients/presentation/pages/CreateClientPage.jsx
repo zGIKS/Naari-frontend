@@ -82,20 +82,20 @@ export const CreateClientPage = () => {
       <div className="create-client-page">
         <div className="page-header" style={{
           marginBottom: '2rem',
-          borderBottom: '1px solid #e5e7eb',
+          borderBottom: '1px solid var(--border-color)',
           paddingBottom: '1.5rem'
         }}>
           <div className="header-content">
             <button 
               onClick={handleCancel}
-              className="btn btn-ghost"
+              className="btn btn-secondary"
               style={{ 
                 marginBottom: '1rem', 
                 padding: '0.5rem 0.75rem',
                 background: 'transparent',
-                border: '1px solid #e5e7eb',
+                border: '1px solid var(--border-color)',
                 borderRadius: '6px',
-                color: '#666',
+                color: 'var(--text-secondary)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -106,12 +106,12 @@ export const CreateClientPage = () => {
                 width: 'fit-content'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb';
-                e.target.style.borderColor = '#d1d5db';
+                e.target.style.backgroundColor = 'var(--bg-tertiary)';
+                e.target.style.color = 'var(--text-primary)';
               }}
               onMouseLeave={(e) => {
                 e.target.style.backgroundColor = 'transparent';
-                e.target.style.borderColor = '#e5e7eb';
+                e.target.style.color = 'var(--text-secondary)';
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -125,7 +125,7 @@ export const CreateClientPage = () => {
               <h1 style={{ 
                 fontSize: '1.875rem', 
                 fontWeight: '700', 
-                color: '#111827',
+                color: 'var(--text-primary)',
                 margin: '0 0 0.5rem 0',
                 lineHeight: '1.2'
               }}>
@@ -133,7 +133,7 @@ export const CreateClientPage = () => {
               </h1>
               <p style={{ 
                 fontSize: '1rem', 
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 margin: '0',
                 lineHeight: '1.5'
               }}>

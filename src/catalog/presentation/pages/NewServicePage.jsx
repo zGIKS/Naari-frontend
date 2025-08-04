@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * NewServicePage - Página para crear/editar servicios
@@ -8,8 +8,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 export const NewServicePage = ({ catalogFactory }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { id } = useParams(); // Para edición
-  const isEditing = Boolean(id);
+  const location = useLocation();
+  const serviceFromState = location.state?.service;
+  const isEditing = Boolean(serviceFromState);
   
   const [categories, setCategories] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -23,10 +24,10 @@ export const NewServicePage = ({ catalogFactory }) => {
 
   useEffect(() => {
     loadBranches();
-    if (isEditing) {
-      loadService();
+    if (isEditing && serviceFromState) {
+      setEditingService(serviceFromState);
     }
-  }, [id]);
+  }, [serviceFromState, isEditing]);
 
   useEffect(() => {
     if (branches.length > 0) {
@@ -52,15 +53,6 @@ export const NewServicePage = ({ catalogFactory }) => {
     }
   };
 
-  const loadService = async () => {
-    try {
-      const service = await serviceService.getServiceById(id);
-      setEditingService(service);
-    } catch (error) {
-      console.error('Error loading service:', error);
-      setError('Error al cargar el servicio');
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,8 +82,8 @@ export const NewServicePage = ({ catalogFactory }) => {
         discounted_price: isDiscountActive ? price * (1 - discountPercent / 100) : 0
       };
 
-      if (isEditing) {
-        await serviceService.updateService(id, serviceData);
+      if (isEditing && editingService) {
+        await serviceService.updateService(editingService.id, serviceData);
       } else {
         await serviceService.createService(serviceData);
       }
@@ -142,86 +134,88 @@ export const NewServicePage = ({ catalogFactory }) => {
     <div className="create-client-page">
       <div className="page-header" style={{
         marginBottom: '2rem',
-        borderBottom: '1px solid #e5e7eb',
-        paddingBottom: '1.5rem'
+        borderBottom: '1px solid var(--border-color)',
+        paddingBottom: '1.5rem',
+        padding: '0 2rem 1.5rem 2rem'
       }}>
         <div className="header-content">
           <button 
             onClick={handleBack}
-            className="btn btn-ghost"
-            style={{ 
-              marginBottom: '1rem', 
-              padding: '0.5rem 0.75rem',
-              background: 'transparent',
-              border: '1px solid #e5e7eb',
-              borderRadius: '6px',
-              color: '#666',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              transition: 'all 0.2s ease',
-              width: 'fit-content'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#f9fafb';
-              e.target.style.borderColor = '#d1d5db';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'transparent';
-              e.target.style.borderColor = '#e5e7eb';
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5"/>
-              <path d="M12 19l-7-7 7-7"/>
-            </svg>
-            Volver al catálogo
-          </button>
-          
-          <div style={{ marginBottom: '0.5rem' }}>
-            <h1 style={{ 
-              fontSize: '1.875rem', 
-              fontWeight: '700', 
-              color: '#111827',
-              margin: '0 0 0.5rem 0',
-              lineHeight: '1.2'
+            className="btn btn-secondary"
+              style={{ 
+                marginBottom: '1.5rem', 
+                padding: '0.5rem 0.75rem',
+                background: 'transparent',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                transition: 'all 0.2s ease',
+                width: 'fit-content'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'var(--bg-tertiary)';
+                e.target.style.color = 'var(--text-primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = 'var(--text-secondary)';
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              {t('admin.back_to_catalog', 'Volver al catálogo')}
+            </button>
+            
+            <div style={{ 
+              marginBottom: '1rem'
             }}>
-              {isEditing ? t('admin.edit_service', 'Editar Servicio') : t('admin.new_service', 'Nuevo Servicio')}
-            </h1>
-            <p style={{ 
-              fontSize: '1rem', 
-              color: '#6b7280',
-              margin: '0',
-              lineHeight: '1.5'
-            }}>
-              {isEditing ? 'Modifica los datos del servicio' : 'Completa la información del nuevo servicio'}
-            </p>
+              <h1 style={{ 
+                fontSize: '2.25rem', 
+                fontWeight: '700', 
+                color: 'var(--text-primary)',
+                margin: '0 0 0.75rem 0',
+                lineHeight: '1.2'
+              }}>
+                {isEditing ? t('admin.edit_service', 'Editar Servicio') : t('admin.new_service', 'Nuevo Servicio')}
+              </h1>
+              <p style={{ 
+                fontSize: '1.1rem', 
+                color: 'var(--text-secondary)',
+                margin: '0',
+                lineHeight: '1.5'
+              }}>
+                {isEditing ? t('admin.modify_service_data', 'Modifica los datos del servicio') : t('admin.complete_service_info', 'Completa la información del nuevo servicio')}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="page-content">
-        <div className="form-container" style={{ 
-          width: '100%',
-          maxWidth: 'none',
-          margin: '0',
-          padding: '0',
-          background: 'transparent',
-          borderRadius: '0',
-          boxShadow: 'none'
-        }}>
+        <div className="page-content">
+          <div className="form-container" style={{ 
+            width: '100%',
+            margin: '0',
+            padding: '2rem',
+            background: 'var(--bg-primary)',
+            borderRadius: '0',
+            boxShadow: 'none'
+          }}>
           <form onSubmit={handleSubmit} className="client-form">
             {error && (
               <div className="error-message" style={{
                 marginBottom: '1.5rem',
                 padding: '1rem',
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
+                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                border: '1px solid var(--error-color)',
                 borderRadius: '8px',
-                color: '#dc2626',
+                color: 'var(--error-color)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem'
@@ -249,7 +243,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     type="text" 
                     className="form-input" 
                     defaultValue={editingService?.name || ''}
-                    placeholder="Ej: Limpieza facial profunda"
+                    placeholder={t('admin.service_name_placeholder', 'Ej: Limpieza facial profunda')}
                     required 
                     disabled={submitLoading}
                   />
@@ -286,7 +280,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     min="0" 
                     className="form-input" 
                     defaultValue={editingService?.price || ''}
-                    placeholder="0.00"
+                    placeholder={t('admin.service_price_placeholder', '0.00')}
                     required 
                     disabled={submitLoading}
                   />
@@ -303,7 +297,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     max="480" 
                     step="15" 
                     className="form-input" 
-                    placeholder="60" 
+                    placeholder={t('admin.service_duration_placeholder', '60')} 
                     defaultValue={editingService?.duration_minutes || ''}
                     required 
                     disabled={submitLoading}
@@ -320,7 +314,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     rows="3" 
                     required 
                     minLength="10" 
-                    placeholder="Describe detalladamente el servicio..."
+                    placeholder={t('admin.service_description_placeholder', 'Describe detalladamente el servicio...')}
                     defaultValue={editingService?.description || ''}
                     disabled={submitLoading}
                   ></textarea>
@@ -343,7 +337,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     rows="3" 
                     required 
                     minLength="10" 
-                    placeholder="Lista los principales beneficios del servicio..."
+                    placeholder={t('admin.service_benefits_placeholder', 'Lista los principales beneficios del servicio...')}
                     defaultValue={editingService?.benefits || ''}
                     disabled={submitLoading}
                   ></textarea>
@@ -359,7 +353,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     rows="3" 
                     required 
                     minLength="10" 
-                    placeholder="Detalla qué incluye exactamente el tratamiento..."
+                    placeholder={t('admin.service_treatment_includes_placeholder', 'Detalla qué incluye exactamente el tratamiento...')}
                     defaultValue={editingService?.treatment_includes || ''}
                     disabled={submitLoading}
                   ></textarea>
@@ -376,7 +370,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                       min="1" 
                       max="365" 
                       className="form-input" 
-                      placeholder="15" 
+                      placeholder={t('admin.treatment_frequency_placeholder', '15')} 
                       defaultValue={editingService?.treatment_frequency_value || ''}
                       disabled={submitLoading}
                       style={{ flex: '1' }}
@@ -388,9 +382,9 @@ export const NewServicePage = ({ catalogFactory }) => {
                       disabled={submitLoading}
                       style={{ flex: '1' }}
                     >
-                      <option value="days">Días</option>
-                      <option value="weeks">Semanas</option>
-                      <option value="months">Meses</option>
+                      <option value="days">{t('admin.days', 'Días')}</option>
+                      <option value="weeks">{t('admin.weeks', 'Semanas')}</option>
+                      <option value="months">{t('admin.months', 'Meses')}</option>
                     </select>
                   </div>
                 </div>
@@ -403,7 +397,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     name="contraindications" 
                     type="text" 
                     className="form-input" 
-                    placeholder="Ej: Embarazo, lactancia, alergias..." 
+                    placeholder={t('admin.contraindications_placeholder', 'Ej: Embarazo, lactancia, alergias...')} 
                     defaultValue={editingService?.contraindications || ''}
                     disabled={submitLoading}
                   />
@@ -426,7 +420,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                     min="0" 
                     max="100" 
                     className="form-input" 
-                    placeholder="0" 
+                    placeholder={t('admin.discount_percent_placeholder', '0')} 
                     defaultValue={editingService?.discount_percent || ''}
                     disabled={submitLoading}
                   />
@@ -450,8 +444,8 @@ export const NewServicePage = ({ catalogFactory }) => {
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
-    </div>
   );
 };

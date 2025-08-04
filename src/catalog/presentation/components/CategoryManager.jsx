@@ -92,7 +92,7 @@ export const CategoryManager = ({ catalogFactory }) => {
   };
 
   const handleEditCategory = (category) => {
-    navigate(`/catalog/categories/edit/${category.id}`, {
+    navigate('/catalog/categories/edit', {
       state: { category }
     });
   };

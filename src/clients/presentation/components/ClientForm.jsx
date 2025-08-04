@@ -339,11 +339,11 @@ export const ClientForm = ({
         <div style={{ 
           marginTop: '1rem', 
           padding: '0.75rem 1rem', 
-          backgroundColor: '#f0f9ff', 
-          border: '1px solid #bae6fd', 
+          backgroundColor: 'rgba(59, 130, 246, 0.1)', 
+          border: '1px solid var(--accent-color)', 
           borderRadius: '6px',
           fontSize: '0.85rem',
-          color: '#0369a1'
+          color: 'var(--accent-color)'
         }}>
           <strong>Nota:</strong> {t('clients.form.autocomplete_note', 'Los campos DNI y RUC se guardarán con el cliente independientemente de si utiliza el autocompletado o los escribe manualmente.')}
         </div>
