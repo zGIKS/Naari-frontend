@@ -1,3 +1,4 @@
+import Error404 from './shared/pages/Error404';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './shared/contexts/ThemeContext';
 import ProtectedRoute from './shared/components/ProtectedRoute';
@@ -141,7 +142,7 @@ function App() {
             path="*" 
             element={
               <ProtectedRoute>
-                <div>404 - Page Not Found</div>
+                <Error404 />
               </ProtectedRoute>
             } 
           />

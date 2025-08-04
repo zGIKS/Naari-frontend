@@ -4,6 +4,13 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   es: {
     translation: {
+      error404: {
+        title: 'Página no encontrada',
+        message: 'La página que buscas no existe o ha sido movida.',
+        suggestion: 'Verifica la URL o regresa a la página principal para continuar navegando.',
+        home: 'Ir a la página principal',
+        back: 'Regresar'
+      },
       login: {
         title: 'Iniciar Sesión',
         email: 'Correo Electrónico',
@@ -567,6 +574,13 @@ const resources = {
   },
   en: {
     translation: {
+      error404: {
+        title: 'Page not found',
+        message: 'The page you are looking for does not exist or has been moved.',
+        suggestion: 'Check the URL or return to the main page to continue browsing.',
+        home: 'Go to home page',
+        back: 'Go back'
+      },
       login: {
         title: 'Login',
         email: 'Email',
