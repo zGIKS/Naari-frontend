@@ -111,7 +111,8 @@ export const EditClientPage = () => {
         <div className="page-header" style={{
           marginBottom: '2rem',
           borderBottom: '1px solid var(--border-color)',
-          paddingBottom: '1.5rem'
+          paddingBottom: '1.5rem',
+          padding: '0 2rem 1.5rem 2rem'
         }}>
           <div className="header-content">
             <button 
@@ -176,7 +177,7 @@ export const EditClientPage = () => {
             width: '100%',
             maxWidth: 'none',
             margin: '0',
-            padding: '0',
+            padding: '2rem',
             background: 'transparent',
             borderRadius: '0',
             boxShadow: 'none'
