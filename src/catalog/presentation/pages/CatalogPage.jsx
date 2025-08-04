@@ -6,6 +6,9 @@ import { CategoryManager } from '../components/CategoryManager';
 import { ProductManager } from '../components/ProductManager';
 import { ServiceManager } from '../components/ServiceManager';
 import { CatalogMenu } from '../components/CatalogMenu';
+import { NewCategoryPage } from './NewCategoryPage';
+import { NewServicePage } from './NewServicePage';
+import { NewProductPage } from './NewProductPage';
 import { CatalogFactory } from '../../infrastructure/factories/CatalogFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
 
@@ -17,18 +20,24 @@ export const CatalogPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { section } = useParams();
-  const [activeSection, setActiveSection] = useState('services');
+  const [activeSection, setActiveSection] = useState('categories');
   const [catalogFactory, setCatalogFactory] = useState(null);
+
+  // Detectar si es una ruta de formulario específica
+  const currentPath = location.pathname;
+  const isNewCategoryPage = currentPath.includes('/catalog/categories/new') || currentPath.includes('/catalog/categories/edit');
+  const isNewServicePage = currentPath.includes('/catalog/services/new') || currentPath.includes('/catalog/services/edit');
+  const isNewProductPage = currentPath.includes('/catalog/products/new') || currentPath.includes('/catalog/products/edit');
 
   // Manejar navegación por parámetros de ruta
   useEffect(() => {
-    if (section && ['service-categories', 'services', 'product-categories', 'products'].includes(section)) {
+    if (section && ['categories', 'services', 'products'].includes(section)) {
       setActiveSection(section);
-    } else {
-      // Redireccionar a servicios por defecto si la sección no es válida
-      navigate('/catalog/services', { replace: true });
+    } else if (!isNewCategoryPage && !isNewServicePage && !isNewProductPage) {
+      // Redireccionar a categorías por defecto si la sección no es válida y no es una página de formulario
+      navigate('/catalog/categories', { replace: true });
     }
-  }, [section, navigate]);
+  }, [section, navigate, isNewCategoryPage, isNewServicePage, isNewProductPage]);
 
   useEffect(() => {
     // Inicializar el factory con el token actual
@@ -50,17 +59,27 @@ export const CatalogPage = () => {
       return <div className="loading">{t('common.loading', 'Cargando...')}</div>;
     }
 
+    // Renderizar páginas de formularios específicas
+    if (isNewCategoryPage) {
+      return <NewCategoryPage catalogFactory={catalogFactory} />;
+    }
+    if (isNewServicePage) {
+      return <NewServicePage catalogFactory={catalogFactory} />;
+    }
+    if (isNewProductPage) {
+      return <NewProductPage catalogFactory={catalogFactory} />;
+    }
+
+    // Renderizar managers por defecto
     switch (activeSection) {
-      case 'service-categories':
-        return <CategoryManager catalogFactory={catalogFactory} categoryType="service" />;
+      case 'categories':
+        return <CategoryManager catalogFactory={catalogFactory} />;
       case 'services':
         return <ServiceManager catalogFactory={catalogFactory} />;
-      case 'product-categories':
-        return <CategoryManager catalogFactory={catalogFactory} categoryType="product" />;
       case 'products':
         return <ProductManager catalogFactory={catalogFactory} />;
       default:
-        return <ServiceManager catalogFactory={catalogFactory} />;
+        return <CategoryManager catalogFactory={catalogFactory} />;
     }
   };
 
@@ -78,15 +97,18 @@ export const CatalogPage = () => {
   return (
     <CalendarLayout>
       <div className="catalog-page">
-        <div className="catalog-header">
-          <h1>{t('navigation.catalog', 'Catálogo')}</h1>
-          <p>{t('admin.catalog_subtitle', 'Gestiona servicios, productos y sus categorías')}</p>
-        </div>
+        {!isNewCategoryPage && !isNewServicePage && !isNewProductPage && (
+          <>
+            <div className="catalog-header">
+              <h1>{t('navigation.catalog', 'Catálogo')}</h1>
+            </div>
 
-        <CatalogMenu 
-          activeSection={activeSection} 
-          onSectionChange={handleSectionChange} 
-        />
+            <CatalogMenu 
+              activeSection={activeSection} 
+              onSectionChange={handleSectionChange} 
+            />
+          </>
+        )}
 
         <div className="catalog-content">
           {renderActiveComponent()}

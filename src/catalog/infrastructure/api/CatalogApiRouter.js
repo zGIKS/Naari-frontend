@@ -74,7 +74,21 @@ class BaseApiService {
         throw error;
       }
 
-      return response.json();
+      // Manejar respuestas vacías (como 204 No Content para DELETE)
+      const contentLength = response.headers.get('content-length');
+      const contentType = response.headers.get('content-type');
+      
+      if (contentLength === '0' || response.status === 204 || 
+          (!contentType || !contentType.includes('application/json'))) {
+        return {}; // Retornar objeto vacío para respuestas sin contenido
+      }
+      
+      try {
+        return await response.json();
+      } catch (jsonError) {
+        // Si no se puede parsear como JSON, retornar objeto vacío
+        return {};
+      }
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         // Network error

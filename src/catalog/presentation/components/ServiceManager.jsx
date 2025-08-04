@@ -1,27 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * ServiceManager - Gestor de servicios estéticos
  */
 export const ServiceManager = ({ catalogFactory }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
 
   const serviceService = catalogFactory.getServiceService();
   const categoryService = catalogFactory.getCategoryService();
+  const branchService = catalogFactory.getBranchService();
 
   useEffect(() => {
-    loadCategories();
-    loadServices();
+    loadBranches();
   }, []);
+
+  useEffect(() => {
+    if (branches.length > 0) {
+      loadCategories();
+      loadServices();
+    }
+  }, [branches]);
+
+  const loadBranches = async () => {
+    try {
+      const data = await branchService.getAllBranches();
+      setBranches(data.filter(branch => branch.isActive));
+    } catch (error) {
+      console.error('Error loading branches:', error);
+    }
+  };
 
   const loadCategories = async () => {
     try {
-      const data = await categoryService.getAllCategories();
+      const data = await categoryService.getAllCategoriesFromAllBranches(branches);
       setCategories(data);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -40,13 +58,15 @@ export const ServiceManager = ({ catalogFactory }) => {
     }
   };
 
-  const handleSubmit = async (formData) => {
-    try {
-      await serviceService.createService(formData);
-      await loadServices();
-      setShowForm(false);
-    } catch (error) {
-      console.error('Error creating service:', error);
+  const handleDelete = async (serviceId) => {
+    if (window.confirm(t('admin.confirm_delete_service', '¿Estás seguro de que quieres eliminar este servicio?'))) {
+      try {
+        await serviceService.deleteService(serviceId);
+        setServices(services.filter(service => service.id !== serviceId));
+      } catch (error) {
+        console.error('Error deleting service:', error);
+        alert('Error al eliminar el servicio');
+      }
     }
   };
 
@@ -60,7 +80,7 @@ export const ServiceManager = ({ catalogFactory }) => {
         <div className="header-actions">
           <button 
             className="btn btn-primary"
-            onClick={() => setShowForm(true)}
+            onClick={() => navigate('/catalog/services/new')}
             disabled={loading}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -94,16 +114,30 @@ export const ServiceManager = ({ catalogFactory }) => {
                 <div key={service.id} className="service-card">
                   <div className="service-header">
                     <h4>{service.name}</h4>
-                    <div className="service-price">
-                      {service.isDiscountActive ? (
-                        <>
-                          <span className="original-price">${service.price}</span>
-                          <span className="discounted-price">${service.getFinalPrice()}</span>
-                          <span className="discount-badge">{service.discountPercent}% OFF</span>
-                        </>
-                      ) : (
-                        <span className="price">${service.price}</span>
-                      )}
+                    <div className="service-actions">
+                      <div className="service-price">
+                        {service.isDiscountActive ? (
+                          <>
+                            <span className="original-price">${service.price}</span>
+                            <span className="discounted-price">${service.getFinalPrice()}</span>
+                            <span className="discount-badge">{service.discountPercent}% OFF</span>
+                          </>
+                        ) : (
+                          <span className="price">${service.price}</span>
+                        )}
+                      </div>
+                      <button 
+                        className="btn-icon btn-danger" 
+                        onClick={() => handleDelete(service.id)}
+                        title={t('common.delete', 'Eliminar')}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3,6 5,6 21,6"/>
+                          <path d="M19,6V20a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                          <line x1="10" y1="11" x2="10" y2="17"/>
+                          <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                      </button>
                     </div>
                   </div>
                   <div className="service-info">
@@ -114,7 +148,7 @@ export const ServiceManager = ({ catalogFactory }) => {
                           <circle cx="12" cy="12" r="10"/>
                           <polyline points="12,6 12,12 16,14"/>
                         </svg>
-                        <span>{service.duration}</span>
+                        <span>{service.duration_minutes ? `${service.duration_minutes} min` : service.duration}</span>
                       </div>
                       <div className="meta-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -138,113 +172,6 @@ export const ServiceManager = ({ catalogFactory }) => {
         )}
       </div>
 
-      {showForm && (
-        <div className="form-modal">
-          <div className="form-overlay" onClick={() => setShowForm(false)}></div>
-          <div className="form-container large">
-            <div className="service-form">
-              <h3>{t('admin.new_service', 'Nuevo Servicio')}</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const isDiscountActive = formData.get('isDiscountActive') === 'on';
-                const discountPercent = parseInt(formData.get('discountPercent')) || 0;
-                const price = parseFloat(formData.get('price'));
-                
-                handleSubmit({
-                  name: formData.get('name'),
-                  description: formData.get('description'),
-                  price: price,
-                  duration: formData.get('duration'),
-                  categoryId: formData.get('categoryId'),
-                  benefits: formData.get('benefits'),
-                  contraindications: formData.get('contraindications'),
-                  treatmentFrequency: formData.get('treatmentFrequency'),
-                  treatmentIncludes: formData.get('treatmentIncludes'),
-                  isDiscountActive: isDiscountActive,
-                  discountPercent: discountPercent,
-                  discountedPrice: isDiscountActive ? price * (1 - discountPercent / 100) : 0
-                });
-              }}>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.service_name', 'Nombre del Servicio')}</label>
-                    <input name="name" type="text" className="form-input" required />
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.service_category', 'Categoría')}</label>
-                    <select name="categoryId" className="form-input" required>
-                      <option value="">{t('admin.select_category', 'Selecciona una categoría')}</option>
-                      {categories.map(category => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <label>{t('admin.service_description', 'Descripción')}</label>
-                  <textarea name="description" className="form-input" rows="3" required minLength="10"></textarea>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.service_price', 'Precio')}</label>
-                    <input name="price" type="number" step="0.01" min="0" className="form-input" required />
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.service_duration', 'Duración')}</label>
-                    <input name="duration" type="text" className="form-input" placeholder="Ej: 60 minutos" required />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>{t('admin.service_benefits', 'Beneficios')}</label>
-                  <textarea name="benefits" className="form-input" rows="3" required minLength="10"></textarea>
-                </div>
-
-                <div className="form-group">
-                  <label>{t('admin.service_includes', 'El tratamiento incluye')}</label>
-                  <textarea name="treatmentIncludes" className="form-input" rows="3" required minLength="10"></textarea>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.treatment_frequency', 'Frecuencia recomendada')}</label>
-                    <input name="treatmentFrequency" type="text" className="form-input" placeholder="Ej: Cada 15 días" />
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.contraindications', 'Contraindicaciones')}</label>
-                    <input name="contraindications" type="text" className="form-input" />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <div className="checkbox-group">
-                    <input name="isDiscountActive" type="checkbox" id="discount" />
-                    <label htmlFor="discount">{t('admin.has_discount', 'Tiene descuento activo')}</label>
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.discount_percent', 'Porcentaje de descuento')}</label>
-                    <input name="discountPercent" type="number" min="0" max="100" className="form-input" />
-                  </div>
-                </div>
-
-                <div className="form-actions">
-                  <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary">
-                    {t('common.cancel', 'Cancelar')}
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    {t('common.create', 'Crear')}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

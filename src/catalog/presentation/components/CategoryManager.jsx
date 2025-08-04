@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
 
 /**
- * CategoryManager - Gestor de categorías de servicios
- * Similar estructura al BranchManager
+ * CategoryManager - Gestor de categorías unificado
  */
 export const CategoryManager = ({ catalogFactory }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
-  const [error, setError] = useState(null);
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
   const [confirmationModal, setConfirmationModal] = useState({
     isOpen: false,
     categoryId: null,
@@ -91,15 +88,13 @@ export const CategoryManager = ({ catalogFactory }) => {
   };
 
   const handleCreateCategory = () => {
-    setEditingCategory(null);
-    setShowForm(true);
-    setError(null);
+    navigate('/catalog/categories/new');
   };
 
   const handleEditCategory = (category) => {
-    setEditingCategory(category);
-    setShowForm(true);
-    setError(null);
+    navigate(`/catalog/categories/edit/${category.id}`, {
+      state: { category }
+    });
   };
 
   const handleToggleStatus = (categoryId, categoryName, activate) => {
@@ -225,7 +220,7 @@ export const CategoryManager = ({ catalogFactory }) => {
       <div className="manager-header">
         <div className="header-content">
           <h2>{t('admin.categories_title', 'Gestión de Categorías')}</h2>
-          <p>{t('admin.categories_subtitle', 'Administra las categorías de servicios por sucursal')}</p>
+          <p>{t('admin.categories_subtitle', 'Administra todas las categorías de servicios y productos')}</p>
         </div>
         <div className="header-actions">
           <select 
@@ -370,83 +365,6 @@ export const CategoryManager = ({ catalogFactory }) => {
         )}
       </div>
 
-      {showForm && (
-        <div className="form-modal">
-          <div className="form-overlay" onClick={() => setShowForm(false)}></div>
-          <div className="form-container">
-            <div className="category-form">
-              <h3>{editingCategory ? t('admin.edit_category', 'Editar Categoría') : t('admin.new_category', 'Nueva Categoría')}</h3>
-              {error && (
-                <div className="error-message">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                  </svg>
-                  {error}
-                </div>
-              )}
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                handleSubmit({
-                  name: formData.get('name'),
-                  description: formData.get('description'),
-                  branchId: formData.get('branchId')
-                });
-              }}>
-                <div className="form-group">
-                  <label>{t('admin.category_name', 'Nombre de la Categoría')}</label>
-                  <input 
-                    name="name" 
-                    type="text" 
-                    className="form-input" 
-                    defaultValue={editingCategory?.name || ''}
-                    required 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>{t('admin.category_description', 'Descripción')}</label>
-                  <textarea 
-                    name="description" 
-                    className="form-input" 
-                    defaultValue={editingCategory?.description || ''}
-                    required
-                  ></textarea>
-                </div>
-                {!editingCategory && (
-                  <div className="form-group">
-                    <label>{t('admin.select_branch', 'Sucursal')}</label>
-                    <select name="branchId" className="form-input" required>
-                      <option value="">{t('admin.select_branch_option', 'Selecciona una sucursal')}</option>
-                      {branches.map(branch => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                <div className="form-actions">
-                  <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary" disabled={submitLoading}>
-                    {t('common.cancel', 'Cancelar')}
-                  </button>
-                  <button type="submit" className="btn btn-primary" disabled={submitLoading}>
-                    {submitLoading ? (
-                      <>
-                        <div className="spinner-sm"></div>
-                        {t('common.creating', 'Creando...')}
-                      </>
-                    ) : (
-                      t('common.create', 'Crear')
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
       <ConfirmationModal
         isOpen={confirmationModal.isOpen}

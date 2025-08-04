@@ -67,7 +67,7 @@ function App() {
           />
 
           <Route 
-            path="/catalog/:section?" 
+            path="/catalog/*" 
             element={
               <ProtectedRoute>
                 <CatalogPage />

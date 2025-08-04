@@ -1816,6 +1816,49 @@ body {
   margin: 0;
 }
 
+/* Catalog Tabs Styles */
+.catalog-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: var(--bg-secondary);
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.catalog-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.catalog-tab:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.catalog-tab.active {
+  background: var(--accent-color);
+  color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+.catalog-tab svg {
+  color: currentColor;
+}
+
 /* Client and User Management Styles */
 .client-page, .user-manager {
   width: 100%;
@@ -2631,10 +2674,36 @@ body {
   overflow-y: auto;
   position: relative;
   z-index: 1001;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+/* Mejorar el scrollbar del modal */
+.form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.form-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 .form-container.large {
   max-width: 700px;
+}
+
+.form-container.extra-large {
+  max-width: 1200px;
+  width: 95%;
 }
 
 /* Employee form container - full width */
@@ -2890,13 +2959,13 @@ body {
 
 /* Service Form Specific Styles */
 .service-form {
-  padding: 2rem;
+  padding: 2rem 2.5rem;
 }
 
 .service-form h3 {
   margin: 0 0 1.5rem 0;
   color: var(--text-primary);
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 600;
   text-align: center;
   border-bottom: 1px solid var(--border-color);
@@ -2908,13 +2977,15 @@ body {
 }
 
 .service-form .form-group label {
-  margin-bottom: 0.75rem;
+  display: block;
+  margin-bottom: 0.5rem;
   color: var(--text-primary);
   font-weight: 500;
   font-size: 0.9rem;
 }
 
 .service-form .form-input {
+  width: 100%;
   padding: 0.875rem 1rem;
   border: 2px solid var(--border-color);
   border-radius: 8px;
@@ -2922,6 +2993,7 @@ body {
   color: var(--text-primary);
   font-size: 0.9rem;
   transition: var(--transition);
+  box-sizing: border-box;
 }
 
 .service-form .form-input:focus {
@@ -2931,14 +3003,62 @@ body {
 }
 
 .service-form textarea.form-input {
-  min-height: 100px;
+  min-height: 80px;
   resize: vertical;
+  font-family: inherit;
 }
 
 .service-form .form-row {
   display: grid;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Primera fila: 4 campos principales */
+.service-form .form-row:first-of-type {
+  grid-template-columns: 2fr 1.5fr 1fr 1fr;
+}
+
+/* Segunda fila: descripción full width */
+.service-form .form-row:nth-of-type(2) {
+  grid-template-columns: 1fr;
+}
+
+/* Tercera fila: beneficios y tratamiento incluye */
+.service-form .form-row:nth-of-type(3) {
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+}
+
+/* Cuarta fila: frecuencia, contraindicaciones y descuento */
+.service-form .form-row:nth-of-type(4) {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Grupo especial para frecuencia de tratamiento */
+.service-form .frequency-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Grupo de checkbox */
+.service-form .checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.service-form .checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.service-form .checkbox-group label {
+  margin: 0;
+  font-weight: normal;
+  cursor: pointer;
 }
 
 .service-form .form-actions {
@@ -2948,6 +3068,65 @@ body {
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-color);
+}
+
+/* Mejoras visuales para el formulario de servicios */
+.service-form .form-input::placeholder {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.service-form .form-group:focus-within label {
+  color: var(--accent-color);
+}
+
+/* Animación suave para los campos */
+.service-form .form-input {
+  transition: all 0.2s ease-in-out;
+}
+
+.service-form .form-input:hover {
+  border-color: var(--text-secondary);
+}
+
+/* Mejoras para el select */
+.service-form select.form-input {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em;
+  padding-right: 2.5rem;
+}
+
+/* Responsive design para el formulario */
+@media (max-width: 1024px) {
+  .service-form .form-row:first-of-type {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .service-form .form-row:nth-of-type(4) {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-container.extra-large {
+    max-width: 95%;
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .service-form {
+    padding: 1.5rem;
+  }
+  
+  .service-form .form-row {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .service-form .frequency-group {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Branch List */
@@ -3019,6 +3198,48 @@ body {
   background: rgba(26, 26, 46, 0.9);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   border-color: rgba(129, 140, 248, 0.3);
+}
+
+/* Service card specific styles */
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.service-header h4 {
+  margin: 0;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.service-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.service-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.btn-icon.btn-danger {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  background: transparent;
+  color: #ef4444;
+}
+
+.btn-icon.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: #dc2626;
 }
 
 .card-header {
@@ -3806,4 +4027,36 @@ body {
   .employee-email {
     font-size: 0.75rem;
   }
+}
+
+/* Catalog forms using client form structure */
+.category-form,
+.product-form,
+.service-form {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 2rem;
+}
+
+/* Required field labels */
+.form-label.required::after {
+  content: ' *';
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Small spinner for buttons */
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

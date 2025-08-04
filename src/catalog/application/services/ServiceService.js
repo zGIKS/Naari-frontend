@@ -164,6 +164,17 @@ export class ServiceService {
     }
   }
 
+  async deleteService(serviceId) {
+    try {
+      await this.apiService.delete(serviceId);
+      this.observer.notify('serviceDeleted', serviceId);
+      return { success: true };
+    } catch (error) {
+      this.observer.notify('serviceDeleteFailed', error);
+      throw error;
+    }
+  }
+
   // Decorator methods
   applyDiscount(service, discount) {
     return new DiscountDecorator(service, discount);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
 
 /**
@@ -7,38 +8,15 @@ import { ConfirmationModal } from '../../../shared/components/ConfirmationModal'
  */
 export const ProductManager = ({ catalogFactory }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, productId: null, productName: '' });
 
   const productService = catalogFactory.getProductService();
   const branchService = catalogFactory.getBranchService();
 
-  // Observer simplificado para manejar solo errores ya que usamos actualización optimista
-  useEffect(() => {
-    const observer = {
-      productCreateFailed: (error) => {
-        setError(getErrorMessage(error));
-      },
-      productUpdateFailed: (error) => {
-        setError(getErrorMessage(error));
-      },
-      productDeleteFailed: (error) => {
-        setError(getErrorMessage(error));
-      }
-    };
-
-    productService.subscribe(observer);
-
-    return () => {
-      productService.unsubscribe(observer);
-    };
-  }, [productService]);
 
   useEffect(() => {
     loadBranches();
@@ -66,61 +44,13 @@ export const ProductManager = ({ catalogFactory }) => {
     }
   };
 
-  const handleSubmit = async (formData) => {
-    setSubmitLoading(true);
-    setError(null);
-    
-    try {
-      if (editingProduct) {
-        // Actualización optimista para edición
-        setProducts(prevProducts => 
-          prevProducts.map(prod => 
-            prod.id === editingProduct.id 
-              ? { 
-                  ...prod, 
-                  name: formData.name,
-                  description: formData.description,
-                  brand: formData.brand,
-                  stock: formData.stock,
-                  purchasePrice: formData.purchasePrice,
-                  salePrice: formData.salePrice,
-                  lowStockAlert: formData.lowStockAlert,
-                  expirationDate: new Date(formData.expirationDate)
-                }
-              : prod
-          )
-        );
-        await productService.updateProduct(editingProduct.id, formData);
-      } else {
-        await productService.createProduct(formData);
-      }
-      
-      // Recargar datos para asegurar consistencia
-      await loadProducts();
-      setShowForm(false);
-      setEditingProduct(null);
-    } catch (error) {
-      console.error('Error saving product:', error);
-      setError(getErrorMessage(error));
-      // Si falla, recargar datos para revertir cambios optimistas
-      if (editingProduct) {
-        await loadProducts();
-      }
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
 
   const handleCreateProduct = () => {
-    setEditingProduct(null);
-    setShowForm(true);
-    setError(null);
+    navigate('/catalog/products/new');
   };
 
   const handleEditProduct = (product) => {
-    setEditingProduct(product);
-    setShowForm(true);
-    setError(null);
+    navigate(`/catalog/products/edit/${product.id}`);
   };
 
   const handleDeleteProduct = (productId, productName) => {
@@ -135,19 +65,12 @@ export const ProductManager = ({ catalogFactory }) => {
     const { productId } = confirmDelete;
     setConfirmDelete({ isOpen: false, productId: null, productName: '' });
 
-    // Actualización optimista - eliminar inmediatamente de la UI
-    const productToDelete = products.find(p => p.id === productId);
-    setProducts(prevProducts => prevProducts.filter(prod => prod.id !== productId));
-
     try {
       await productService.deleteProduct(productId);
-      // Recargar datos para asegurar consistencia
+      // Recargar la lista completa para asegurar consistencia
       await loadProducts();
     } catch (error) {
-      // Si falla, restaurar el producto eliminado
-      if (productToDelete) {
-        setProducts(prevProducts => [...prevProducts, productToDelete]);
-      }
+      console.error('Error deleting product:', error);
       setError(getErrorMessage(error));
     }
   };
@@ -156,24 +79,6 @@ export const ProductManager = ({ catalogFactory }) => {
     setConfirmDelete({ isOpen: false, productId: null, productName: '' });
   };
 
-  const getErrorMessage = (error) => {
-    if (error.status === 400) {
-      return t('admin.product_error_invalid_data', 'Datos inválidos. Verifica que todos los campos estén correctos.');
-    } else if (error.status === 401) {
-      return t('admin.product_error_unauthorized', 'No tienes autorización. Inicia sesión nuevamente.');
-    } else if (error.status === 403) {
-      return t('admin.product_error_forbidden', 'No tienes permisos para realizar esta acción.');
-    } else if (error.status === 404) {
-      return t('admin.product_error_not_found', 'Producto no encontrado.');
-    } else if (error.status === 409) {
-      return t('admin.product_error_conflict', 'Ya existe un producto con ese nombre.');
-    } else if (error.status === 500) {
-      return t('admin.product_error_server', 'Error del servidor. Intenta nuevamente más tarde.');
-    } else if (error.status === 0) {
-      return t('admin.product_error_network', 'Error de conexión. Verifica tu conexión a internet.');
-    }
-    return t('admin.product_error_general', 'Error al procesar la solicitud. Intenta nuevamente.');
-  };
 
   return (
     <div className="product-manager">
@@ -318,7 +223,7 @@ export const ProductManager = ({ catalogFactory }) => {
         )}
       </div>
 
-      {showForm && (
+      {false && (
         <div className="form-modal">
           <div className="form-overlay" onClick={() => setShowForm(false)}></div>
           <div className="form-container">

@@ -48,9 +48,14 @@ const LogoutIcon = () => (
   </svg>
 );
 
-const SidebarItem = ({ item, isActive, onClick, isExpanded, onToggle }) => {
+const SidebarItem = ({ item, isActive, onClick, isExpanded, onToggle, location }) => {
   const { t } = useTranslation();
   const hasSubItems = item.subItems && item.subItems.length > 0;
+
+  const isSubItemActive = (subItem) => {
+    return location.pathname === subItem.path || 
+           (subItem.path !== '/' && location.pathname.startsWith(subItem.path));
+  };
 
   return (
     <div className="sidebar-item">
@@ -76,7 +81,7 @@ const SidebarItem = ({ item, isActive, onClick, isExpanded, onToggle }) => {
           {item.subItems.map((subItem, index) => (
             <div 
               key={index}
-              className="sidebar-subitem"
+              className={`sidebar-subitem ${isSubItemActive(subItem) ? 'active' : ''}`}
               onClick={() => onClick(subItem.path)}
             >
               <span className="sidebar-subitem-label">
@@ -106,6 +111,21 @@ const Sidebar = ({ isOpen }) => {
         const items = NavigationFactory.createSidebarItems(userRoles, permissions);
         const filteredItems = NavigationFactory.filterByPermissions(items, permissions);
         setNavigationItems(filteredItems);
+        
+        // Auto-expand items that have active subitems
+        const newExpandedItems = {};
+        filteredItems.forEach(item => {
+          if (item.subItems) {
+            const hasActiveSubitem = item.subItems.some(subItem => 
+              location.pathname === subItem.path || 
+              (subItem.path !== '/' && location.pathname.startsWith(subItem.path))
+            );
+            if (hasActiveSubitem) {
+              newExpandedItems[item.id] = true;
+            }
+          }
+        });
+        setExpandedItems(prev => ({ ...prev, ...newExpandedItems }));
       } catch (error) {
         console.error('Error creating navigation:', error);
         setNavigationItems([]);
@@ -113,7 +133,7 @@ const Sidebar = ({ isOpen }) => {
     } else if (!loading) {
       setNavigationItems([]);
     }
-  }, [userRoles, permissions, loading]);
+  }, [userRoles, permissions, loading, location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -150,6 +170,28 @@ const Sidebar = ({ isOpen }) => {
     }
   };
 
+  const isItemActive = (item) => {
+    // Exact match
+    if (location.pathname === item.path) {
+      return true;
+    }
+    
+    // Check if current path starts with item path (for nested routes)
+    if (item.path !== '/' && location.pathname.startsWith(item.path)) {
+      return true;
+    }
+    
+    // Check subitems
+    if (item.subItems) {
+      return item.subItems.some(subItem => 
+        location.pathname === subItem.path || 
+        (subItem.path !== '/' && location.pathname.startsWith(subItem.path))
+      );
+    }
+    
+    return false;
+  };
+
   const handleMoreOptionsClick = (action) => {
     setIsMoreOptionsOpen(false);
     
@@ -176,10 +218,11 @@ const Sidebar = ({ isOpen }) => {
           <SidebarItem
             key={item.id}
             item={item}
-            isActive={location.pathname === item.path}
+            isActive={isItemActive(item)}
             onClick={(path) => handleItemClick(path || item.path)}
             isExpanded={expandedItems[item.id]}
             onToggle={() => toggleExpanded(item.id)}
+            location={location}
           />
         ))}
       </nav>
