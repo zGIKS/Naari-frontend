@@ -1947,13 +1947,6 @@ body {
 /* Estilos específicos para diferentes tipos de campos en profile */
 .profile-form .form-field input[type="email"] {
   font-size: 0.95rem;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  letter-spacing: 0.3px;
-}
-
-.profile-form .form-field.full-width input[type="password"] {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  letter-spacing: 1px;
 }
 
 /* Mejorar placeholders en profile */
@@ -1977,8 +1970,6 @@ body {
   /* En móviles, todos los campos usan el mismo estilo de fuente */
   .profile-form .form-field input {
     font-size: 1rem;
-    font-family: inherit;
-    letter-spacing: normal;
   }
 }
 
@@ -3019,11 +3010,6 @@ body {
 }
 
 /* Estilos específicos para diferentes tipos de campos */
-.branch-form .form-group input[type="tel"] {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  letter-spacing: 0.5px;
-}
-
 .branch-form .form-group input[type="email"] {
   font-size: 0.95rem;
 }
@@ -3652,13 +3638,6 @@ body {
 /* Estilos específicos para diferentes tipos de campos */
 .employee-form-grid .form-group input[type="email"] {
   font-size: 0.95rem;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  letter-spacing: 0.3px;
-}
-
-.employee-form-grid .form-group.full-width input[type="password"] {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  letter-spacing: 1px;
 }
 
 .employee-form-grid .form-group select {
@@ -3798,8 +3777,6 @@ body {
   .employee-form-grid .form-group input,
   .employee-form-grid .form-group select {
     font-size: 1rem;
-    font-family: inherit;
-    letter-spacing: normal;
   }
   
   .employee-form-grid .form-input {
