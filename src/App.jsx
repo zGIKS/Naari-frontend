@@ -12,6 +12,7 @@ import { CatalogPage } from './catalog/presentation/pages/CatalogPage';
 import { ClientPage } from './clients/presentation/pages/ClientPage';
 import { CreateClientPage } from './clients/presentation/pages/CreateClientPage';
 import { EditClientPage } from './clients/presentation/pages/EditClientPage';
+import PackagesPage from './shared/pages/PackagesPage';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -99,6 +100,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditClientPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/packages" 
+            element={
+              <ProtectedRoute>
+                <PackagesPage />
               </ProtectedRoute>
             } 
           />

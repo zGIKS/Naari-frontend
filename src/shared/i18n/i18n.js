@@ -90,6 +90,7 @@ const resources = {
         'catalog.services': 'Servicios',
         'catalog.product-categories': 'Categorías de Productos',
         'catalog.products': 'Productos',
+        packages: 'Paquetes',
         'my-appointments': 'Mi Agenda',
         'my-clients': 'Mis clientes'
       },
@@ -556,6 +557,12 @@ const resources = {
         search: 'Buscar...',
         delete: 'Eliminar'
       },
+      packages: {
+        title: 'Gestión de Paquetes',
+        subtitle: 'Gestiona paquetes y ofertas especiales',
+        coming_soon: 'Próximamente',
+        placeholder_message: 'La funcionalidad de paquetes estará disponible pronto.'
+      },
       validation: {
         email_invalid: 'Email inválido',
         password_min_length: 'Mínimo 8 caracteres',
@@ -658,6 +665,7 @@ const resources = {
         'catalog.services': 'Services',
         'catalog.product-categories': 'Product Categories',
         'catalog.products': 'Products',
+        packages: 'Packages',
         'my-appointments': 'My Schedule',
         'my-clients': 'My Clients'
       },
@@ -1103,6 +1111,12 @@ const resources = {
         refresh: 'Refresh',
         search: 'Search...',
         delete: 'Delete'
+      },
+      packages: {
+        title: 'Package Management',
+        subtitle: 'Manage packages and special offers',
+        coming_soon: 'Coming Soon',
+        placeholder_message: 'Package functionality will be available soon.'
       },
       validation: {
         email_invalid: 'Invalid email',

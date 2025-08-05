@@ -45,6 +45,12 @@ export class NavigationFactory {
         id: 'catalog'
       },
       {
+        icon: 'PackagesIcon',
+        label: 'navigation.packages',
+        path: '/packages',
+        id: 'packages'
+      },
+      {
         icon: 'BranchesIcon',
         label: 'navigation.branches',
         path: '/branches',
@@ -137,6 +143,12 @@ export class NavigationFactory {
         label: 'navigation.catalog',
         path: '/catalog',
         id: 'catalog'
+      },
+      {
+        icon: 'PackagesIcon',
+        label: 'navigation.packages',
+        path: '/packages',
+        id: 'packages'
       }
     ];
   }
