@@ -235,6 +235,19 @@ class ServiceApiService extends BaseApiService {
       body: JSON.stringify(serviceData)
     });
   }
+
+  async update(id, serviceData) {
+    return this.makeRequest(`/services/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(serviceData)
+    });
+  }
+
+  async delete(id) {
+    return this.makeRequest(`/services/${id}`, {
+      method: 'DELETE'
+    });
+  }
 }
 
 export { CatalogApiFactory };

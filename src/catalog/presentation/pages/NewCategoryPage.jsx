@@ -61,6 +61,17 @@ export const NewCategoryPage = ({ catalogFactory }) => {
     setSubmitLoading(true);
 
     try {
+      // Validar datos requeridos
+      if (!formData.name.trim()) {
+        throw new Error(t('validation.name_required', 'El nombre es requerido'));
+      }
+      if (!formData.description.trim()) {
+        throw new Error(t('validation.description_required', 'La descripción es requerida'));
+      }
+      if (!formData.branchId) {
+        throw new Error(t('validation.branch_required', 'La sucursal es requerida'));
+      }
+
       if (isEditing && editingCategory) {
         await categoryService.updateCategory(editingCategory.id, formData);
       } else {

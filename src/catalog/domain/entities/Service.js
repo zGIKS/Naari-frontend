@@ -16,21 +16,32 @@ export class Service {
     treatmentIncludes, 
     isDiscountActive = false, 
     discountPercent = 0, 
-    discountedPrice = 0
+    discountedPrice = 0,
+    treatmentFrequencyValue = null,
+    treatmentFrequencyUnit = 'days'
   ) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.price = price;
     this.duration = duration;
+    this.duration_minutes = duration; // Alias para compatibilidad
     this.categoryId = categoryId;
+    this.category_id = categoryId; // Alias para compatibilidad
     this.benefits = benefits;
     this.contraindications = contraindications;
     this.treatmentFrequency = treatmentFrequency;
     this.treatmentIncludes = treatmentIncludes;
+    this.treatment_includes = treatmentIncludes; // Alias para compatibilidad
     this.isDiscountActive = isDiscountActive;
+    this.is_discount_active = isDiscountActive; // Alias para compatibilidad
     this.discountPercent = discountPercent;
+    this.discount_percent = discountPercent; // Alias para compatibilidad
     this.discountedPrice = discountedPrice;
+    this.treatmentFrequencyValue = treatmentFrequencyValue;
+    this.treatment_frequency_value = treatmentFrequencyValue; // Alias para compatibilidad
+    this.treatmentFrequencyUnit = treatmentFrequencyUnit;
+    this.treatment_frequency_unit = treatmentFrequencyUnit; // Alias para compatibilidad
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
@@ -71,15 +82,19 @@ export class Service {
       data.name,
       data.description,
       data.price,
-      data.duration,
+      data.duration_minutes,
       data.category_id,
       data.benefits,
       data.contraindications,
-      data.treatment_frequency,
+      data.treatment_frequency_value && data.treatment_frequency_unit 
+        ? `${data.treatment_frequency_value} ${data.treatment_frequency_unit}`
+        : data.treatment_frequency,
       data.treatment_includes,
       data.is_discount_active,
       data.discount_percent,
-      data.discounted_price
+      data.discounted_price,
+      data.treatment_frequency_value,
+      data.treatment_frequency_unit
     );
   }
 

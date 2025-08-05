@@ -18,28 +18,12 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
   const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // Cargar datos al montar el componente
-  useEffect(() => {
-    loadBranches();
-    loadEmployees();
-  }, [catalogFactory, userFactory]);
+  // Definir showToast primero para que esté disponible en otros métodos
+  const showToast = useCallback((type, message) => {
+    setToast({ type, message });
+  }, []);
 
-  const loadBranches = async () => {
-    if (!catalogFactory) return;
-
-    setIsLoadingBranches(true);
-    try {
-      const branchService = catalogFactory.getBranchService();
-      const branches = await branchService.getAllBranches();
-      setBranches(branches.filter(branch => branch.isActive));
-    } catch (error) {
-      console.error('Error loading branches:', error);
-      showToast('error', t('users.error.network', 'Error de conexión'));
-    } finally {
-      setIsLoadingBranches(false);
-    }
-  };
-
+  // Definir loadEmployees primero
   const loadEmployees = useCallback(async (searchQuery = '') => {
     if (!userFactory) return;
 
@@ -59,7 +43,38 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     } finally {
       setIsLoadingEmployees(false);
     }
-  }, [userFactory, t]);
+  }, [userFactory, t, showToast]);
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    // Solo cargar si tenemos los factories y no hemos cargado aún
+    if (catalogFactory && userFactory && branches.length === 0) {
+      loadBranches();
+    }
+  }, [catalogFactory, userFactory, branches.length]);
+
+  useEffect(() => {
+    // Solo cargar empleados si tenemos userFactory y no hemos cargado aún
+    if (userFactory && employees.length === 0) {
+      loadEmployees();
+    }
+  }, [userFactory, employees.length, loadEmployees]);
+
+  const loadBranches = async () => {
+    if (!catalogFactory) return;
+
+    setIsLoadingBranches(true);
+    try {
+      const branchService = catalogFactory.getBranchService();
+      const branches = await branchService.getAllBranches();
+      setBranches(branches.filter(branch => branch.isActive));
+    } catch (error) {
+      console.error('Error loading branches:', error);
+      showToast('error', t('users.error.network', 'Error de conexión'));
+    } finally {
+      setIsLoadingBranches(false);
+    }
+  };
 
   const handleCreateEmployee = async (employeeData) => {
     if (!userFactory) return;
@@ -141,10 +156,6 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
       console.error('Error toggling employee status:', error);
       showToast('error', t('users.error.network', 'Error de conexión'));
     }
-  };
-
-  const showToast = (type, message) => {
-    setToast({ type, message });
   };
 
   const closeToast = () => {

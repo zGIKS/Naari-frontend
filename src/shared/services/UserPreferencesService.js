@@ -7,6 +7,9 @@ export class UserPreferencesService {
   constructor(apiBase, token) {
     this.apiBase = apiBase;
     this.token = token;
+    this.cache = null;
+    this.cacheTimestamp = null;
+    this.CACHE_DURATION = 5000; // 5 segundos
   }
 
   /**
@@ -14,6 +17,13 @@ export class UserPreferencesService {
    */
   async getUserPreferences() {
     try {
+      // Verificar cache
+      if (this.cache && this.cacheTimestamp && 
+          (Date.now() - this.cacheTimestamp) < this.CACHE_DURATION) {
+        console.log('Returning cached user preferences');
+        return this.cache;
+      }
+
       console.log('Fetching user preferences from:', ApiRouter.USER_PREFERENCES.BASE);
       const response = await fetch(ApiRouter.USER_PREFERENCES.BASE, {
         method: 'GET',
@@ -31,7 +41,13 @@ export class UserPreferencesService {
 
       const data = await response.json();
       console.log('User preferences received:', data);
-      return data.data || data; // Support both { data: {...} } and direct response formats
+      
+      const preferences = data.data || data;
+      // Actualizar cache
+      this.cache = preferences;
+      this.cacheTimestamp = Date.now();
+      
+      return preferences;
     } catch (error) {
       console.error('Error fetching user preferences:', error);
       // Retornar valores por defecto si falla
@@ -70,7 +86,13 @@ export class UserPreferencesService {
 
       const data = await response.json();
       console.log('Preferences updated successfully:', data);
-      return data.data || data; // Support both { data: {...} } and direct response formats
+      
+      const updatedPreferences = data.data || data;
+      // Actualizar cache con los nuevos datos
+      this.cache = updatedPreferences;
+      this.cacheTimestamp = Date.now();
+      
+      return updatedPreferences;
     } catch (error) {
       console.error('Error updating user preferences:', error);
       throw error;

@@ -3,7 +3,7 @@
  * Patrón: Entity (DDD)
  */
 export class Product {
-  constructor(id, name, description, brand, stock, purchasePrice, salePrice, lowStockAlert, expirationDate, branchId) {
+  constructor(id, name, description, brand, stock, purchasePrice, salePrice, lowStockAlert, expirationDate, branchId, qrUuid = null) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -14,6 +14,7 @@ export class Product {
     this.lowStockAlert = lowStockAlert;
     this.expirationDate = new Date(expirationDate);
     this.branchId = branchId;
+    this.qr_uuid = qrUuid; // Campo QR UUID manejado por el backend
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
@@ -65,7 +66,8 @@ export class Product {
       data.sale_price,
       data.low_stock_alert,
       data.expiration_date,
-      data.branch_id
+      data.branch_id,
+      data.qr_uuid // Mapear el QR UUID desde la respuesta del API
     );
   }
 

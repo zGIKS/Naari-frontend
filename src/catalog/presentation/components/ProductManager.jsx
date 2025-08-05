@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
+import QRCode from 'qrcode';
 
 /**
  * ProductManager - Gestor de productos
@@ -13,6 +14,7 @@ export const ProductManager = ({ catalogFactory }) => {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, productId: null, productName: '' });
+  const [qrModal, setQrModal] = useState({ isOpen: false, qrCodeUrl: '', productName: '', productId: '' });
 
   const productService = catalogFactory.getProductService();
   const branchService = catalogFactory.getBranchService();
@@ -36,6 +38,13 @@ export const ProductManager = ({ catalogFactory }) => {
     setLoading(true);
     try {
       const data = await productService.getAllProducts();
+      console.log('Productos cargados:', data); // Debug para ver los datos
+      if (data.length > 0) {
+        console.log('Primer producto completo:', data[0]);
+        console.log('Propiedades del primer producto:', Object.keys(data[0]));
+        console.log('qr_uuid del primer producto:', data[0].qr_uuid);
+        console.log('Stock del primer producto:', data[0].stock);
+      }
       setProducts(data);
     } catch (error) {
       console.error('Error loading products:', error);
@@ -61,6 +70,58 @@ export const ProductManager = ({ catalogFactory }) => {
       productId: productId,
       productName: productName
     });
+  };
+
+  const handleGenerateQR = async (product) => {
+    try {
+      // Verificar que el producto tenga QR disponible
+      if (!hasQRAvailable(product)) {
+        console.warn('Producto sin QR disponible:', product);
+        return;
+      }
+
+      // Usar el qr_uuid del producto como el contenido del QR
+      const qrCodeUrl = await QRCode.toDataURL(product.qr_uuid, {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      setQrModal({
+        isOpen: true,
+        qrCodeUrl,
+        productName: product.name,
+        productId: product.qr_uuid // Mostrar el QR UUID en lugar del ID del producto
+      });
+    } catch (error) {
+      console.error('Error generando código QR:', error);
+    }
+  };
+
+  // Función para verificar si el producto tiene QR disponible
+  const hasQRAvailable = (product) => {
+    return (product.stock > 0 && product.stock !== '0') && 
+           product.qr_uuid !== null && 
+           product.qr_uuid !== undefined && 
+           product.qr_uuid !== '';
+  };
+
+  // Función para obtener el estado del producto
+  const getProductStatus = (product) => {
+    if (product.stock === 0 || product.stock === '0') {
+      return { status: 'out_of_stock', message: t('admin.out_of_stock', 'Sin stock'), showQR: false };
+    } else if (product.qr_uuid && product.qr_uuid !== null && product.qr_uuid !== '') {
+      return { status: 'available', message: t('admin.available', 'Disponible'), showQR: true };
+    } else {
+      return { status: 'updating', message: t('admin.updating', 'Actualizando...'), showQR: false };
+    }
+  };
+
+  const handleCloseQRModal = () => {
+    setQrModal({ isOpen: false, qrCodeUrl: '', productName: '', productId: '' });
   };
 
   const handleConfirmDelete = async () => {
@@ -144,9 +205,31 @@ export const ProductManager = ({ catalogFactory }) => {
                               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                             </svg>
                           </button>
+                          {hasQRAvailable(product) && (
+                            <button
+                              onClick={() => handleGenerateQR(product)}
+                              className="btn-icon qr-btn"
+                              title={t('admin.generate_qr', 'Generar código QR')}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <rect x="3" y="3" width="5" height="5"/>
+                                <rect x="3" y="16" width="5" height="5"/>
+                                <rect x="16" y="3" width="5" height="5"/>
+                                <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+                                <path d="M21 21v.01"/>
+                                <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+                                <path d="M3 12h.01"/>
+                                <path d="M12 3h.01"/>
+                                <path d="M12 16v.01"/>
+                                <path d="M16 12h1"/>
+                                <path d="M21 12v.01"/>
+                                <path d="M12 21v-1"/>
+                              </svg>
+                            </button>
+                          )}
                           <button
                             onClick={() => handleDeleteProduct(product.id, product.name)}
-                            className="btn-icon delete-btn"
+                            className="btn-icon btn-danger"
                             title={t('admin.delete', 'Eliminar')}
                           >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -394,6 +477,53 @@ export const ProductManager = ({ catalogFactory }) => {
         cancelText={t('common.cancel', 'Cancelar')}
         type="danger"
       />
+
+      {/* Modal de código QR */}
+      {qrModal.isOpen && (
+        <div className="modal-overlay" onClick={handleCloseQRModal}>
+          <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{t('admin.qr_code_title', 'Código QR')}</h3>
+              <button onClick={handleCloseQRModal} className="modal-close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="qr-content">
+                <h4>{qrModal.productName}</h4>
+                <p className="qr-id">QR UUID: {qrModal.productId}</p>
+                <div className="qr-code-container">
+                  <img src={qrModal.qrCodeUrl} alt="Código QR del producto" />
+                </div>
+                <p className="qr-description">
+                  {t('admin.qr_description', 'Escanea este código QR para acceder rápidamente a la información del producto')}
+                </p>
+                <div className="qr-actions">
+                  <button 
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.download = `qr-${qrModal.productName}.png`;
+                      link.href = qrModal.qrCodeUrl;
+                      link.click();
+                    }}
+                    className="btn btn-primary"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7,10 12,15 17,10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    {t('admin.download_qr', 'Descargar QR')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

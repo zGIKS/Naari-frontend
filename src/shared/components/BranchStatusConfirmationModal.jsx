@@ -108,7 +108,7 @@ export const BranchStatusConfirmationModal = ({
           </button>
           <button 
             onClick={onConfirm}
-            className={`btn ${isDeactivating ? 'btn-warning' : 'btn-primary'}`}
+            className={`btn ${isDeactivating ? 'btn-danger' : 'btn-primary'}`}
           >
             {isDeactivating 
               ? t('admin.deactivate', 'Desactivar')

@@ -3356,29 +3356,216 @@ body {
 }
 
 /* Service card specific styles */
-.service-header {
+.service-card {
+  position: relative;
+}
+
+.service-card .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  min-height: 60px;
 }
 
-.service-header h4 {
-  margin: 0;
-  flex: 1;
-  margin-right: 1rem;
-}
-
-.service-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.service-price {
+.service-card .service-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+.service-card .service-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.service-card .service-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.service-card .price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.service-card .original-price {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.service-card .discounted-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.service-card .discount-badge {
+  background: var(--success-color);
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.service-card .card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.service-card .card-content {
+  margin-bottom: 1rem;
+}
+
+.service-card .service-description {
+  margin-bottom: 1rem;
+}
+
+.service-card .service-description p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.service-card .service-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.service-card .info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.service-card .info-row svg {
+  flex-shrink: 0;
+  color: var(--primary-color);
+}
+
+.service-card .service-section {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(var(--primary-rgb), 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.service-card .service-section.warning {
+  background: rgba(var(--warning-rgb), 0.05);
+  border-left-color: var(--warning-color);
+}
+
+.service-card .service-section h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.service-card .service-section h5 svg {
+  color: var(--primary-color);
+}
+
+.service-card .service-section.warning h5 svg {
+  color: var(--warning-color);
+}
+
+.service-card .service-section p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.service-card .card-footer {
+  border-top: 1px solid rgba(var(--text-rgb), 0.1);
+  padding-top: 0.75rem;
+  margin-top: 1rem;
+}
+
+.service-card .card-footer .text-muted {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+/* Service list layout */
+.service-list .list-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(var(--primary-rgb), 0.1);
+}
+
+.service-list .list-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.service-list .list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Dark theme adjustments for service cards */
+[data-theme="dark"] .service-card .service-section {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .service-card .service-section.warning {
+  background: rgba(251, 191, 36, 0.1);
+}
+
+[data-theme="dark"] .service-card .card-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .service-list .list-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .service-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .service-card .service-price {
+    align-self: flex-end;
+  }
+  
+  .service-card .card-actions {
+    align-self: flex-end;
+  }
 }
 
 .btn-icon.btn-danger {
@@ -4465,4 +4652,125 @@ body {
   .language-select {
     width: 100%;
   }
+}
+
+/* QR Code Button */
+.btn-icon.qr-btn {
+  background: var(--bg-secondary);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.btn-icon.qr-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* QR Modal Styles */
+.qr-modal {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  min-width: 400px;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.qr-content {
+  text-align: center;
+}
+
+.qr-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+}
+
+.qr-id {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-family: monospace;
+  background: var(--bg-secondary);
+  padding: 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.qr-code-container {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.qr-description {
+  margin: 1.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.qr-actions {
+  margin-top: 1.5rem;
+}
+
+.qr-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .qr-code-container {
+  background: #ffffff;
+}
+
+[data-theme="dark"] .btn-icon.qr-btn {
+  background: var(--bg-secondary);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-icon.qr-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* QR Status Indicators */
+.info-row .success {
+  color: var(--success-color);
+  font-weight: 500;
+}
+
+.info-row .error {
+  color: var(--error-color);
+  font-weight: 500;
+}
+
+.info-row .warning {
+  color: var(--warning-color);
+  font-weight: 500;
+}
+
+/* QR Status in dark theme */
+[data-theme="dark"] .info-row .success {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .info-row .error {
+  color: #f87171;
+}
+
+[data-theme="dark"] .info-row .warning {
+  color: #fbbf24;
 }

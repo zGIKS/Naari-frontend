@@ -152,6 +152,18 @@ export class ServiceService {
     }
   }
 
+  async getServiceRawDataById(id) {
+    try {
+      const response = await this.apiService.getById(id);
+      // Handle single item response and return raw data for editing
+      const data = response.data || response;
+      return data; // Return raw data without transformation
+    } catch (error) {
+      this.observer.notify('serviceLoadFailed', error);
+      throw error;
+    }
+  }
+
   async createService(serviceData) {
     try {
       const response = await this.apiService.create(serviceData);
@@ -160,6 +172,18 @@ export class ServiceService {
       return service;
     } catch (error) {
       this.observer.notify('serviceCreateFailed', error);
+      throw error;
+    }
+  }
+
+  async updateService(serviceId, serviceData) {
+    try {
+      const response = await this.apiService.update(serviceId, serviceData);
+      const service = Service.fromApiResponse(response.data || response);
+      this.observer.notify('serviceUpdated', service);
+      return service;
+    } catch (error) {
+      this.observer.notify('serviceUpdateFailed', error);
       throw error;
     }
   }

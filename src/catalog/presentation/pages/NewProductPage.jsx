@@ -20,6 +20,18 @@ export const NewProductPage = ({ catalogFactory }) => {
   const productService = catalogFactory.getProductService();
   const branchService = catalogFactory.getBranchService();
 
+  // Helper function to format date for input[type="date"]
+  const formatDateForInput = (date) => {
+    if (!date) return '';
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    if (typeof date === 'string') {
+      return new Date(date).toISOString().split('T')[0];
+    }
+    return '';
+  };
+
   useEffect(() => {
     loadBranches();
     if (isEditing && productFromState) {
@@ -56,8 +68,33 @@ export const NewProductPage = ({ catalogFactory }) => {
         branchId: formData.get('branchId')
       };
 
+      // Validaciones frontend
+      if (!productData.name.trim()) {
+        throw new Error(t('validation.name_required', 'El nombre es requerido'));
+      }
+      if (!productData.description.trim()) {
+        throw new Error(t('validation.description_required', 'La descripción es requerida'));
+      }
+      if (!isEditing && !productData.branchId) {
+        throw new Error(t('validation.branch_required', 'La sucursal es requerida'));
+      }
+      if (productData.purchasePrice <= 0) {
+        throw new Error(t('validation.purchase_price_positive', 'El precio de compra debe ser mayor a 0'));
+      }
+      if (productData.salePrice <= 0) {
+        throw new Error(t('validation.sale_price_positive', 'El precio de venta debe ser mayor a 0'));
+      }
+      if (productData.salePrice < productData.purchasePrice) {
+        throw new Error(t('validation.sale_price_must_be_higher', 'El precio de venta no puede ser menor al precio de compra'));
+      }
+      if (productData.stock < 0) {
+        throw new Error(t('validation.stock_non_negative', 'El stock no puede ser negativo'));
+      }
+
       if (isEditing && editingProduct) {
-        await productService.updateProduct(editingProduct.id, productData);
+        // Para edición, excluir branchId del payload según especificación de API
+        const { branchId, ...updatePayload } = productData;
+        await productService.updateProduct(editingProduct.id, updatePayload);
       } else {
         await productService.createProduct(productData);
       }
@@ -188,7 +225,7 @@ export const NewProductPage = ({ catalogFactory }) => {
             borderRadius: '0',
             boxShadow: 'none'
           }}>
-          <form onSubmit={handleSubmit} className="client-form">
+          <form onSubmit={handleSubmit} className="client-form" key={`${editingProduct?.id || 'new'}-${branches.length}`}>
             {error && (
               <div className="error-message" style={{
                 marginBottom: '1.5rem',
@@ -245,8 +282,8 @@ export const NewProductPage = ({ catalogFactory }) => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="branchId" className="form-label required">
-                    {t('admin.select_branch', 'Sucursal')}
+                  <label htmlFor="branchId" className={`form-label ${!isEditing ? 'required' : ''}`}>
+                    {t('admin.select_branch', 'Sucursal')} {isEditing && `(${t('admin.readonly', 'Solo lectura')})`}
                   </label>
                   <select
                     id="branchId"
@@ -360,7 +397,7 @@ export const NewProductPage = ({ catalogFactory }) => {
                     name="expirationDate"
                     type="date"
                     className="form-input"
-                    defaultValue={editingProduct?.expirationDate || ''}
+                    defaultValue={formatDateForInput(editingProduct?.expirationDate)}
                     placeholder={t('admin.expiration_date_placeholder', 'Ej: 2024-12-31')}
                   />
                 </div>

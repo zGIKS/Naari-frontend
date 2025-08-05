@@ -65,6 +65,32 @@ export const NewServicePage = ({ catalogFactory }) => {
       const discountPercent = parseInt(formData.get('discountPercent')) || 0;
       const price = parseFloat(formData.get('price'));
       
+      // Validaciones frontend
+      if (!formData.get('name').trim()) {
+        throw new Error(t('validation.name_required', 'El nombre es requerido'));
+      }
+      if (!formData.get('description').trim()) {
+        throw new Error(t('validation.description_required', 'La descripción es requerida'));
+      }
+      if (!formData.get('categoryId')) {
+        throw new Error(t('validation.category_required', 'La categoría es requerida'));
+      }
+      if (price <= 0) {
+        throw new Error(t('validation.price_positive', 'El precio debe ser mayor a 0'));
+      }
+      if (!formData.get('durationMinutes') || parseInt(formData.get('durationMinutes')) <= 0) {
+        throw new Error(t('validation.duration_positive', 'La duración debe ser mayor a 0'));
+      }
+      if (!formData.get('benefits').trim()) {
+        throw new Error(t('validation.benefits_required', 'Los beneficios son requeridos'));
+      }
+      if (!formData.get('treatmentIncludes').trim()) {
+        throw new Error(t('validation.treatment_includes_required', 'El tratamiento incluye es requerido'));
+      }
+      if (isDiscountActive && (discountPercent <= 0 || discountPercent >= 100)) {
+        throw new Error(t('validation.discount_percent_valid', 'El porcentaje de descuento debe estar entre 1 y 99'));
+      }
+      
       const serviceData = {
         name: formData.get('name'),
         description: formData.get('description'),
@@ -207,7 +233,7 @@ export const NewServicePage = ({ catalogFactory }) => {
             borderRadius: '0',
             boxShadow: 'none'
           }}>
-          <form onSubmit={handleSubmit} className="client-form">
+          <form onSubmit={handleSubmit} className="client-form" key={`${editingService?.id || 'new'}-${categories.length}`}>
             {error && (
               <div className="error-message" style={{
                 marginBottom: '1.5rem',
@@ -256,16 +282,24 @@ export const NewServicePage = ({ catalogFactory }) => {
                     id="categoryId"
                     name="categoryId" 
                     className="form-input" 
-                    defaultValue={editingService?.categoryId || ''}
+                    defaultValue={(() => {
+                      const categoryId = editingService?.category_id || '';
+                      const categoryExists = categories.find(c => c.id === categoryId);
+                      console.log('SELECT - categoryId:', categoryId, 'categories loaded:', categories.length, 'category exists:', !!categoryExists);
+                      return categoryId;
+                    })()}
                     required
                     disabled={submitLoading}
                   >
                     <option value="">{t('admin.select_category', 'Selecciona una categoría')}</option>
-                    {categories.map(category => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
+                    {categories.map(category => {
+                      console.log('OPTION - category:', category.id, category.name);
+                      return (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
                 <div className="form-group">
@@ -382,9 +416,9 @@ export const NewServicePage = ({ catalogFactory }) => {
                       disabled={submitLoading}
                       style={{ flex: '1' }}
                     >
-                      <option value="days">{t('admin.days', 'Días')}</option>
-                      <option value="weeks">{t('admin.weeks', 'Semanas')}</option>
-                      <option value="months">{t('admin.months', 'Meses')}</option>
+                      <option value="days">{t('admin.days')}</option>
+                      <option value="weeks">{t('admin.weeks')}</option>
+                      <option value="months">{t('admin.months')}</option>
                     </select>
                   </div>
                 </div>
@@ -409,7 +443,7 @@ export const NewServicePage = ({ catalogFactory }) => {
                       name="isDiscountActive" 
                       type="checkbox" 
                       id="discount" 
-                      defaultChecked={editingService?.is_discount_active || false}
+                      defaultChecked={editingService?.is_discount_active === true}
                       disabled={submitLoading}
                     />
                     <label htmlFor="discount" style={{ margin: 0 }}>{t('admin.has_discount', 'Tiene descuento activo')}</label>
