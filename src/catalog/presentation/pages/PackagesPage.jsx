@@ -582,17 +582,35 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
     if (selectedPackage) {
       console.log('PackageCreator - Loading selected package:', selectedPackage); // Debug log
       
-      // Cargar datos del formulario del paquete seleccionado
+      // Cargar datos del formulario del paquete seleccionado (vacíos para mostrar placeholders)
       setPackageForm({
-        name: selectedPackage.name || '',
-        description: selectedPackage.description || '',
-        stockQuantity: selectedPackage.stockQuantity || 1
+        name: '',
+        description: '',
+        stockQuantity: ''
       });
       
-      // Cargar items del paquete
+      // Mapear items del paquete con la estructura correcta
+      const mappedProducts = (selectedPackage.products || []).map(product => ({
+        id: product.id,
+        name: product.name,
+        originalPrice: product.original_price || product.originalPrice || 0,
+        packagePrice: product.package_price || product.packagePrice || 0,
+        quantity: product.quantity || 1,
+        description: product.description || ''
+      }));
+      
+      const mappedServices = (selectedPackage.services || []).map(service => ({
+        id: service.id,
+        name: service.name,
+        originalPrice: service.original_price || service.originalPrice || 0,
+        packagePrice: service.package_price || service.packagePrice || 0,
+        quantity: service.quantity || 1,
+        description: service.description || ''
+      }));
+      
       setPackageItems({
-        products: selectedPackage.products || [],
-        services: selectedPackage.services || []
+        products: mappedProducts,
+        services: mappedServices
       });
     }
   };
@@ -670,7 +688,12 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
       
       console.log('PackageCreator - Saving package data:', packageForm); // Debug log
       
-      if (!packageForm.name || !packageForm.description) {
+      // Usar valores del formulario o valores originales si están vacíos
+      const finalName = packageForm.name.trim() || (selectedPackage ? selectedPackage.name : '');
+      const finalDescription = packageForm.description.trim() || (selectedPackage ? selectedPackage.description : '');
+      const finalStockQuantity = packageForm.stockQuantity || (selectedPackage ? selectedPackage.stockQuantity : 1);
+      
+      if (!finalName || !finalDescription) {
         throw new Error('Nombre y descripción son requeridos');
       }
 
@@ -679,12 +702,12 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
       }
 
       // Asegurar que stockQuantity tenga un valor válido
-      const stockQuantity = Math.max(1, parseInt(packageForm.stockQuantity) || 1);
+      const stockQuantity = Math.max(1, parseInt(finalStockQuantity) || 1);
       
       const packageService = catalogFactory.getPackageService();
       const packageData = {
-        name: packageForm.name.trim(),
-        description: packageForm.description.trim(),
+        name: finalName,
+        description: finalDescription,
         type: packageService.determinePackageType(packageItems.products, packageItems.services),
         products: packageItems.products,
         services: packageItems.services,
@@ -756,7 +779,7 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
                 type="text"
                 value={packageForm.name}
                 onChange={(e) => setPackageForm(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Ingresa el nombre del paquete"
+                placeholder={selectedPackage ? selectedPackage.name : "Ingresa el nombre del paquete"}
                 className="form-input"
               />
             </div>
@@ -766,7 +789,7 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
                 type="text"
                 value={packageForm.description}
                 onChange={(e) => setPackageForm(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe el paquete"
+                placeholder={selectedPackage ? selectedPackage.description : "Describe el paquete"}
                 className="form-input"
               />
             </div>
@@ -777,6 +800,7 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
                 min="1"
                 value={packageForm.stockQuantity}
                 onChange={(e) => setPackageForm(prev => ({ ...prev, stockQuantity: parseInt(e.target.value) || 1 }))}
+                placeholder={selectedPackage ? selectedPackage.stockQuantity : "1"}
                 className="form-input"
               />
             </div>
@@ -872,7 +896,7 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
               <div className="summary-actions">
                 <button
                   onClick={handleSavePackage}
-                  disabled={saving || !packageForm.name || !packageForm.description || (packageItems.products.length === 0 && packageItems.services.length === 0)}
+                  disabled={saving || (packageItems.products.length === 0 && packageItems.services.length === 0) || (!packageForm.name && !selectedPackage?.name) || (!packageForm.description && !selectedPackage?.description)}
                   className="btn btn-primary full-width"
                 >
                   {saving ? (

@@ -138,7 +138,7 @@ export class Package {
 
   // Conversión desde respuesta API
   static fromApiResponse(data) {
-    return new Package(
+    const packageInstance = new Package(
       data.id,
       data.name,
       data.description,
@@ -151,6 +151,22 @@ export class Package {
       data.is_available,
       data.created_by
     );
+
+    // Agregar propiedades adicionales del API si están presentes
+    if (data.total_discount !== undefined) {
+      packageInstance.totalDiscount = data.total_discount;
+    }
+    if (data.discount_percent !== undefined) {
+      packageInstance.discountPercent = data.discount_percent;
+    }
+    if (data.created_at) {
+      packageInstance.createdAt = new Date(data.created_at);
+    }
+    if (data.updated_at) {
+      packageInstance.updatedAt = new Date(data.updated_at);
+    }
+
+    return packageInstance;
   }
 
   // Conversión para payload API
