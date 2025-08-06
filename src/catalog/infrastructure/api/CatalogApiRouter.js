@@ -46,7 +46,16 @@ class BaseApiService {
   // Template Method
   async makeRequest(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
+    
+    console.log('CatalogApiRouter - Making request:', {
+      url,
+      method: options.method || 'GET',
+      hasToken: !!this.token,
+      tokenPrefix: this.token ? this.token.substring(0, 20) + '...' : 'NO_TOKEN'
+    }); // Debug log
+    
     const config = {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${this.token}`,
@@ -120,31 +129,31 @@ class BaseApiService {
  */
 class BranchApiService extends BaseApiService {
   async getAll() {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.LIST);
+    return this.makeRequest(API_ENDPOINTS.BRANCHES.LIST);
   }
 
   async create(branchData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.CREATE, {
+    return this.makeRequest(API_ENDPOINTS.BRANCHES.CREATE, {
       method: 'POST',
       body: JSON.stringify(branchData)
     });
   }
 
   async update(id, branchData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.UPDATE(id), {
+    return this.makeRequest(API_ENDPOINTS.BRANCHES.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(branchData)
     });
   }
 
   async activate(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.ACTIVATE(id), {
+    return this.makeRequest(API_ENDPOINTS.BRANCHES.ACTIVATE(id), {
       method: 'PATCH'
     });
   }
 
   async deactivate(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.DEACTIVATE(id), {
+    return this.makeRequest(API_ENDPOINTS.BRANCHES.DEACTIVATE(id), {
       method: 'PATCH'
     });
   }
@@ -157,38 +166,38 @@ class CategoryApiService extends BaseApiService {
   async getAll(branchId) {
     // Si se proporciona branchId, usar el endpoint específico por sucursal
     if (branchId) {
-      return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.BY_BRANCH(branchId));
+      return this.makeRequest(API_ENDPOINTS.CATEGORIES.BY_BRANCH(branchId));
     }
     // Si no se proporciona branchId, usar el endpoint general que lista todas las categorías
-    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.LIST);
+    return this.makeRequest(API_ENDPOINTS.CATEGORIES.LIST);
   }
 
   async getByBranch(branchId) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.BY_BRANCH(branchId));
+    return this.makeRequest(API_ENDPOINTS.CATEGORIES.BY_BRANCH(branchId));
   }
 
   async create(categoryData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.CREATE, {
+    return this.makeRequest(API_ENDPOINTS.CATEGORIES.CREATE, {
       method: 'POST',
       body: JSON.stringify(categoryData)
     });
   }
 
   async update(id, categoryData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.UPDATE(id), {
+    return this.makeRequest(API_ENDPOINTS.CATEGORIES.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(categoryData)
     });
   }
 
   async activate(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.ACTIVATE(id), {
+    return this.makeRequest(API_ENDPOINTS.CATEGORIES.ACTIVATE(id), {
       method: 'PATCH'
     });
   }
 
   async deactivate(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.DEACTIVATE(id), {
+    return this.makeRequest(API_ENDPOINTS.CATEGORIES.DEACTIVATE(id), {
       method: 'PATCH'
     });
   }
@@ -199,25 +208,25 @@ class CategoryApiService extends BaseApiService {
  */
 class ProductApiService extends BaseApiService {
   async getAll() {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.LIST);
+    return this.makeRequest(API_ENDPOINTS.PRODUCTS.LIST);
   }
 
   async create(productData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.CREATE, {
+    return this.makeRequest(API_ENDPOINTS.PRODUCTS.CREATE, {
       method: 'POST',
       body: JSON.stringify(productData)
     });
   }
 
   async update(id, productData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.UPDATE(id), {
+    return this.makeRequest(API_ENDPOINTS.PRODUCTS.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(productData)
     });
   }
 
   async delete(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.DELETE(id), {
+    return this.makeRequest(API_ENDPOINTS.PRODUCTS.DELETE(id), {
       method: 'DELETE'
     });
   }
@@ -228,29 +237,29 @@ class ProductApiService extends BaseApiService {
  */
 class ServiceApiService extends BaseApiService {
   async getAll() {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.LIST);
+    return this.makeRequest(API_ENDPOINTS.SERVICES.LIST);
   }
 
   async getById(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.GET(id));
+    return this.makeRequest(API_ENDPOINTS.SERVICES.GET(id));
   }
 
   async create(serviceData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.CREATE, {
+    return this.makeRequest(API_ENDPOINTS.SERVICES.CREATE, {
       method: 'POST',
       body: JSON.stringify(serviceData)
     });
   }
 
   async update(id, serviceData) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.UPDATE(id), {
+    return this.makeRequest(API_ENDPOINTS.SERVICES.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(serviceData)
     });
   }
 
   async delete(id) {
-    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.DELETE(id), {
+    return this.makeRequest(API_ENDPOINTS.SERVICES.DELETE(id), {
       method: 'DELETE'
     });
   }
@@ -296,13 +305,13 @@ class PackageApiService extends BaseApiService {
 
   async deactivate(id) {
     return this.makeRequest(API_ENDPOINTS.PACKAGES.DEACTIVATE(id), {
-      method: 'PUT'
+      method: 'PATCH'
     });
   }
 
   async updateStock(id, stockData) {
     return this.makeRequest(API_ENDPOINTS.PACKAGES.STOCK(id), {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(stockData)
     });
   }

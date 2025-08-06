@@ -203,7 +203,19 @@ export class PackageService {
         throw new Error(validationErrors.join(', '));
       }
 
-      const response = await this.apiService.update(packageId, packageData);
+      // Crear el objeto Package y usar toApiPayload para asegurar formato correcto
+      const packageObj = new Package(
+        packageId,
+        packageData.name,
+        packageData.description,
+        packageData.type,
+        packageData.products || [],
+        packageData.services || [],
+        packageData.totalPrice,
+        packageData.stockQuantity
+      );
+
+      const response = await this.apiService.update(packageId, packageObj.toApiPayload());
       const updatedPackage = Package.fromApiResponse(response.data || response);
       
       this.observer.notify('packageUpdated', updatedPackage);

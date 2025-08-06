@@ -1,4 +1,5 @@
-import { API_CONFIG, API_ENDPOINTS } from '../config/ApiConfig.js';
+import { API_CONFIG } from '../config/ApiConfig.js';
+import { API_ENDPOINTS } from '../config/ApiEndpoints.js';
 
 export class ApiRouter {
   static buildUrl(endpoint) {

@@ -1,6 +1,8 @@
 import { Employee } from '../../domain/entities/Employee.js';
 import { JWTUtils } from '../../../shared/utils/jwtUtils.js';
-import { API_ENDPOINTS } from '../../../shared/config/ApiConfig.js';
+import { ApiClient } from '../../../iam/infrastructure/api/ApiClient.js';
+import { SessionManager } from '../../../iam/domain/services/SessionManager.js';
+import { API_ENDPOINTS } from '../../../shared/config/ApiEndpoints.js';
 
 /**
  * UserService - Servicio para gestión de usuarios/empleados

@@ -580,6 +580,16 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
 
   const loadSelectedPackage = () => {
     if (selectedPackage) {
+      console.log('PackageCreator - Loading selected package:', selectedPackage); // Debug log
+      
+      // Cargar datos del formulario del paquete seleccionado
+      setPackageForm({
+        name: selectedPackage.name || '',
+        description: selectedPackage.description || '',
+        stockQuantity: selectedPackage.stockQuantity || 1
+      });
+      
+      // Cargar items del paquete
       setPackageItems({
         products: selectedPackage.products || [],
         services: selectedPackage.services || []
@@ -658,6 +668,8 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
     try {
       setSaving(true);
       
+      console.log('PackageCreator - Saving package data:', packageForm); // Debug log
+      
       if (!packageForm.name || !packageForm.description) {
         throw new Error('Nombre y descripción son requeridos');
       }
@@ -666,20 +678,27 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
         throw new Error('Debe agregar al menos un producto o servicio');
       }
 
+      // Asegurar que stockQuantity tenga un valor válido
+      const stockQuantity = Math.max(1, parseInt(packageForm.stockQuantity) || 1);
+      
       const packageService = catalogFactory.getPackageService();
       const packageData = {
-        name: packageForm.name,
-        description: packageForm.description,
+        name: packageForm.name.trim(),
+        description: packageForm.description.trim(),
         type: packageService.determinePackageType(packageItems.products, packageItems.services),
         products: packageItems.products,
         services: packageItems.services,
         totalPrice: calculateTotals().packageTotal,
-        stockQuantity: packageForm.stockQuantity
+        stockQuantity: stockQuantity
       };
 
+      console.log('PackageCreator - Final package data to save:', packageData); // Debug log
+
       if (selectedPackage) {
+        console.log('PackageCreator - Updating existing package:', selectedPackage.id); // Debug log
         await packageService.updatePackage(selectedPackage.id, packageData);
       } else {
+        console.log('PackageCreator - Creating new package'); // Debug log
         await packageService.createPackage(packageData);
       }
 

@@ -18,50 +18,75 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: '/user/change-password'
   },
 
-  // Clients
+  // User Preferences (alias for compatibility)
+  USER_PREFERENCES: {
+    BASE: '/user/preferences'
+  },
+
+    // Clients
   CLIENTS: {
     LIST: '/clients',
     CREATE: '/clients',
     GET: (id) => `/clients/${id}`,
     UPDATE: (id) => `/clients/${id}`,
-    DELETE: (id) => `/clients/${id}`
+    DELETE: (id) => `/clients/${id}`,
+    SEARCH_DNI: (dni) => `/clients/search/${dni}`
   },
 
-  // Catalog
-  CATALOG: {
-    CATEGORIES: {
-      LIST: '/categories',
-      CREATE: '/categories',
-      GET: (id) => `/categories/${id}`,
-      UPDATE: (id) => `/categories/${id}`,
-      DELETE: (id) => `/categories/${id}`,
-      BY_BRANCH: (branchId) => `/categories/branch/${branchId}`,
-      ACTIVATE: (id) => `/categories/${id}/activate`,
-      DEACTIVATE: (id) => `/categories/${id}/deactivate`
-    },
-    SERVICES: {
-      LIST: '/services',
-      CREATE: '/services',
-      GET: (id) => `/services/${id}`,
-      UPDATE: (id) => `/services/${id}`,
-      DELETE: (id) => `/services/${id}`
-    },
-    PRODUCTS: {
-      LIST: '/products',
-      CREATE: '/products',
-      GET: (id) => `/products/${id}`,
-      UPDATE: (id) => `/products/${id}`,
-      DELETE: (id) => `/products/${id}`
-    },
-    BRANCHES: {
-      LIST: '/branches',
-      CREATE: '/branches',
-      GET: (id) => `/branches/${id}`,
-      UPDATE: (id) => `/branches/${id}`,
-      DELETE: (id) => `/branches/${id}`,
-      ACTIVATE: (id) => `/branches/${id}/activate`,
-      DEACTIVATE: (id) => `/branches/${id}/deactivate`
-    }
+  // Categories
+  CATEGORIES: {
+    LIST: '/categories',
+    CREATE: '/categories',
+    GET: (id) => `/categories/${id}`,
+    UPDATE: (id) => `/categories/${id}`,
+    DELETE: (id) => `/categories/${id}`,
+    BY_BRANCH: (branchId) => `/categories/branch/${branchId}`,
+    ACTIVATE: (id) => `/categories/${id}/activate`,
+    DEACTIVATE: (id) => `/categories/${id}/deactivate`
+  },
+
+  // Services
+  SERVICES: {
+    BASE: '/services',
+    LIST: '/services',
+    CREATE: '/services',
+    GET: (id) => `/services/${id}`,
+    UPDATE: (id) => `/services/${id}`,
+    DELETE: (id) => `/services/${id}`,
+    BOOKINGS: '/services/bookings'
+  },
+
+  // Products
+  PRODUCTS: {
+    BASE: '/products',
+    LIST: '/products',
+    CREATE: '/products',
+    GET: (id) => `/products/${id}`,
+    UPDATE: (id) => `/products/${id}`,
+    DELETE: (id) => `/products/${id}`,
+    CATEGORIES: '/products/categories'
+  },
+
+  // Branches
+  BRANCHES: {
+    LIST: '/branches',
+    CREATE: '/branches',
+    GET: (id) => `/branches/${id}`,
+    UPDATE: (id) => `/branches/${id}`,
+    DELETE: (id) => `/branches/${id}`,
+    ACTIVATE: (id) => `/branches/${id}/activate`,
+    DEACTIVATE: (id) => `/branches/${id}/deactivate`
+  },
+
+  // Users
+  USERS: {
+    BASE: '/users',
+    ME: '/users/me',
+    ME_PERMISSIONS: '/users/me/permissions',
+    SIGNUP: '/users/signup',
+    UPDATE: (id) => `/users/${id}`,
+    ACTIVATE: (id) => `/users/${id}/activate`,
+    DEACTIVATE: (id) => `/users/${id}/deactivate`
   },
 
   // Appointments

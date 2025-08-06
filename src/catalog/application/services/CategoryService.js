@@ -73,11 +73,30 @@ export class CategoryService {
 
   async getAllCategories(branchId = null) {
     try {
+      console.log('CategoryService - getAllCategories called with branchId:', branchId); // Debug log
+      
       const response = await this.apiService.getAll(branchId);
+      console.log('CategoryService - API response:', response); // Debug log
+      
       // Handle different response formats
-      const data = Array.isArray(response) ? response : response.data || [];
-      return data.map(item => Category.fromApiResponse(item));
+      let data = [];
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response.categories) {
+        // Handle response format: {branch: {...}, categories: [...], count: N}
+        data = response.categories;
+      } else if (response.data) {
+        data = Array.isArray(response.data) ? response.data : response.data.categories || [];
+      }
+      
+      console.log('CategoryService - Parsed data:', data); // Debug log
+      
+      const categories = data.map(item => Category.fromApiResponse(item));
+      console.log('CategoryService - Mapped categories:', categories); // Debug log
+      
+      return categories;
     } catch (error) {
+      console.error('CategoryService - Error in getAllCategories:', error); // Debug log
       this.observer.notify('categoryLoadFailed', error);
       // Return empty array instead of throwing to prevent app crash
       console.warn('Categories endpoint failed, returning empty array:', error.message);
@@ -87,16 +106,23 @@ export class CategoryService {
 
   async getAllCategoriesFromAllBranches(branches) {
     try {
+      console.log('CategoryService - getAllCategoriesFromAllBranches called with branches:', branches); // Debug log
+      
       const allCategories = [];
       
       for (const branch of branches) {
         try {
+          console.log(`CategoryService - Loading categories for branch ${branch.id} (${branch.name})`); // Debug log
           const branchCategories = await this.getAllCategories(branch.id);
+          console.log(`CategoryService - Loaded ${branchCategories.length} categories for branch ${branch.id}`); // Debug log
           allCategories.push(...branchCategories);
         } catch (error) {
           console.warn(`Failed to load categories for branch ${branch.id}:`, error);
         }
       }
+      
+      console.log(`CategoryService - Total categories loaded: ${allCategories.length}`); // Debug log
+      console.log('CategoryService - All categories:', allCategories); // Debug log
       
       return allCategories;
     } catch (error) {

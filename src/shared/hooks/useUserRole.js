@@ -15,11 +15,15 @@ export const useUserRole = () => {
         const authService = AuthServiceFactory.getInstance();
         const currentUser = authService.getCurrentUser();
         
+        console.log('useUserRole - Loading user role:', currentUser); // Debug log
+        
         if (currentUser && currentUser.roles) {
           const roles = currentUser.roles;
+          console.log('useUserRole - User roles found:', roles); // Debug log
           setUserRoles(roles);
           setUserRole(roles[0]); // Primer rol como principal
         } else {
+          console.log('useUserRole - No roles found for user'); // Debug log
           setUserRoles([]);
           setUserRole(null);
         }
