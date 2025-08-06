@@ -4,70 +4,81 @@
 export const API_ENDPOINTS = {
   // Authentication
   AUTH: {
-    LOGIN: '/api/v1/auth/login',
-    LOGOUT: '/api/v1/auth/logout',
-    REFRESH: '/api/v1/auth/refresh',
-    VERIFY: '/api/v1/auth/verify'
+    LOGIN: '/auth/login',
+    LOGOUT: '/auth/logout',
+    REFRESH: '/auth/refresh',
+    VERIFY: '/auth/verify'
   },
 
   // User Management
   USER: {
-    PROFILE: '/api/v1/user/profile',
-    PREFERENCES: '/api/v1/user/preferences',
-    UPDATE_PROFILE: '/api/v1/user/profile',
-    CHANGE_PASSWORD: '/api/v1/user/change-password'
+    PROFILE: '/user/profile',
+    PREFERENCES: '/user/preferences',
+    UPDATE_PROFILE: '/user/profile',
+    CHANGE_PASSWORD: '/user/change-password'
   },
 
   // Clients
   CLIENTS: {
-    LIST: '/api/v1/clients',
-    CREATE: '/api/v1/clients',
-    GET: (id) => `/api/v1/clients/${id}`,
-    UPDATE: (id) => `/api/v1/clients/${id}`,
-    DELETE: (id) => `/api/v1/clients/${id}`
+    LIST: '/clients',
+    CREATE: '/clients',
+    GET: (id) => `/clients/${id}`,
+    UPDATE: (id) => `/clients/${id}`,
+    DELETE: (id) => `/clients/${id}`
   },
 
   // Catalog
   CATALOG: {
     CATEGORIES: {
-      LIST: '/api/v1/catalog/categories',
-      CREATE: '/api/v1/catalog/categories',
-      GET: (id) => `/api/v1/catalog/categories/${id}`,
-      UPDATE: (id) => `/api/v1/catalog/categories/${id}`,
-      DELETE: (id) => `/api/v1/catalog/categories/${id}`,
-      BY_BRANCH: (branchId) => `/api/v1/catalog/categories/branch/${branchId}`
+      LIST: '/categories',
+      CREATE: '/categories',
+      GET: (id) => `/categories/${id}`,
+      UPDATE: (id) => `/categories/${id}`,
+      DELETE: (id) => `/categories/${id}`,
+      BY_BRANCH: (branchId) => `/categories/branch/${branchId}`,
+      ACTIVATE: (id) => `/categories/${id}/activate`,
+      DEACTIVATE: (id) => `/categories/${id}/deactivate`
     },
     SERVICES: {
-      LIST: '/api/v1/catalog/services',
-      CREATE: '/api/v1/catalog/services',
-      GET: (id) => `/api/v1/catalog/services/${id}`,
-      UPDATE: (id) => `/api/v1/catalog/services/${id}`,
-      DELETE: (id) => `/api/v1/catalog/services/${id}`
+      LIST: '/services',
+      CREATE: '/services',
+      GET: (id) => `/services/${id}`,
+      UPDATE: (id) => `/services/${id}`,
+      DELETE: (id) => `/services/${id}`
     },
     PRODUCTS: {
-      LIST: '/api/v1/catalog/products',
-      CREATE: '/api/v1/catalog/products',
-      GET: (id) => `/api/v1/catalog/products/${id}`,
-      UPDATE: (id) => `/api/v1/catalog/products/${id}`,
-      DELETE: (id) => `/api/v1/catalog/products/${id}`
+      LIST: '/products',
+      CREATE: '/products',
+      GET: (id) => `/products/${id}`,
+      UPDATE: (id) => `/products/${id}`,
+      DELETE: (id) => `/products/${id}`
     },
     BRANCHES: {
-      LIST: '/api/v1/catalog/branches',
-      CREATE: '/api/v1/catalog/branches',
-      GET: (id) => `/api/v1/catalog/branches/${id}`,
-      UPDATE: (id) => `/api/v1/catalog/branches/${id}`,
-      DELETE: (id) => `/api/v1/catalog/branches/${id}`,
-      ACTIVATE: (id) => `/api/v1/catalog/branches/${id}/activate`,
-      DEACTIVATE: (id) => `/api/v1/catalog/branches/${id}/deactivate`
+      LIST: '/branches',
+      CREATE: '/branches',
+      GET: (id) => `/branches/${id}`,
+      UPDATE: (id) => `/branches/${id}`,
+      DELETE: (id) => `/branches/${id}`,
+      ACTIVATE: (id) => `/branches/${id}/activate`,
+      DEACTIVATE: (id) => `/branches/${id}/deactivate`
     }
   },
 
   // Appointments
   APPOINTMENTS: {
-    LIST: '/api/v1/appointments',
-    CREATE: '/api/v1/appointments',
-    GET: (id) => `/api/v1/appointments/${id}`,
-    UPDATE: (id) => `/api/v1/appointments/${id}`,
-    DELETE: (id) => `/api/v1/appointments/${id}`
+    LIST: '/appointments',
+    CREATE: '/appointments',
+    GET: (id) => `/appointments/${id}`,
+    UPDATE: (id) => `/appointments/${id}`,
+    DELETE: (id) => `/appointments/${id}`
+  },
+
+  // Packages
+  PACKAGES: {
+    BASE: '/packages',
+    ACTIVATE: (id) => `/packages/${id}/activate`,
+    DEACTIVATE: (id) => `/packages/${id}/deactivate`,
+    STOCK: (id) => `/packages/${id}/stock`,
+    BY_ID: (id) => `/packages/${id}`
   }
 };

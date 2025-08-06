@@ -68,7 +68,8 @@ export const NewCategoryPage = ({ catalogFactory }) => {
       if (!formData.description.trim()) {
         throw new Error(t('validation.description_required', 'La descripción es requerida'));
       }
-      if (!formData.branchId) {
+      // Solo validar sucursal si es creación nueva
+      if (!isEditing && !formData.branchId) {
         throw new Error(t('validation.branch_required', 'La sucursal es requerida'));
       }
 
@@ -249,7 +250,7 @@ export const NewCategoryPage = ({ catalogFactory }) => {
                     value={formData.branchId}
                     onChange={handleInputChange}
                     required
-                    disabled={submitLoading}
+                    disabled={submitLoading || isEditing}
                   >
                     <option value="">{t('admin.select_branch_option', 'Selecciona una sucursal')}</option>
                     {branches.map(branch => (
@@ -258,6 +259,16 @@ export const NewCategoryPage = ({ catalogFactory }) => {
                       </option>
                     ))}
                   </select>
+                  {isEditing && (
+                    <small className="form-help-text" style={{ 
+                      color: 'var(--text-secondary)', 
+                      fontSize: '0.875rem',
+                      marginTop: '0.25rem',
+                      display: 'block'
+                    }}>
+                      {t('admin.branch_edit_disabled', 'La sucursal no se puede cambiar al editar una categoría')}
+                    </small>
+                  )}
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>

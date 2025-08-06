@@ -12,6 +12,7 @@ export const CategoryManager = ({ catalogFactory }) => {
   const [categories, setCategories] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [selectedBranch, setSelectedBranch] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
   const [confirmationModal, setConfirmationModal] = useState({
@@ -48,13 +49,12 @@ export const CategoryManager = ({ catalogFactory }) => {
 
   useEffect(() => {
     loadBranches();
+    loadCategories(); // Load categories initially
   }, []);
 
   useEffect(() => {
-    if (branches.length > 0) {
-      loadCategories();
-    }
-  }, [selectedBranch, branches]);
+    loadCategories(); // Reload categories when branch selection changes
+  }, [selectedBranch]);
 
   const loadBranches = async () => {
     try {
@@ -74,8 +74,8 @@ export const CategoryManager = ({ catalogFactory }) => {
         // Load categories for specific branch
         data = await categoryService.getAllCategories(selectedBranch);
       } else {
-        // Load categories from all branches
-        data = await categoryService.getAllCategoriesFromAllBranches(branches);
+        // Load all categories using the general endpoint
+        data = await categoryService.getAllCategories();
       }
       
       setCategories(data);

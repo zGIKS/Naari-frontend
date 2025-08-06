@@ -1,5 +1,5 @@
 // Catalog API Router - Implementa el patrón Factory Method para crear servicios
-import { API_CONFIG } from '../../../shared/config/ApiConfig.js';
+import { API_ENDPOINTS } from '../../../shared/config/ApiEndpoints.js';
 
 /**
  * Abstract Factory para servicios de Catalog
@@ -26,6 +26,10 @@ class CatalogApiFactory {
 
   createServiceService() {
     return new ServiceApiService(this.baseUrl, this.token);
+  }
+
+  createPackageService() {
+    return new PackageApiService(this.baseUrl, this.token);
   }
 }
 
@@ -116,31 +120,31 @@ class BaseApiService {
  */
 class BranchApiService extends BaseApiService {
   async getAll() {
-    return this.makeRequest('/branches');
+    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.LIST);
   }
 
   async create(branchData) {
-    return this.makeRequest('/branches', {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.CREATE, {
       method: 'POST',
       body: JSON.stringify(branchData)
     });
   }
 
   async update(id, branchData) {
-    return this.makeRequest(`/branches/${id}`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(branchData)
     });
   }
 
   async activate(id) {
-    return this.makeRequest(`/branches/${id}/activate`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.ACTIVATE(id), {
       method: 'PATCH'
     });
   }
 
   async deactivate(id) {
-    return this.makeRequest(`/branches/${id}/deactivate`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.BRANCHES.DEACTIVATE(id), {
       method: 'PATCH'
     });
   }
@@ -151,38 +155,40 @@ class BranchApiService extends BaseApiService {
  */
 class CategoryApiService extends BaseApiService {
   async getAll(branchId) {
-    if (!branchId) {
-      throw new Error('branchId is required for categories endpoint');
+    // Si se proporciona branchId, usar el endpoint específico por sucursal
+    if (branchId) {
+      return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.BY_BRANCH(branchId));
     }
-    return this.makeRequest(`/categories?branchId=${encodeURIComponent(branchId)}`);
+    // Si no se proporciona branchId, usar el endpoint general que lista todas las categorías
+    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.LIST);
   }
 
   async getByBranch(branchId) {
-    return this.makeRequest(`/categories/branch/${branchId}`);
+    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.BY_BRANCH(branchId));
   }
 
   async create(categoryData) {
-    return this.makeRequest('/categories', {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.CREATE, {
       method: 'POST',
       body: JSON.stringify(categoryData)
     });
   }
 
   async update(id, categoryData) {
-    return this.makeRequest(`/categories/${id}`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(categoryData)
     });
   }
 
   async activate(id) {
-    return this.makeRequest(`/categories/${id}/activate`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.ACTIVATE(id), {
       method: 'PATCH'
     });
   }
 
   async deactivate(id) {
-    return this.makeRequest(`/categories/${id}/deactivate`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.CATEGORIES.DEACTIVATE(id), {
       method: 'PATCH'
     });
   }
@@ -193,25 +199,25 @@ class CategoryApiService extends BaseApiService {
  */
 class ProductApiService extends BaseApiService {
   async getAll() {
-    return this.makeRequest('/products');
+    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.LIST);
   }
 
   async create(productData) {
-    return this.makeRequest('/products', {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.CREATE, {
       method: 'POST',
       body: JSON.stringify(productData)
     });
   }
 
   async update(id, productData) {
-    return this.makeRequest(`/products/${id}`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(productData)
     });
   }
 
   async delete(id) {
-    return this.makeRequest(`/products/${id}`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.PRODUCTS.DELETE(id), {
       method: 'DELETE'
     });
   }
@@ -222,30 +228,82 @@ class ProductApiService extends BaseApiService {
  */
 class ServiceApiService extends BaseApiService {
   async getAll() {
-    return this.makeRequest('/services');
+    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.LIST);
   }
 
   async getById(id) {
-    return this.makeRequest(`/services/${id}`);
+    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.GET(id));
   }
 
   async create(serviceData) {
-    return this.makeRequest('/services', {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.CREATE, {
       method: 'POST',
       body: JSON.stringify(serviceData)
     });
   }
 
   async update(id, serviceData) {
-    return this.makeRequest(`/services/${id}`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.UPDATE(id), {
       method: 'PUT',
       body: JSON.stringify(serviceData)
     });
   }
 
   async delete(id) {
-    return this.makeRequest(`/services/${id}`, {
+    return this.makeRequest(API_ENDPOINTS.CATALOG.SERVICES.DELETE(id), {
       method: 'DELETE'
+    });
+  }
+}
+
+/**
+ * Servicio para Packages
+ */
+class PackageApiService extends BaseApiService {
+  async getAll() {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.BASE);
+  }
+
+  async getById(id) {
+    return this.makeRequest(`${API_ENDPOINTS.PACKAGES.BASE}?id=${encodeURIComponent(id)}`);
+  }
+
+  async create(packageData) {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.BASE, {
+      method: 'POST',
+      body: JSON.stringify(packageData)
+    });
+  }
+
+  async update(id, packageData) {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.BY_ID(id), {
+      method: 'PUT',
+      body: JSON.stringify(packageData)
+    });
+  }
+
+  async delete(id) {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.BY_ID(id), {
+      method: 'DELETE'
+    });
+  }
+
+  async activate(id) {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.ACTIVATE(id), {
+      method: 'PUT'
+    });
+  }
+
+  async deactivate(id) {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.DEACTIVATE(id), {
+      method: 'PUT'
+    });
+  }
+
+  async updateStock(id, stockData) {
+    return this.makeRequest(API_ENDPOINTS.PACKAGES.STOCK(id), {
+      method: 'PUT',
+      body: JSON.stringify(stockData)
     });
   }
 }

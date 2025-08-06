@@ -26,6 +26,7 @@ const CategoryIcon = () => (
   </svg>
 );
 
+
 /**
  * CatalogMenu - Navegación simple por pestañas
  */

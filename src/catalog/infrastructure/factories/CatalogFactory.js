@@ -3,6 +3,7 @@ import { BranchService } from '../../application/services/BranchService.js';
 import { CategoryService } from '../../application/services/CategoryService.js';
 import { ProductService } from '../../application/services/ProductService.js';
 import { ServiceService } from '../../application/services/ServiceService.js';
+import { PackageService } from '../../application/services/PackageService.js';
 
 /**
  * Catalog Factory - Punto de entrada único para el bounded context
@@ -61,6 +62,17 @@ class CatalogFactory {
       this.services.serviceService = new ServiceService(apiService);
     }
     return this.services.serviceService;
+  }
+
+  getPackageService() {
+    if (!this.services.packageService) {
+      if (!this.apiFactory) {
+        throw new Error('CatalogFactory not initialized. Call initialize() first.');
+      }
+      const apiService = this.apiFactory.createPackageService();
+      this.services.packageService = new PackageService(apiService);
+    }
+    return this.services.packageService;
   }
 
   // Método para limpiar servicios (útil cuando cambia el token)

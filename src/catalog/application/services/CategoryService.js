@@ -72,12 +72,6 @@ export class CategoryService {
   }
 
   async getAllCategories(branchId = null) {
-    if (!branchId) {
-      // If no branchId provided, return empty array
-      console.warn('No branchId provided for categories, returning empty array');
-      return [];
-    }
-
     try {
       const response = await this.apiService.getAll(branchId);
       // Handle different response formats

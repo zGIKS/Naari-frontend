@@ -12,7 +12,7 @@ import { CatalogPage } from './catalog/presentation/pages/CatalogPage';
 import { ClientPage } from './clients/presentation/pages/ClientPage';
 import { CreateClientPage } from './clients/presentation/pages/CreateClientPage';
 import { EditClientPage } from './clients/presentation/pages/EditClientPage';
-import PackagesPage from './shared/pages/PackagesPage';
+import { PackagesPage } from './catalog/presentation/pages/PackagesPage';
 import './styles/themes.css';
 import './shared/i18n/i18n';
 
@@ -106,6 +106,24 @@ function App() {
 
           <Route 
             path="/packages" 
+            element={
+              <ProtectedRoute>
+                <PackagesPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/packages/new" 
+            element={
+              <ProtectedRoute>
+                <PackagesPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/packages/edit/:id" 
             element={
               <ProtectedRoute>
                 <PackagesPage />
