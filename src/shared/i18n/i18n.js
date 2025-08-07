@@ -43,7 +43,7 @@ const resources = {
       },
       profile: {
         toggle: 'Perfil',
-        view: 'Ver perfil',
+        view: 'Perfil',
         settings: 'Configuración',
         logout: 'Cerrar sesión',
         title: 'Mi Perfil',
@@ -692,7 +692,7 @@ const resources = {
       },
       profile: {
         toggle: 'Profile',
-        view: 'View profile',
+        view: 'Profile',
         settings: 'Settings',
         logout: 'Logout',
         title: 'My Profile',

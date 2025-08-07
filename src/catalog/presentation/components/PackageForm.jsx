@@ -16,7 +16,7 @@ export const PackageForm = ({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    stockQuantity: 1,
+    stockQuantity: '',
     ...initialPackage
   });
   const [packageContent, setPackageContent] = useState({
@@ -31,7 +31,7 @@ export const PackageForm = ({
       setFormData({
         name: initialPackage.name || '',
         description: initialPackage.description || '',
-        stockQuantity: initialPackage.stockQuantity || 1
+        stockQuantity: initialPackage.stockQuantity || ''
       });
       setPackageContent({
         products: initialPackage.products || [],
@@ -42,7 +42,16 @@ export const PackageForm = ({
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Para el campo de stock, validar que sea un número positivo
+    if (name === 'stockQuantity') {
+      const numValue = parseInt(value);
+      if (value === '' || (numValue > 0 && numValue <= 9999)) {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
     
     // Limpiar error del campo modificado
     if (errors[name]) {
@@ -74,7 +83,7 @@ export const PackageForm = ({
       newErrors.description = t('packages.errors.descriptionMinLength');
     }
 
-    if (!formData.stockQuantity || formData.stockQuantity < 1) {
+    if (!formData.stockQuantity || parseInt(formData.stockQuantity) < 1) {
       newErrors.stockQuantity = t('packages.errors.stockRequired');
     }
 
@@ -180,7 +189,10 @@ export const PackageForm = ({
                 value={formData.stockQuantity}
                 onChange={handleInputChange}
                 min="1"
+                max="9999"
                 className={errors.stockQuantity ? 'error' : ''}
+                placeholder={t('packages.stockPlaceholder')}
+                onFocus={(e) => e.target.select()}
               />
               {errors.stockQuantity && <span className="error-message">{errors.stockQuantity}</span>}
             </div>

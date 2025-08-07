@@ -13,7 +13,7 @@ import { ClientPage } from './clients/presentation/pages/ClientPage';
 import { CreateClientPage } from './clients/presentation/pages/CreateClientPage';
 import { EditClientPage } from './clients/presentation/pages/EditClientPage';
 import { PackagesPage } from './catalog/presentation/pages/PackagesPage';
-import './styles/themes.css';
+import './styles/main.css';
 import './shared/i18n/i18n';
 
 function App() {

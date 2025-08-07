@@ -1,0 +1,183 @@
+/**
+ * Typography Styles
+ * 
+ * Enhanced typography system including:
+ * - Font stack definitions
+ * - Heading hierarchy
+ * - Body text styles
+ * - Utility classes for text manipulation
+ */
+
+/* ==========================================================================
+   Font Faces and Font Stacks
+   ========================================================================== */
+
+/* Primary font stack for general use */
+.font-primary {
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Monospace font stack for code and data */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'Ubuntu Mono', monospace;
+}
+
+/* ==========================================================================
+   Font Size Utilities
+   ========================================================================== */
+
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+.text-3xl { font-size: var(--font-size-3xl); }
+.text-4xl { font-size: var(--font-size-4xl); }
+
+/* ==========================================================================
+   Font Weight Utilities
+   ========================================================================== */
+
+.font-light { font-weight: var(--font-weight-light); }
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+/* ==========================================================================
+   Line Height Utilities
+   ========================================================================== */
+
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+.leading-loose { line-height: var(--line-height-loose); }
+
+/* ==========================================================================
+   Text Color Utilities
+   ========================================================================== */
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+
+.text-success { color: var(--success-color); }
+.text-warning { color: var(--warning-color); }
+.text-error { color: var(--error-color); }
+.text-info { color: var(--info-color); }
+
+/* ==========================================================================
+   Text Alignment Utilities
+   ========================================================================== */
+
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* ==========================================================================
+   Text Decoration Utilities
+   ========================================================================== */
+
+.underline { text-decoration: underline; }
+.no-underline { text-decoration: none; }
+.line-through { text-decoration: line-through; }
+
+/* ==========================================================================
+   Text Transform Utilities
+   ========================================================================== */
+
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* ==========================================================================
+   Text Overflow Utilities
+   ========================================================================== */
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-wrap {
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Letter Spacing Utilities
+   ========================================================================== */
+
+.tracking-tight { letter-spacing: -0.025em; }
+.tracking-normal { letter-spacing: 0; }
+.tracking-wide { letter-spacing: 0.025em; }
+.tracking-wider { letter-spacing: 0.05em; }
+.tracking-widest { letter-spacing: 0.1em; }
+
+/* ==========================================================================
+   Special Typography Styles
+   ========================================================================== */
+
+/* Code and monospace text */
+code,
+.code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background-color: var(--bg-tertiary);
+  padding: 0.125rem 0.25rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+/* Keyboard shortcuts */
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 0.125rem 0.25rem;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Highlighted text */
+mark {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+  padding: 0 0.125rem;
+  border-radius: var(--border-radius-sm);
+}
+
+/* Quotations */
+blockquote {
+  border-left: 4px solid var(--primary-color);
+  padding-left: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Small text */
+small,
+.small {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* Large text */
+.lead {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+  color: var(--text-secondary);
+}

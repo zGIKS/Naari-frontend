@@ -1,0 +1,212 @@
+/**
+ * CSS Custom Properties (Variables)
+ * 
+ * Design tokens for the Naari application including:
+ * - Color palette for light and dark themes
+ * - Spacing scale
+ * - Typography scale
+ * - Animation and transition durations
+ * - Shadow and border radius values
+ */
+
+/* ==========================================================================
+   Root Variables - Global design tokens
+   ========================================================================== */
+
+:root {
+  /* Transitions */
+  --transition: all 0.3s ease;
+  --transition-fast: all 0.15s ease;
+  --transition-slow: all 0.6s ease;
+  
+  /* Animations */
+  --animation-fast: 0.15s;
+  --animation-normal: 0.3s;
+  --animation-slow: 0.6s;
+  
+  /* Spacing Scale */
+  --spacing-xs: 0.25rem;    /* 4px */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 1rem;       /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  --spacing-xl: 2rem;       /* 32px */
+  --spacing-2xl: 3rem;      /* 48px */
+  --spacing-3xl: 4rem;      /* 64px */
+  
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  --border-radius-2xl: 16px;
+  --border-radius-full: 9999px;
+  
+  /* Typography Scale */
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+  
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 2;
+  
+  /* Z-Index Scale */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+  --z-index-toast: 1080;
+  
+  /* Container Sizes */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+}
+
+/* ==========================================================================
+   Light Theme - Default color palette
+   ========================================================================== */
+
+[data-theme="light"] {
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --bg-inverse: #212529;
+  
+  /* Text Colors */
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-tertiary: #adb5bd;
+  --text-inverse: #ffffff;
+  
+  /* Border Colors */
+  --border-color: #dee2e6;
+  --border-light: #f1f3f4;
+  --border-dark: #adb5bd;
+  
+  /* Brand Colors */
+  --primary-color: #6366F1;
+  --primary-hover: #4f46e5;
+  --primary-light: #a5b4fc;
+  --primary-dark: #3730a3;
+  
+  /* Accent Colors */
+  --accent-color: #6366F1;
+  --accent-hover: #4f46e5;
+  
+  /* Semantic Colors */
+  --success-color: #28a745;
+  --success-light: #d4edda;
+  --success-dark: #155724;
+  
+  --warning-color: #ffc107;
+  --warning-light: #fff3cd;
+  --warning-dark: #856404;
+  
+  --error-color: #dc3545;
+  --error-light: #f8d7da;
+  --error-dark: #721c24;
+  
+  --info-color: #17a2b8;
+  --info-light: #d1ecf1;
+  --info-dark: #0c5460;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+  --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  
+  /* Interactive States */
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+  --active-overlay: rgba(0, 0, 0, 0.1);
+  --focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ==========================================================================
+   Dark Theme - Dark mode color palette
+   ========================================================================== */
+
+[data-theme="dark"] {
+  /* Background Colors */
+  --bg-primary: #0f0f23;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --bg-inverse: #ffffff;
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #b0b3c1;
+  --text-tertiary: #8b92a9;
+  --text-inverse: #212529;
+  
+  /* Border Colors */
+  --border-color: #2d3748;
+  --border-light: #374151;
+  --border-dark: #1f2937;
+  
+  /* Brand Colors */
+  --primary-color: #818cf8;
+  --primary-hover: #6366F1;
+  --primary-light: #a5b4fc;
+  --primary-dark: #4338ca;
+  
+  /* Accent Colors */
+  --accent-color: #818cf8;
+  --accent-hover: #6366F1;
+  
+  /* Semantic Colors */
+  --success-color: #51cf66;
+  --success-light: rgba(64, 192, 87, 0.15);
+  --success-dark: #37b24d;
+  
+  --warning-color: #fbbf24;
+  --warning-light: rgba(245, 158, 11, 0.15);
+  --warning-dark: #d97706;
+  
+  --error-color: #ff6b6b;
+  --error-light: rgba(250, 82, 82, 0.15);
+  --error-dark: #e03131;
+  
+  --info-color: #4dabf7;
+  --info-light: #339af0;
+  --info-dark: #228be6;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.6);
+  --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  
+  /* Interactive States */
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --active-overlay: rgba(255, 255, 255, 0.1);
+  --focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.3);
+}

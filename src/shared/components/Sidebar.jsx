@@ -228,18 +228,22 @@ const Sidebar = ({ isOpen }) => {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="sidebar-more-options" ref={moreOptionsRef}>
+        <div className={`sidebar-more-options ${isMoreOptionsOpen ? 'open' : ''}`} ref={moreOptionsRef}>
           <button
             type="button"
             onClick={() => setIsMoreOptionsOpen(!isMoreOptionsOpen)}
             className="more-options-button"
             aria-label={t('sidebar.more_options', 'Más opciones')}
           >
-            <MoreOptionsIcon />
-            <span className="more-options-text">
-              {t('sidebar.more_options', 'Más opciones')}
+            <div className="more-options-button-content">
+              <MoreOptionsIcon />
+              <span className="more-options-text">
+                {t('sidebar.more_options', 'Más opciones')}
+              </span>
+            </div>
+            <span className="more-options-icon">
+              <ChevronDownIcon />
             </span>
-            <ChevronDownIcon />
           </button>
           
           {isMoreOptionsOpen && (
@@ -250,7 +254,7 @@ const Sidebar = ({ isOpen }) => {
                 className="more-options-item"
               >
                 <ProfileIcon />
-                <span>{t('profile.view', 'Ver perfil')}</span>
+                <span>{t('profile.view', 'Perfil')}</span>
               </button>
               
               <button

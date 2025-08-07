@@ -24,6 +24,31 @@ const GlobeIcon = () => (
   </svg>
 );
 
+// Icono para Español - Bandera simplificada
+const EsIcon = () => (
+  <svg width="16" height="12" viewBox="0 0 24 18" fill="currentColor">
+    <rect x="0" y="0" width="24" height="18" fill="#AA151B"/>
+    <rect x="0" y="4.5" width="24" height="9" fill="#F1BF00"/>
+  </svg>
+);
+
+// Icono para English - Bandera simplificada
+const EnIcon = () => (
+  <svg width="16" height="12" viewBox="0 0 24 18" fill="currentColor">
+    <rect x="0" y="0" width="24" height="18" fill="#012169"/>
+    <g fill="white">
+      <polygon points="0,0 8,0 0,6"/>
+      <polygon points="0,18 0,12 8,18"/>
+      <polygon points="24,0 16,0 24,6"/>
+      <polygon points="24,18 24,12 16,18"/>
+    </g>
+    <rect x="10" y="0" width="4" height="18" fill="white"/>
+    <rect x="0" y="7" width="24" height="4" fill="white"/>
+    <rect x="11" y="0" width="2" height="18" fill="#C8102E"/>
+    <rect x="0" y="8" width="24" height="2" fill="#C8102E"/>
+  </svg>
+);
+
 const SettingsPage = () => {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
@@ -105,7 +130,9 @@ const SettingsPage = () => {
                     className={`language-option ${currentLanguage === 'es' ? 'active' : ''}`}
                     disabled={languageLoading}
                   >
-                    <GlobeIcon />
+                    <div className="language-icon">
+                      <EsIcon />
+                    </div>
                     <span>Español</span>
                   </button>
                   <button
@@ -113,7 +140,9 @@ const SettingsPage = () => {
                     className={`language-option ${currentLanguage === 'en' ? 'active' : ''}`}
                     disabled={languageLoading}
                   >
-                    <GlobeIcon />
+                    <div className="language-icon">
+                      <EnIcon />
+                    </div>
                     <span>English</span>
                   </button>
                 </div>
