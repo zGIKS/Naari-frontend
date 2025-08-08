@@ -34,20 +34,15 @@
 
 .login-card {
   background: var(--bg-primary);
-  padding: var(--spacing-3xl);
-  border-radius: var(--border-radius-2xl);
-  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-2xl);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
   width: 100%;
-  max-width: 420px;
-  transition: var(--transition);
+  max-width: 380px;
   border: 1px solid var(--border-color);
   position: relative;
 }
 
-.login-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-2xl);
-}
 
 /* ==========================================================================
    Login Form Header
@@ -59,10 +54,10 @@
 }
 
 .login-title {
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0 0 var(--spacing-lg) 0;
   color: var(--text-primary);
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
   text-align: center;
   letter-spacing: -0.025em;
   line-height: var(--line-height-tight);
@@ -91,35 +86,34 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
 }
 
 .login-form .form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .login-form .form-group label {
-  color: var(--text-primary);
-  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   margin-bottom: var(--spacing-xs);
 }
 
 .login-form .form-input {
-  padding: var(--spacing-lg);
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  background: var(--bg-secondary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   transition: var(--transition);
   width: 100%;
   box-sizing: border-box;
-  min-height: 52px;
+  min-height: 44px;
 }
 
 .login-form .form-input:focus {
@@ -149,12 +143,12 @@
 }
 
 .password-input {
-  padding-right: 3.5rem;
+  padding-right: 3rem;
 }
 
 .password-toggle {
   position: absolute;
-  right: var(--spacing-lg);
+  right: var(--spacing-md);
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
@@ -165,11 +159,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
   z-index: 10;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 }
 
 .password-toggle:hover {

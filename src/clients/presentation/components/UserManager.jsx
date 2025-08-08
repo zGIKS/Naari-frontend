@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../../../shared/components/ToastProvider';
 import { EmployeeForm } from './EmployeeForm';
 import { EmployeeList } from './EmployeeList';
-import Toast from '../../../shared/components/Toast';
+import { UserStatusConfirmationModal } from '../../../shared/components/UserStatusConfirmationModal';
 
 /**
  * UserManager - Componente para gestión de usuarios/empleados en admin panel
  */
 export const UserManager = ({ userFactory, catalogFactory }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,12 +18,11 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
   const [employees, setEmployees] = useState([]);
   const [isLoadingBranches, setIsLoadingBranches] = useState(false);
   const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
-  const [toast, setToast] = useState(null);
-
-  // Definir showToast primero para que esté disponible en otros métodos
-  const showToast = useCallback((type, message) => {
-    setToast({ type, message });
-  }, []);
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    user: null,
+    action: null // 'activate' or 'deactivate'
+  });
 
   // Definir loadEmployees primero
   const loadEmployees = useCallback(async (searchQuery = '') => {
@@ -35,15 +36,15 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
       if (response.success) {
         setEmployees(response.data);
       } else {
-        showToast('error', response.error || t('users.error.load_employees_failed', 'Error al cargar empleados'));
+        showError( response.error || t('users.error.load_employees_failed', 'Error al cargar empleados'));
       }
     } catch (error) {
       console.error('Error loading employees:', error);
-      showToast('error', t('users.error.network', 'Error de conexión'));
+      showError( t('users.error.network', 'Error de conexión'));
     } finally {
       setIsLoadingEmployees(false);
     }
-  }, [userFactory, t, showToast]);
+  }, [userFactory, t, showError]);
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -70,7 +71,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
       setBranches(branches.filter(branch => branch.isActive));
     } catch (error) {
       console.error('Error loading branches:', error);
-      showToast('error', t('users.error.network', 'Error de conexión'));
+      showError( t('users.error.network', 'Error de conexión'));
     } finally {
       setIsLoadingBranches(false);
     }
@@ -88,13 +89,13 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
         setShowForm(false);
         setEditingEmployee(null);
         await loadEmployees();
-        showToast('success', t('users.success.created', 'Empleado registrado exitosamente'));
+        showSuccess( t('users.success.created', 'Empleado registrado exitosamente'));
       } else {
-        showToast('error', response.error || t('users.error.create_failed', 'Error al crear empleado'));
+        showError( response.error || t('users.error.create_failed', 'Error al crear empleado'));
       }
     } catch (error) {
       console.error('Error creating employee:', error);
-      showToast('error', t('users.error.network', 'Error de conexión'));
+      showError( t('users.error.network', 'Error de conexión'));
     } finally {
       setIsSubmitting(false);
     }
@@ -116,13 +117,13 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
         console.log('Employee updated successfully, reloading employee list...');
         await loadEmployees();
         
-        showToast('success', t('users.success.updated', 'Empleado actualizado exitosamente'));
+        showSuccess( t('users.success.updated', 'Empleado actualizado exitosamente'));
       } else {
-        showToast('error', response.error || t('users.error.update_failed', 'Error al actualizar empleado'));
+        showError( response.error || t('users.error.update_failed', 'Error al actualizar empleado'));
       }
     } catch (error) {
       console.error('Error updating employee:', error);
-      showToast('error', t('users.error.network', 'Error de conexión'));
+      showError( t('users.error.network', 'Error de conexión'));
     } finally {
       setIsSubmitting(false);
     }
@@ -133,34 +134,55 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     setShowForm(true);
   };
 
-  const handleToggleEmployeeStatus = async (employee) => {
-    if (!userFactory) return;
+  const handleToggleEmployeeStatus = (employee) => {
+    const action = employee.isActive ? 'deactivate' : 'activate';
+    setConfirmationModal({
+      isOpen: true,
+      user: employee,
+      action: action
+    });
+  };
+
+  const handleConfirmStatusChange = async () => {
+    if (!userFactory || !confirmationModal.user) return;
 
     try {
       const userService = userFactory.createUserService(t);
-      const response = employee.isActive 
+      const employee = confirmationModal.user;
+      const response = confirmationModal.action === 'deactivate'
         ? await userService.deactivateEmployee(employee.id)
         : await userService.activateEmployee(employee.id);
 
       if (response.success) {
         await loadEmployees();
-        const message = response.message || (employee.isActive 
+        const message = response.message || (confirmationModal.action === 'deactivate'
           ? t('users.success.deactivated', 'Empleado desactivado exitosamente')
           : t('users.success.activated', 'Empleado activado exitosamente')
         );
-        showToast('success', message);
+        showSuccess(message);
       } else {
-        showToast('error', response.error || t('users.error.status_change_failed', 'Error al cambiar estado'));
+        showError(response.error || t('users.error.status_change_failed', 'Error al cambiar estado'));
       }
     } catch (error) {
       console.error('Error toggling employee status:', error);
-      showToast('error', t('users.error.network', 'Error de conexión'));
+      showError(t('users.error.network', 'Error de conexión'));
+    } finally {
+      setConfirmationModal({
+        isOpen: false,
+        user: null,
+        action: null
+      });
     }
   };
 
-  const closeToast = () => {
-    setToast(null);
+  const handleCancelStatusChange = () => {
+    setConfirmationModal({
+      isOpen: false,
+      user: null,
+      action: null
+    });
   };
+
 
   const handleCancelForm = () => {
     setShowForm(false);
@@ -251,13 +273,14 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
         </>
       )}
 
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={closeToast}
-        />
-      )}
+      <UserStatusConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={handleCancelStatusChange}
+        onConfirm={handleConfirmStatusChange}
+        user={confirmationModal.user}
+        action={confirmationModal.action}
+      />
+
     </div>
   );
 };

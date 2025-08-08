@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BranchForm } from './BranchForm';
 import { BranchList } from './BranchList';
 import { BranchStatusConfirmationModal } from '../../../shared/components/BranchStatusConfirmationModal';
-import Toast from '../../../shared/components/Toast';
+import { useToast } from '../../../shared/components/ToastProvider';
 
 /**
  * BranchManager - Gestor de sucursales
@@ -11,6 +11,7 @@ import Toast from '../../../shared/components/Toast';
  */
 export const BranchManager = ({ catalogFactory, userFactory }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -21,7 +22,6 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
     branch: null,
     action: null // 'activate' or 'deactivate'
   });
-  const [toast, setToast] = useState(null);
 
   const branchService = catalogFactory.getBranchService();
 
@@ -133,13 +133,13 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
         ? t('admin.activate_branch_success', 'Sucursal activada. Los usuarios de esta sucursal han sido reactivados automáticamente')
         : t('admin.deactivate_branch_success', 'Sucursal desactivada. Los usuarios de esta sucursal han sido desactivados automáticamente');
       
-      showToast('success', successMessage);
+      showSuccess( successMessage);
       
       // Refrescar lista de branches
       await loadBranches();
       
     } catch (error) {
-      showToast('error', error.message);
+      showError( error.message);
     }
   };
 
@@ -151,13 +151,6 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
     });
   };
 
-  const showToast = (type, message) => {
-    setToast({ type, message });
-  };
-
-  const closeToast = () => {
-    setToast(null);
-  };
 
   return (
     <div className="branch-manager">
@@ -224,13 +217,6 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
         action={confirmationModal.action}
       />
 
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={closeToast}
-        />
-      )}
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useToast } from '../../../shared/components/ToastProvider';
 import { ClientForm } from '../components/ClientForm';
 import CalendarLayout from '../../../shared/components/CalendarLayout';
-import Toast from '../../../shared/components/Toast';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
 
@@ -14,11 +14,11 @@ export const EditClientPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { showSuccess, showError } = useToast();
   const [clientFactory, setClientFactory] = useState(null);
   const [client, setClient] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     // Inicializar el factory con el token actual
@@ -37,19 +37,11 @@ export const EditClientPage = () => {
       setIsLoading(false);
     } else {
       // Si no hay datos del cliente, redirigir a la lista
-      showToast('error', t('clients.error.no_client_data', 'No se encontraron datos del cliente'));
+      showError( t('clients.error.no_client_data', 'No se encontraron datos del cliente'));
       navigate('/clients');
     }
   }, [location.state, navigate, t]);
 
-  const showToast = (type, message) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 5000);
-  };
-
-  const closeToast = () => {
-    setToast(null);
-  };
 
   const handleUpdateClient = async (clientData) => {
     if (!clientFactory || !client) return;
@@ -60,18 +52,18 @@ export const EditClientPage = () => {
       const response = await clientService.updateClient(client.id, clientData);
 
       if (response.success) {
-        showToast('success', t('clients.success.updated', 'Cliente actualizado exitosamente'));
+        showSuccess( t('clients.success.updated', 'Cliente actualizado exitosamente'));
         
         // Redirigir a la lista de clientes después de un breve delay
         setTimeout(() => {
           navigate(location.state?.returnTo || '/clients', { state: { refreshClients: true } });
         }, 1500);
       } else {
-        showToast('error', response.error || t('clients.error.update_failed', 'Error al actualizar cliente'));
+        showError( response.error || t('clients.error.update_failed', 'Error al actualizar cliente'));
       }
     } catch (error) {
       console.error('Error updating client:', error);
-      showToast('error', t('clients.error.network', 'Error de conexión'));
+      showError( t('clients.error.network', 'Error de conexión'));
     } finally {
       setIsSubmitting(false);
     }
@@ -192,13 +184,6 @@ export const EditClientPage = () => {
           </div>
         </div>
 
-        {toast && (
-          <Toast
-            type={toast.type}
-            message={toast.message}
-            onClose={closeToast}
-          />
-        )}
       </div>
     </CalendarLayout>
   );

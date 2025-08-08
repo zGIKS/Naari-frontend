@@ -26,7 +26,7 @@ body.modal-open {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.75) !important;
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -38,9 +38,9 @@ body.modal-open {
 }
 
 .modal {
-  background: var(--bg-primary);
+  background: var(--bg-primary) !important;
   border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-2xl);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35) !important;
   max-width: 95vw;
   max-height: 95vh;
   overflow: hidden;
@@ -93,7 +93,7 @@ body.modal-open {
   justify-content: space-between;
   gap: var(--spacing-lg);
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-primary);
+  background: var(--bg-primary) !important;
   position: relative;
   flex-shrink: 0;
 }
@@ -145,7 +145,7 @@ body.modal-open {
 .modal-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
   margin: 0;
   line-height: var(--line-height-tight);
   flex: 1;
@@ -153,7 +153,7 @@ body.modal-open {
 
 .modal-subtitle {
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
   margin: var(--spacing-xs) 0 0 0;
   line-height: var(--line-height-normal);
 }
@@ -235,8 +235,9 @@ body.modal-open {
   justify-content: flex-end;
   align-items: center;
   border-top: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: var(--bg-primary) !important;
   flex-shrink: 0;
+  backdrop-filter: none;
 }
 
 .modal-actions.space-between {
@@ -263,19 +264,28 @@ body.modal-open {
 .confirmation-modal {
   max-width: 480px;
   width: 100%;
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3) !important;
 }
 
 .confirmation-modal .modal-header {
   padding-bottom: var(--spacing-md);
+  background: var(--bg-primary) !important;
 }
 
 .confirmation-modal .modal-body {
   padding-top: 0;
+  background: var(--bg-primary) !important;
 }
 
 .confirmation-modal .modal-message {
-  color: var(--text-secondary);
+  color: var(--text-primary) !important;
   font-size: var(--font-size-base);
+  line-height: 1.5;
+  background: var(--bg-primary) !important;
+  padding: 0.5rem;
+  border-radius: 6px;
 }
 
 /* Form Modal */

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../../shared/components/ToastProvider';
 import { ClientForm } from '../components/ClientForm';
 import CalendarLayout from '../../../shared/components/CalendarLayout';
-import Toast from '../../../shared/components/Toast';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
 
@@ -13,9 +13,9 @@ import { API_CONFIG } from '../../../shared/config/ApiConfig';
 export const CreateClientPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [clientFactory, setClientFactory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     // Inicializar el factory con el token actual
@@ -27,14 +27,6 @@ export const CreateClientPage = () => {
     }
   }, []);
 
-  const showToast = (type, message) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 5000);
-  };
-
-  const closeToast = () => {
-    setToast(null);
-  };
 
   const handleCreateClient = async (clientData) => {
     if (!clientFactory) return;
@@ -45,18 +37,18 @@ export const CreateClientPage = () => {
       const response = await clientService.createClient(clientData);
 
       if (response.success) {
-        showToast('success', t('clients.success.created', 'Cliente creado exitosamente'));
+        showSuccess(t('clients.success.created', 'Cliente creado exitosamente'));
         
         // Redirigir a la lista de clientes después de un breve delay
         setTimeout(() => {
           navigate('/clients', { state: { refreshClients: true } });
         }, 1500);
       } else {
-        showToast('error', response.error || t('clients.error.create_failed', 'Error al crear cliente'));
+        showError( response.error || t('clients.error.create_failed', 'Error al crear cliente'));
       }
     } catch (error) {
       console.error('Error creating client:', error);
-      showToast('error', t('clients.error.network', 'Error de conexión'));
+      showError( t('clients.error.network', 'Error de conexión'));
     } finally {
       setIsSubmitting(false);
     }
@@ -162,13 +154,6 @@ export const CreateClientPage = () => {
           </div>
         </div>
 
-        {toast && (
-          <Toast
-            type={toast.type}
-            message={toast.message}
-            onClose={closeToast}
-          />
-        )}
       </div>
     </CalendarLayout>
   );

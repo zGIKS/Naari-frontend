@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '../config/ApiEndpoints';
 import CalendarLayout from '../components/CalendarLayout';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { useToast } from '../components/ToastProvider';
 
 const EditIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -52,6 +53,7 @@ const LockIcon = () => (
 const ProfilePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -122,7 +124,7 @@ const ProfilePage = () => {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setErrors({ general: 'Error al cargar los datos del perfil' });
+      showError('Error al cargar los datos del perfil');
       
       // If it's an authentication error, redirect to login
       if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -208,7 +210,7 @@ const ProfilePage = () => {
       if (emailChanged) {
         if (!isAdmin()) {
           // Block non-admin email changes
-          setErrors({ general: t('validation.email_admin_only', 'Solo los administradores pueden modificar el email. Este es un evento de seguridad crítico.') });
+          showError(t('validation.email_admin_only', 'Solo los administradores pueden modificar el email. Este es un evento de seguridad crítico.'));
           setSaving(false);
           return;
         } else {
@@ -245,7 +247,7 @@ const ProfilePage = () => {
         
         if (response.status === 401) {
           // Token expired or invalid, show error and stay on page
-          setErrors({ general: 'Sesión expirada. Por favor, inicia sesión nuevamente.' });
+          showError('Sesión expirada. Por favor, inicia sesión nuevamente.');
           setSaving(false);
           return;
         }
@@ -264,13 +266,14 @@ const ProfilePage = () => {
       setEditingFields({});
       setEditForm(prev => ({ ...prev, password: '' })); // Clear password field
       setErrors({});
+      showSuccess('Perfil actualizado exitosamente');
       
       // Refresh the session to update the user data in the auth service
       await authService.validateSession();
       
     } catch (error) {
       console.error('Error updating profile:', error);
-      setErrors({ general: error.message });
+      showError(error.message);
     } finally {
       setSaving(false);
     }
@@ -391,7 +394,7 @@ const ProfilePage = () => {
 
       if (!response.ok) {
         if (response.status === 401) {
-          setErrors({ general: 'Sesión expirada. Por favor, inicia sesión nuevamente.' });
+          showError('Sesión expirada. Por favor, inicia sesión nuevamente.');
           setSaving(false);
           return;
         }
@@ -408,11 +411,11 @@ const ProfilePage = () => {
       setErrors({});
       
       // Show success message with security note
-      setErrors({ success: t('profile.email_changed_success', 'Email actualizado exitosamente. Este cambio ha sido registrado como evento de seguridad crítico.') });
+      showSuccess(t('profile.email_changed_success', 'Email actualizado exitosamente. Este cambio ha sido registrado como evento de seguridad crítico.'));
 
     } catch (error) {
       console.error('Error updating email:', error);
-      setErrors({ general: error.message || 'Error al actualizar el email' });
+      showError(error.message || 'Error al actualizar el email');
     } finally {
       setSaving(false);
     }
@@ -487,12 +490,6 @@ const ProfilePage = () => {
         </div>
 
         <div className="profile-content">
-          {errors.general && (
-            <div className="error-message general-error">
-              {errors.general}
-            </div>
-          )}
-
           <div className="profile-form">
             <div className="form-section">
               <h2>{t('profile.personal_info', 'Información Personal')}</h2>

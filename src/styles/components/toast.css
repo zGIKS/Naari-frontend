@@ -17,7 +17,7 @@
   position: fixed;
   top: var(--spacing-xl);
   right: var(--spacing-xl);
-  z-index: var(--z-toast);
+  z-index: 9999;
   max-width: 420px;
   width: 100%;
   display: flex;

@@ -42,12 +42,8 @@
   gap: var(--spacing-2xl);
   width: 100%;
   box-sizing: border-box;
-  transition: var(--transition);
 }
 
-.profile-header:hover {
-  box-shadow: var(--shadow-lg);
-}
 
 .profile-avatar {
   width: 96px;
@@ -63,13 +59,8 @@
   font-weight: var(--font-weight-bold);
   flex-shrink: 0;
   position: relative;
-  transition: var(--transition);
 }
 
-.profile-avatar:hover {
-  border-color: var(--primary-color);
-  transform: scale(1.05);
-}
 
 .profile-avatar img {
   width: 100%;
@@ -92,13 +83,8 @@
   justify-content: center;
   color: white;
   cursor: pointer;
-  transition: var(--transition);
 }
 
-.profile-avatar-upload:hover {
-  background: var(--primary-dark);
-  transform: scale(1.1);
-}
 
 .profile-avatar-upload input {
   position: absolute;
@@ -191,17 +177,12 @@
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: var(--transition);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
   border-bottom: 3px solid transparent;
 }
 
-.profile-nav-item:hover {
-  color: var(--text-primary);
-  background: var(--bg-tertiary);
-}
 
 .profile-nav-item.active {
   color: var(--primary-color);
@@ -331,7 +312,6 @@
   box-sizing: border-box;
   min-width: 0;
   line-height: var(--line-height-normal);
-  transition: var(--transition);
 }
 
 .form-value.editable {
@@ -339,11 +319,6 @@
   position: relative;
 }
 
-.form-value.editable:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--primary-color);
-  transform: translateY(-1px);
-}
 
 .form-value.readonly {
   background: var(--bg-tertiary);
@@ -361,7 +336,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
   flex-shrink: 0;
   width: 36px;
   height: 36px;
@@ -372,10 +346,6 @@
   z-index: 10;
 }
 
-.edit-field-btn:hover {
-  background: var(--primary-dark);
-  transform: translateY(-50%) scale(1.05);
-}
 
 .edit-field-btn svg {
   width: 16px;
@@ -445,7 +415,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
   font-size: var(--font-size-xs);
 }
 
@@ -484,13 +453,8 @@
   border-radius: var(--border-radius-lg);
   text-align: center;
   border: 1px solid var(--border-color);
-  transition: var(--transition);
 }
 
-.profile-stat:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
 
 .profile-stat-value {
   font-size: var(--font-size-3xl);
@@ -706,4 +670,44 @@
     height: 32px;
     right: var(--spacing-xs);
   }
+}
+
+/* ==========================================================================
+   Profile-specific Password Input Fixes
+   ========================================================================== */
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-input {
+  width: 100%;
+  padding-right: 3rem;
+}
+
+.password-input-wrapper .password-toggle {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.password-input-wrapper .password-toggle:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
 }

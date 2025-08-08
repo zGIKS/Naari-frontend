@@ -42,6 +42,16 @@ export const EmployeeList = ({
     return true;
   };
 
+  // Función para verificar si se puede editar un usuario
+  const canEditUser = (employee) => {
+    if (!isAdmin) return false;
+    
+    // No se puede editar usuarios desactivados
+    if (!employee.isActive) return false;
+    
+    return true;
+  };
+
   // Función para copiar email al clipboard
   const copyEmail = async (email, employeeId) => {
     try {
@@ -222,16 +232,18 @@ export const EmployeeList = ({
                       </svg>
                     )}
                   </button>
-                  <button
-                    onClick={() => onEdit(employee)}
-                    className="btn-icon edit-btn"
-                    title={t('common.edit', 'Editar')}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                  </button>
+                  {canEditUser(employee) && (
+                    <button
+                      onClick={() => onEdit(employee)}
+                      className="btn-icon edit-btn"
+                      title={t('common.edit', 'Editar')}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                  )}
                   <button
                     onClick={() => onToggleStatus(employee)}
                     className={`btn-icon status-btn ${employee.isActive ? 'deactivate' : 'activate'} ${!canToggleStatus(employee) ? 'disabled' : ''}`}

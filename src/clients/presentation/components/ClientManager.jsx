@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ClientList } from './ClientList';
-import Toast from '../../../shared/components/Toast';
+import { useToast } from '../../../shared/components/ToastProvider';
 import './ClientManager.css';
 
 /**
@@ -10,11 +10,11 @@ import './ClientManager.css';
  */
 export const ClientManager = ({ clientFactory }) => {
   const { t } = useTranslation();
+  const { showError } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [clients, setClients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState(null);
 
   // Cargar clientes al montar el componente
   useEffect(() => {
@@ -40,24 +40,16 @@ export const ClientManager = ({ clientFactory }) => {
       if (response.success) {
         setClients(response.data);
       } else {
-        showToast('error', response.error || t('clients.error.load_failed', 'Error al cargar clientes'));
+        showError( response.error || t('clients.error.load_failed', 'Error al cargar clientes'));
       }
     } catch (error) {
       console.error('Error loading clients:', error);
-      showToast('error', t('clients.error.network', 'Error de conexión'));
+      showError( t('clients.error.network', 'Error de conexión'));
     } finally {
       setIsLoading(false);
     }
   }, [clientFactory]);
 
-  const showToast = (type, message) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 5000);
-  };
-
-  const closeToast = () => {
-    setToast(null);
-  };
 
   const handleCreateNewClient = () => {
     navigate('/clients/create');
@@ -111,13 +103,6 @@ export const ClientManager = ({ clientFactory }) => {
         />
       </div>
 
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={closeToast}
-        />
-      )}
     </div>
   );
 };

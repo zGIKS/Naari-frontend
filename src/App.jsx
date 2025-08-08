@@ -1,6 +1,7 @@
 import Error404 from './shared/pages/Error404';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './shared/contexts/ThemeContext';
+import ToastProvider from './shared/components/ToastProvider';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import PublicRoute from './shared/components/PublicRoute';
 import LoginPage from './iam/presentation/pages/LoginPage';
@@ -19,7 +20,8 @@ import './shared/i18n/i18n';
 function App() {
   return (
     <ThemeProvider>
-      <Router>
+      <ToastProvider>
+        <Router>
         <Routes>
           {/* Rutas públicas - solo accesibles sin autenticación */}
           <Route 
@@ -175,7 +177,8 @@ function App() {
             } 
           />
         </Routes>
-      </Router>
+        </Router>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

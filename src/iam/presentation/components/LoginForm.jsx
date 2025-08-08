@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthServiceFactory } from '../../infrastructure/factories/AuthServiceFactory';
-import Toast from '../../../shared/components/Toast';
+import { useToast } from '../../../shared/components/ToastProvider';
 
 const EyeIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -21,14 +21,13 @@ const LoginForm = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
   const { t } = useTranslation();
+  const { showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -44,75 +43,65 @@ const LoginForm = ({ onLoginSuccess }) => {
           'NO_TOKEN_RECEIVED': 'login.error',
           'Authentication failed': 'login.invalidCredentials'
         }[result.error] || 'login.error';
-        setError(t(errorKey));
+        showError(t(errorKey));
       }
     } catch (err) {
-      setError(t('login.error'));
+      showError(t('login.error'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <div className="login-card">
-        <h1 className="login-title">{t('login.title')}</h1>
+    <div className="login-card">
+      <h1 className="login-title">{t('login.title')}</h1>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">{t('login.email')}</label>
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="form-group">
+          <label htmlFor="email">{t('login.email')}</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="form-input"
+            placeholder={t('login.email')}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">{t('login.password')}</label>
+          <div className="password-input-container">
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-              className="form-input"
-              placeholder={t('login.email')}
+              className="form-input password-input"
+              placeholder={t('login.password')}
             />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
+            >
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
           </div>
+        </div>
 
-          <div className="form-group">
-            <label htmlFor="password">{t('login.password')}</label>
-            <div className="password-input-container">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="form-input password-input"
-                placeholder={t('login.password')}
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="submit-button"
-          >
-            {loading ? '...' : t('login.submit')}
-          </button>
-        </form>
-      </div>
-
-      {error && (
-        <Toast 
-          message={error} 
-          type="error" 
-          onClose={() => setError('')} 
-        />
-      )}
-    </>
+        <button
+          type="submit"
+          disabled={loading}
+          className="submit-button"
+        >
+          {loading ? '...' : t('login.submit')}
+        </button>
+      </form>
+    </div>
   );
 };
 

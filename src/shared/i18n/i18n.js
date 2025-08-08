@@ -455,6 +455,13 @@ const resources = {
         actions: {
           new_employee: 'Nuevo Empleado'
         },
+        confirmation: {
+          deactivate_user: 'Desactivar Empleado',
+          activate_user: 'Activar Empleado',
+          deactivate_user_message: '¿Estás seguro que quieres desactivar este empleado?',
+          activate_user_message: '¿Estás seguro que quieres activar este empleado?',
+          deactivate_user_warning: 'Al desactivar este empleado, no podrá acceder al sistema hasta que sea reactivado'
+        },
         validation: {
           email_required: 'Email es requerido',
           email_invalid: 'Email no es válido',
@@ -1084,6 +1091,13 @@ const resources = {
         },
         actions: {
           new_employee: 'New Employee'
+        },
+        confirmation: {
+          deactivate_user: 'Deactivate Employee',
+          activate_user: 'Activate Employee',
+          deactivate_user_message: 'Are you sure you want to deactivate this employee?',
+          activate_user_message: 'Are you sure you want to activate this employee?',
+          deactivate_user_warning: 'By deactivating this employee, they will not be able to access the system until reactivated'
         },
         validation: {
           email_required: 'Email is required',
