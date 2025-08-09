@@ -124,33 +124,35 @@ const SettingsPage = () => {
                 </span>
               </div>
               <div className="settings-option-control">
-                <div className="language-selector">
-                  <button
-                    onClick={() => handleLanguageChange('es')}
-                    className={`language-option ${currentLanguage === 'es' ? 'active' : ''}`}
-                    disabled={languageLoading}
-                  >
-                    <div className="language-icon">
-                      <EsIcon />
-                    </div>
-                    <span>Español</span>
-                  </button>
-                  <button
-                    onClick={() => handleLanguageChange('en')}
-                    className={`language-option ${currentLanguage === 'en' ? 'active' : ''}`}
-                    disabled={languageLoading}
-                  >
-                    <div className="language-icon">
-                      <EnIcon />
-                    </div>
-                    <span>English</span>
-                  </button>
-                </div>
-                {languageLoading && (
-                  <div className="settings-loading">
-                    <div className="spinner"></div>
+                <div className="language-selector-wrapper">
+                  <div className="language-selector">
+                    <button
+                      onClick={() => handleLanguageChange('es')}
+                      className={`language-option ${currentLanguage === 'es' ? 'active' : ''}`}
+                      disabled={languageLoading}
+                    >
+                      <div className="language-icon">
+                        <EsIcon />
+                      </div>
+                      <span>Español</span>
+                    </button>
+                    <button
+                      onClick={() => handleLanguageChange('en')}
+                      className={`language-option ${currentLanguage === 'en' ? 'active' : ''}`}
+                      disabled={languageLoading}
+                    >
+                      <div className="language-icon">
+                        <EnIcon />
+                      </div>
+                      <span>English</span>
+                    </button>
                   </div>
-                )}
+                  {languageLoading && (
+                    <div className="settings-loading-overlay">
+                      <div className="spinner"></div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
