@@ -1,0 +1,641 @@
+/**
+ * Loading Component Styles
+ * 
+ * Loading states and spinner styling including:
+ * - Spinner animations
+ * - Loading screens
+ * - Button loading states
+ * - Skeleton loaders
+ * - Progress indicators
+ */
+
+/* ==========================================================================
+   Spinner Base Styles
+   ========================================================================== */
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin var(--transition-slow) linear infinite;
+  display: inline-block;
+}
+
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.spinner-md {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+.spinner-lg {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+.spinner-xl {
+  width: 56px;
+  height: 56px;
+  border-width: 4px;
+}
+
+/* Spinner Color Variants */
+.spinner-primary {
+  border-color: var(--primary-light);
+  border-top-color: var(--primary-color);
+}
+
+.spinner-secondary {
+  border-color: var(--bg-tertiary);
+  border-top-color: var(--text-secondary);
+}
+
+.spinner-success {
+  border-color: var(--success-light);
+  border-top-color: var(--success-color);
+}
+
+.spinner-warning {
+  border-color: var(--warning-light);
+  border-top-color: var(--warning-color);
+}
+
+.spinner-error {
+  border-color: var(--error-light);
+  border-top-color: var(--error-color);
+}
+
+.spinner-white {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+}
+
+/* ==========================================================================
+   Loading Containers
+   ========================================================================== */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.loading-screen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-loading);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-loading);
+  animation: fadeIn var(--animation-fast) ease-out;
+}
+
+.loading-content {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-2xl);
+  border: 1px solid var(--border-color);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Loading Spinners
+   ========================================================================== */
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+}
+
+.loading-spinner .spinner {
+  margin-bottom: var(--spacing-md);
+}
+
+.loading-text {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+}
+
+.loading-description {
+  margin: var(--spacing-sm) 0 0 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ==========================================================================
+   Inline Loading States
+   ========================================================================== */
+
+.loading-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.loading-inline .spinner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+/* ==========================================================================
+   Button Loading States
+   ========================================================================== */
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin var(--transition-slow) linear infinite;
+  margin-right: var(--spacing-sm);
+}
+
+.btn.loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn.loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin var(--transition-slow) linear infinite;
+}
+
+.btn.loading .btn-spinner {
+  display: none;
+}
+
+/* ==========================================================================
+   Specific Loading Components
+   ========================================================================== */
+
+/* Settings Loading */
+.settings-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-2xl);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+}
+
+.settings-loading .spinner {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+/* Catalog Loading */
+.catalog-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4xl) var(--spacing-xl);
+  text-align: center;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.catalog-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.catalog-loading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* Page Loading */
+.page-loading {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+
+/* List Loading */
+.list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4xl) var(--spacing-xl);
+  text-align: center;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.list-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ==========================================================================
+   Skeleton Loading
+   ========================================================================== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton var(--animation-slow) ease-in-out infinite;
+  border-radius: var(--border-radius-sm);
+}
+
+.skeleton-text {
+  height: 1em;
+  margin: var(--spacing-xs) 0;
+}
+
+.skeleton-text.title {
+  height: 1.5em;
+  width: 60%;
+}
+
+.skeleton-text.subtitle {
+  height: 1em;
+  width: 80%;
+}
+
+.skeleton-text.line {
+  height: 1em;
+  width: 100%;
+}
+
+.skeleton-text.short {
+  width: 40%;
+}
+
+.skeleton-text.medium {
+  width: 70%;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-avatar.sm {
+  width: 32px;
+  height: 32px;
+}
+
+.skeleton-avatar.lg {
+  width: 64px;
+  height: 64px;
+}
+
+.skeleton-card {
+  padding: var(--spacing-xl);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  background: var(--bg-primary);
+}
+
+.skeleton-card-header {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.skeleton-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   Progress Indicators
+   ========================================================================== */
+
+.progress {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: var(--border-radius-full);
+  transition: width var(--transition) ease-out;
+  position: relative;
+}
+
+.progress-bar.animated::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  animation: progress-shine var(--animation-normal) ease-in-out infinite;
+}
+
+.progress.sm {
+  height: 4px;
+}
+
+.progress.lg {
+  height: 12px;
+}
+
+.progress-success .progress-bar {
+  background: var(--success-color);
+}
+
+.progress-warning .progress-bar {
+  background: var(--warning-color);
+}
+
+.progress-error .progress-bar {
+  background: var(--error-color);
+}
+
+/* Circular Progress */
+.progress-circle {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.progress-circle svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-circle-bg {
+  fill: none;
+  stroke: var(--bg-tertiary);
+  stroke-width: 4;
+}
+
+.progress-circle-bar {
+  fill: none;
+  stroke: var(--primary-color);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--transition) ease-out;
+}
+
+.progress-circle.sm {
+  width: 32px;
+  height: 32px;
+}
+
+.progress-circle.lg {
+  width: 96px;
+  height: 96px;
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes skeleton {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Animation classes */
+.animate-pulse {
+  animation: pulse var(--animation-slow) ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin var(--transition-slow) linear infinite;
+}
+
+/* ==========================================================================
+   Loading States for Specific Components
+   ========================================================================== */
+
+/* Form Loading */
+.form-loading {
+  position: relative;
+}
+
+.form-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
+/* Table Loading */
+.table-loading {
+  position: relative;
+  min-height: 200px;
+}
+
+.table-loading tbody {
+  opacity: 0.5;
+}
+
+.table-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin var(--transition-slow) linear infinite;
+}
+
+/* ==========================================================================
+   Loading Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .loading-screen {
+    padding: var(--spacing-lg);
+  }
+
+  .loading-content {
+    padding: var(--spacing-xl);
+  }
+
+  .loading-spinner {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-md);
+  }
+
+  .skeleton-card {
+    padding: var(--spacing-lg);
+  }
+
+  .progress-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .progress-circle.lg {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-content {
+    padding: var(--spacing-lg);
+    width: 95%;
+  }
+
+  .loading-text {
+    font-size: var(--font-size-sm);
+  }
+
+  .skeleton-card {
+    padding: var(--spacing-md);
+  }
+}
+
+/* ==========================================================================
+   Dark Theme Adjustments
+   ========================================================================== */
+
+[data-theme="dark"] .loading-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+}

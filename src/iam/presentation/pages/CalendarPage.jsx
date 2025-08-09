@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import DashboardLayout from '../../../shared/components/DashboardLayout';
+import CalendarLayout from '../../../shared/components/CalendarLayout';
 import { AuthServiceFactory } from '../../infrastructure/factories/AuthServiceFactory';
 
-const DashboardPage = () => {
+const CalendarPage = () => {
   const [user, setUser] = useState(null);
   const { t } = useTranslation();
 
@@ -28,13 +28,13 @@ const DashboardPage = () => {
   }
 
   return (
-    <DashboardLayout>
-      <div className="dashboard-welcome">
-        <h1>{t('dashboard.title')}</h1>
+    <CalendarLayout>
+      <div className="Calendar-welcome">
+        <h1>{t('Calendar.title')}</h1>
         <h2>{t('welcome.message', { name: user.full_name || user.firstName || user.email })}</h2>
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };
 
-export default DashboardPage;
+export default CalendarPage;

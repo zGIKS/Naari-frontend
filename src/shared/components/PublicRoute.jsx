@@ -40,9 +40,9 @@ const PublicRoute = ({ children }) => {
     );
   }
 
-  // Si ya está autenticado, redirigir al dashboard
+  // Si ya está autenticado, redirigir al Calendar
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/Calendar" replace />;
   }
 
   return children;

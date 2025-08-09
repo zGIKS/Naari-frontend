@@ -1,0 +1,476 @@
+/**
+ * Icon Component Styles
+ * 
+ * Modern SVG icon styles with improved visual feedback:
+ * - Base icon styles for consistency
+ * - Hover and active states
+ * - Action-specific icon variants
+ * - Icon animations and transitions
+ * - Accessibility improvements
+ */
+
+/* ==========================================================================
+   Icon Base Styles
+   ========================================================================== */
+
+.icon-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-base svg {
+  transition: all var(--transition);
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ==========================================================================
+   Icon Size Variants
+   ========================================================================== */
+
+.icon-xs {
+  width: 14px;
+  height: 14px;
+}
+
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-md {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-xl {
+  width: 28px;
+  height: 28px;
+}
+
+.icon-2xl {
+  width: 32px;
+  height: 32px;
+}
+
+/* ==========================================================================
+   Modern Icon Styles with Enhanced Visual Effects
+   ========================================================================== */
+
+.modern-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  position: relative;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  opacity: 0.85;
+}
+
+.modern-icon:hover {
+  opacity: 1;
+  transform: translateY(-1px) scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.modern-icon svg {
+  transition: all var(--transition);
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.modern-icon:hover svg {
+  stroke-width: 2;
+}
+
+/* ==========================================================================
+   Action Icons with Semantic Colors
+   ========================================================================== */
+
+/* Edit Icon */
+.icon-edit {
+  color: var(--info-color);
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+}
+
+.icon-edit:hover {
+  color: white;
+  background: var(--info-color);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px) rotate(-2deg);
+}
+
+/* Delete Icon */
+.icon-delete {
+  color: var(--error-color);
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+}
+
+.icon-delete:hover {
+  color: white;
+  background: var(--error-color);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  transform: translateY(-2px) rotate(5deg);
+}
+
+/* View Icon */
+.icon-view {
+  color: var(--primary-color);
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+}
+
+.icon-view:hover {
+  color: white;
+  background: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px) scale(1.1);
+}
+
+/* Activate Icon */
+.icon-activate {
+  color: var(--success-color);
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+}
+
+.icon-activate:hover {
+  color: white;
+  background: var(--success-color);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.icon-activate:hover svg {
+  animation: checkmark 0.5s ease-in-out;
+}
+
+/* Deactivate Icon */
+.icon-deactivate {
+  color: var(--warning-color);
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+}
+
+.icon-deactivate:hover {
+  color: white;
+  background: var(--warning-color);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  transform: translateY(-2px) rotate(-5deg);
+}
+
+/* Settings Icon */
+.icon-settings {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs);
+}
+
+.icon-settings:hover {
+  color: var(--primary-color);
+  background: var(--primary-light);
+  transform: translateY(-1px) rotate(45deg);
+}
+
+/* ==========================================================================
+   Navigation Icons (Sidebar)
+   ========================================================================== */
+
+.nav-icon {
+  color: var(--text-secondary);
+  opacity: 0.8;
+  transition: all var(--transition);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.nav-icon:hover {
+  color: var(--primary-color);
+  opacity: 1;
+  transform: scale(1.1) rotate(2deg);
+  filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.3));
+}
+
+.nav-icon.active {
+  color: white;
+  opacity: 1;
+  transform: scale(1.05);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.nav-icon svg {
+  stroke-width: 1.5;
+  transition: stroke-width var(--transition);
+}
+
+.nav-icon:hover svg {
+  stroke-width: 2;
+}
+
+.nav-icon.active svg {
+  stroke-width: 2;
+}
+
+/* ==========================================================================
+   Status Icons
+   ========================================================================== */
+
+.status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  opacity: 0.3;
+  background: currentColor;
+  animation: pulse-ring 2s infinite;
+}
+
+.status-icon.active {
+  color: var(--success-color);
+}
+
+.status-icon.inactive {
+  color: var(--error-color);
+}
+
+.status-icon.pending {
+  color: var(--warning-color);
+}
+
+.status-icon.processing {
+  color: var(--info-color);
+}
+
+.status-icon.processing svg {
+  animation: spin 2s linear infinite;
+}
+
+/* ==========================================================================
+   Interactive Icon Buttons
+   ========================================================================== */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  transition: all var(--transition);
+  transform: translate(-50%, -50%);
+}
+
+.icon-btn:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.icon-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.icon-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+  position: relative;
+}
+
+/* ==========================================================================
+   Icon Animations
+   ========================================================================== */
+
+@keyframes checkmark {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Icon Loading States
+   ========================================================================== */
+
+.icon-loading {
+  position: relative;
+}
+
+.icon-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.icon-loading svg {
+  opacity: 0.3;
+}
+
+/* ==========================================================================
+   Icon Tooltips
+   ========================================================================== */
+
+.icon-tooltip {
+  position: relative;
+}
+
+.icon-tooltip::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--bg-inverse);
+  color: var(--text-inverse);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--transition);
+  z-index: var(--z-index-tooltip);
+}
+
+.icon-tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ==========================================================================
+   Accessibility Improvements
+   ========================================================================== */
+
+.icon-base:focus-visible,
+.modern-icon:focus-visible,
+.icon-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modern-icon,
+  .icon-btn,
+  .nav-icon,
+  .status-icon,
+  .icon-loading::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   High Contrast Mode
+   ========================================================================== */
+
+@media (prefers-contrast: high) {
+  .modern-icon,
+  .icon-btn {
+    border: 2px solid currentColor;
+  }
+  
+  .icon-edit:hover,
+  .icon-delete:hover,
+  .icon-view:hover,
+  .icon-activate:hover,
+  .icon-deactivate:hover {
+    background: currentColor;
+    color: var(--bg-primary);
+  }
+}

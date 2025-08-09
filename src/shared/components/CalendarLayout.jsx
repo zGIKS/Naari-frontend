@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
-const DashboardLayout = ({ children }) => {
+const CalendarLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
@@ -11,19 +11,19 @@ const DashboardLayout = ({ children }) => {
 
 
   return (
-    <div className="dashboard-layout">
+    <div className="Calendar-layout">
       <Header 
         onToggleSidebar={toggleSidebar} 
         sidebarOpen={sidebarOpen}
       />
       
-      <div className="dashboard-content-wrapper">
+      <div className="Calendar-content-wrapper">
         <Sidebar 
           isOpen={sidebarOpen}
         />
         
-        <main className={`dashboard-main ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
-          <div className="dashboard-main-content">
+        <main className={`Calendar-main ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
+          <div className="Calendar-main-content">
             {children}
           </div>
         </main>
@@ -32,4 +32,4 @@ const DashboardLayout = ({ children }) => {
   );
 };
 
-export default DashboardLayout;
+export default CalendarLayout;

@@ -71,7 +71,7 @@ export class JWTUtils {
       return null;
     }
 
-    return {
+    const tokenInfo = {
       userId: decoded.user_id || decoded.sub,
       sessionId: decoded.session_id,
       roles: decoded.roles || [],
@@ -79,5 +79,10 @@ export class JWTUtils {
       iat: decoded.iat,
       isExpired: this.isTokenExpired(token)
     };
+    
+    console.log('JWTUtils - Token info extracted:', tokenInfo); // Debug log
+    console.log('JWTUtils - Raw decoded token:', decoded); // Debug log
+    
+    return tokenInfo;
   }
 }

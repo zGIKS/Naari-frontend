@@ -21,90 +21,38 @@ export class NavigationFactory {
   static createAdministratorNavigation(permissions) {
     return [
       {
-        icon: 'DashboardIcon',
-        label: 'Dashboard',
-        path: '/dashboard',
-        id: 'dashboard'
+        icon: 'CalendarIcon',
+        label: 'navigation.Calendar',
+        path: '/Calendar',
+        id: 'Calendar'
+      },
+      {
+        icon: 'AdminIcon',
+        label: 'navigation.admin',
+        path: '/admin',
+        id: 'admin'
       },
       {
         icon: 'ClientsIcon',
-        label: 'Clientes',
+        label: 'navigation.clients',
         path: '/clients',
-        id: 'clients',
-        permission: 'clients:read',
-        subItems: [
-          {
-            label: 'Registrar cliente',
-            path: '/clients/register',
-            permission: 'clients:create'
-          },
-          {
-            label: 'Lista de clientes',
-            path: '/clients/list',
-            permission: 'clients:read'
-          }
-        ]
+        id: 'clients'
       },
       {
-        icon: 'UsersIcon',
-        label: 'Usuarios',
-        path: '/users',
-        id: 'users',
-        permission: 'users:read',
-        subItems: [
-          {
-            label: 'Registrar usuario',
-            path: '/users/register',
-            permission: 'users:create'
-          },
-          {
-            label: 'Lista de usuarios',
-            path: '/users/list',
-            permission: 'users:read'
-          }
-        ]
+        icon: 'CatalogIcon',
+        label: 'navigation.catalog',
+        path: '/catalog',
+        id: 'catalog'
       },
       {
-        icon: 'ServicesIcon',
-        label: 'Servicios',
-        path: '/services',
-        id: 'services',
-        permission: 'services:read',
-        subItems: [
-          {
-            label: 'Registrar servicio',
-            path: '/services/register',
-            permission: 'services:create'
-          },
-          {
-            label: 'Paquetes',
-            path: '/services/packages',
-            permission: 'services:read'
-          },
-          {
-            label: 'Precios por sucursal',
-            path: '/services/pricing',
-            permission: 'services:update'
-          }
-        ]
-      },
-      {
-        icon: 'ProductsIcon',
-        label: 'Productos',
-        path: '/products',
-        id: 'products',
-        permission: 'products:read',
-        subItems: [
-          {
-            label: 'Registrar producto',
-            path: '/products/register',
-            permission: 'products:create'
-          }
-        ]
+        icon: 'PackagesIcon',
+        label: 'navigation.packages',
+        path: '/packages',
+        id: 'packages'
       },
       {
         icon: 'BranchesIcon',
-        label: 'Sucursales',
+        label: 'navigation.branches',
         path: '/branches',
         id: 'branches',
         permission: 'branches:read',
@@ -118,7 +66,7 @@ export class NavigationFactory {
       },
       {
         icon: 'AppointmentsIcon',
-        label: 'Citas',
+        label: 'navigation.appointments',
         path: '/appointments',
         id: 'appointments',
         permission: 'appointments:read',
@@ -137,7 +85,7 @@ export class NavigationFactory {
       },
       {
         icon: 'AnalyticsIcon',
-        label: 'Analytics',
+        label: 'navigation.analytics',
         path: '/analytics',
         id: 'analytics',
         permission: 'analytics:read',
@@ -160,33 +108,20 @@ export class NavigationFactory {
   static createReceptionistNavigation(permissions) {
     return [
       {
-        icon: 'DashboardIcon',
-        label: 'Dashboard',
-        path: '/dashboard',
-        id: 'dashboard'
+        icon: 'CalendarIcon',
+        label: 'navigation.Calendar',
+        path: '/Calendar',
+        id: 'Calendar'
       },
       {
         icon: 'ClientsIcon',
-        label: 'Clientes',
+        label: 'navigation.clients',
         path: '/clients',
-        id: 'clients',
-        permission: 'clients:read',
-        subItems: [
-          {
-            label: 'Registrar cliente',
-            path: '/clients/register',
-            permission: 'clients:create'
-          },
-          {
-            label: 'Lista de clientes',
-            path: '/clients/list',
-            permission: 'clients:read'
-          }
-        ]
+        id: 'clients'
       },
       {
         icon: 'AppointmentsIcon',
-        label: 'Citas',
+        label: 'navigation.appointments',
         path: '/appointments',
         id: 'appointments',
         permission: 'appointments:read',
@@ -205,21 +140,15 @@ export class NavigationFactory {
       },
       {
         icon: 'CatalogIcon',
-        label: 'Servicios y productos',
+        label: 'navigation.catalog',
         path: '/catalog',
-        id: 'catalog',
-        subItems: [
-          {
-            label: 'Ver servicios',
-            path: '/services/view',
-            permission: 'services:read'
-          },
-          {
-            label: 'Ver productos',
-            path: '/products/view',
-            permission: 'products:read'
-          }
-        ]
+        id: 'catalog'
+      },
+      {
+        icon: 'PackagesIcon',
+        label: 'navigation.packages',
+        path: '/packages',
+        id: 'packages'
       }
     ];
   }
@@ -227,14 +156,14 @@ export class NavigationFactory {
   static createEstheticianNavigation(permissions) {
     return [
       {
-        icon: 'DashboardIcon',
-        label: 'Mi Panel',
-        path: '/dashboard',
-        id: 'dashboard'
+        icon: 'CalendarIcon',
+        label: 'navigation.Calendar',
+        path: '/Calendar',
+        id: 'Calendar'
       },
       {
         icon: 'AgendaIcon',
-        label: 'Mi Agenda',
+        label: 'navigation.my-appointments',
         path: '/my-appointments',
         id: 'my-appointments',
         subItems: [
@@ -247,7 +176,7 @@ export class NavigationFactory {
       },
       {
         icon: 'ClientsIcon',
-        label: 'Mis clientes',
+        label: 'navigation.my-clients',
         path: '/my-clients',
         id: 'my-clients',
         subItems: [

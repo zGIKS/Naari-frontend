@@ -1,0 +1,52 @@
+{
+  "name": "Naari - Sistema de Gestión",
+  "short_name": "Naari",
+  "description": "Sistema de gestión para centros de estética",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3498db",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/naari.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/naari.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Calendario",
+      "short_name": "Calendario",
+      "description": "Ver calendario de citas",
+      "url": "/Calendar",
+      "icons": [
+        {
+          "src": "/naari.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "short_name": "Clientes",
+      "description": "Gestionar clientes",
+      "url": "/clients",
+      "icons": [
+        {
+          "src": "/naari.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

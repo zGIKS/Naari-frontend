@@ -7,7 +7,7 @@ const LoginPage = () => {
 
   const handleLoginSuccess = (user) => {
     // La sesión ya fue creada por el SessionManager, solo navegamos
-    navigate('/dashboard');
+    navigate('/Calendar');
   };
 
   return (

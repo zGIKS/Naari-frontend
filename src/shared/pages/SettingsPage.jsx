@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
-import DashboardLayout from '../components/DashboardLayout';
+import { useLanguage } from '../hooks/useLanguage';
+import CalendarLayout from '../components/CalendarLayout';
 
 const SunIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -23,21 +24,44 @@ const GlobeIcon = () => (
   </svg>
 );
 
-const SettingsPage = () => {
-  const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
+// Icono para Español - Bandera simplificada
+const EsIcon = () => (
+  <svg width="16" height="12" viewBox="0 0 24 18" fill="currentColor">
+    <rect x="0" y="0" width="24" height="18" fill="#AA151B"/>
+    <rect x="0" y="4.5" width="24" height="9" fill="#F1BF00"/>
+  </svg>
+);
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'es' ? 'en' : 'es';
-    i18n.changeLanguage(newLang).then(() => {
-      localStorage.setItem('naari_language', newLang);
-      // Forzar re-render completo
-      window.location.reload();
-    });
+// Icono para English - Bandera simplificada
+const EnIcon = () => (
+  <svg width="16" height="12" viewBox="0 0 24 18" fill="currentColor">
+    <rect x="0" y="0" width="24" height="18" fill="#012169"/>
+    <g fill="white">
+      <polygon points="0,0 8,0 0,6"/>
+      <polygon points="0,18 0,12 8,18"/>
+      <polygon points="24,0 16,0 24,6"/>
+      <polygon points="24,18 24,12 16,18"/>
+    </g>
+    <rect x="10" y="0" width="4" height="18" fill="white"/>
+    <rect x="0" y="7" width="24" height="4" fill="white"/>
+    <rect x="11" y="0" width="2" height="18" fill="#C8102E"/>
+    <rect x="0" y="8" width="24" height="2" fill="#C8102E"/>
+  </svg>
+);
+
+const SettingsPage = () => {
+  const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+  const { currentLanguage, changeLanguage, loading: languageLoading } = useLanguage();
+
+  const handleLanguageChange = (newLanguage) => {
+    if (newLanguage !== currentLanguage) {
+      changeLanguage(newLanguage);
+    }
   };
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="settings-page">
         <div className="settings-header">
           <h1>{t('settings.title', 'Configuraciones')}</h1>
@@ -100,21 +124,34 @@ const SettingsPage = () => {
                 </span>
               </div>
               <div className="settings-option-control">
-                <div className="language-selector">
-                  <button
-                    onClick={toggleLanguage}
-                    className={`language-option ${i18n.language === 'es' ? 'active' : ''}`}
-                  >
-                    <GlobeIcon />
-                    <span>Español</span>
-                  </button>
-                  <button
-                    onClick={toggleLanguage}
-                    className={`language-option ${i18n.language === 'en' ? 'active' : ''}`}
-                  >
-                    <GlobeIcon />
-                    <span>English</span>
-                  </button>
+                <div className="language-selector-wrapper">
+                  <div className="language-selector">
+                    <button
+                      onClick={() => handleLanguageChange('es')}
+                      className={`language-option ${currentLanguage === 'es' ? 'active' : ''}`}
+                      disabled={languageLoading}
+                    >
+                      <div className="language-icon">
+                        <EsIcon />
+                      </div>
+                      <span>Español</span>
+                    </button>
+                    <button
+                      onClick={() => handleLanguageChange('en')}
+                      className={`language-option ${currentLanguage === 'en' ? 'active' : ''}`}
+                      disabled={languageLoading}
+                    >
+                      <div className="language-icon">
+                        <EnIcon />
+                      </div>
+                      <span>English</span>
+                    </button>
+                  </div>
+                  {languageLoading && (
+                    <div className="settings-loading-overlay">
+                      <div className="spinner"></div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -122,7 +159,7 @@ const SettingsPage = () => {
 
         </div>
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };
 

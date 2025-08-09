@@ -6,24 +6,3 @@ export const API_CONFIG = {
     return `${this.BASE_URL}/api/${this.API_VERSION}`;
   }
 };
-
-export const API_ENDPOINTS = {
-  AUTH: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout'
-  },
-  
-  USERS: {
-    ME: '/users/me'
-  },
-  
-  PRODUCTS: {
-    BASE: '/products',
-    CATEGORIES: '/products/categories'
-  },
-  
-  SERVICES: {
-    BASE: '/services',
-    BOOKINGS: '/services/bookings'
-  }
-};

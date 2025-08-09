@@ -34,8 +34,10 @@ export class SessionManager {
       
       // Extraer roles del JWT
       const tokenInfo = JWTUtils.getTokenInfo(token);
+      console.log('SessionManager - Token info during validation:', tokenInfo); // Debug log
       
       const userResponse = await this.apiClient.get(ApiRouter.USERS.ME);
+      console.log('SessionManager - User response from /users/me:', userResponse); // Debug log
       
       if (userResponse.authenticated && userResponse.active) {
         // Combinar datos del usuario con roles del JWT
@@ -45,6 +47,8 @@ export class SessionManager {
           userId: tokenInfo?.userId,
           sessionId: tokenInfo?.sessionId
         };
+        
+        console.log('SessionManager - Final user with roles:', userWithRoles); // Debug log
         
         this.currentUser = userWithRoles;
         this.token = token;
@@ -70,9 +74,11 @@ export class SessionManager {
         
         // Extraer roles del JWT
         const tokenInfo = JWTUtils.getTokenInfo(loginResponse.accessToken);
+        console.log('SessionManager - Token info during login:', tokenInfo); // Debug log
         
         // Obtener datos del usuario
         const userResponse = await this.apiClient.get(ApiRouter.USERS.ME);
+        console.log('SessionManager - User response during login:', userResponse); // Debug log
         
         if (userResponse.authenticated && userResponse.active) {
           // Combinar datos del usuario con roles del JWT
@@ -82,6 +88,8 @@ export class SessionManager {
             userId: tokenInfo?.userId,
             sessionId: tokenInfo?.sessionId
           };
+          
+          console.log('SessionManager - Final user with roles during login:', userWithRoles); // Debug log
           
           this.currentUser = userWithRoles;
           this.notifyObservers('SESSION_CREATED', userWithRoles);

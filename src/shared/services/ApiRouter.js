@@ -1,4 +1,5 @@
-import { API_CONFIG, API_ENDPOINTS } from '../config/ApiConfig.js';
+import { API_CONFIG } from '../config/ApiConfig.js';
+import { API_ENDPOINTS } from '../config/ApiEndpoints.js';
 
 export class ApiRouter {
   static buildUrl(endpoint) {
@@ -15,6 +16,12 @@ export class ApiRouter {
   static get USERS() {
     return {
       ME: this.buildUrl(API_ENDPOINTS.USERS.ME)
+    };
+  }
+  
+  static get USER_PREFERENCES() {
+    return {
+      BASE: this.buildUrl(API_ENDPOINTS.USER_PREFERENCES.BASE)
     };
   }
   

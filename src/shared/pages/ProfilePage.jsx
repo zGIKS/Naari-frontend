@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { API_CONFIG, API_ENDPOINTS } from '../config/ApiConfig';
-import DashboardLayout from '../components/DashboardLayout';
+import { API_CONFIG } from '../config/ApiConfig';
+import { API_ENDPOINTS } from '../config/ApiEndpoints';
+import CalendarLayout from '../components/CalendarLayout';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
+import { ConfirmationModal } from '../components/ConfirmationModal';
+import { useToast } from '../components/ToastProvider';
 
 const EditIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -50,6 +53,7 @@ const LockIcon = () => (
 const ProfilePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -67,6 +71,11 @@ const ProfilePage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [emailChangeModal, setEmailChangeModal] = useState({
+    isOpen: false,
+    oldEmail: '',
+    newEmail: ''
+  });
 
   useEffect(() => {
     fetchProfile();
@@ -115,7 +124,7 @@ const ProfilePage = () => {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setErrors({ general: 'Error al cargar los datos del perfil' });
+      showError('Error al cargar los datos del perfil');
       
       // If it's an authentication error, redirect to login
       if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -196,14 +205,24 @@ const ProfilePage = () => {
       if (editForm.first_name.trim()) updateData.first_name = editForm.first_name.trim();
       if (editForm.last_name.trim()) updateData.last_name = editForm.last_name.trim();
       
-      // Only admins can update email
-      if (editForm.email.trim() && isAdmin()) {
-        updateData.email = editForm.email.trim();
-      } else if (editForm.email.trim() && !isAdmin()) {
-        // Show error if non-admin tries to update email
-        setErrors({ general: t('validation.email_admin_only', 'Solo los administradores pueden modificar el email') });
-        setSaving(false);
-        return;
+      // Handle email changes with security confirmation
+      const emailChanged = editForm.email.trim() && editForm.email.trim() !== profile.email;
+      if (emailChanged) {
+        if (!isAdmin()) {
+          // Block non-admin email changes
+          showError(t('validation.email_admin_only', 'Solo los administradores pueden modificar el email. Este es un evento de seguridad crítico.'));
+          setSaving(false);
+          return;
+        } else {
+          // Admin changing their own email - require confirmation
+          setEmailChangeModal({
+            isOpen: true,
+            oldEmail: profile.email,
+            newEmail: editForm.email.trim()
+          });
+          setSaving(false);
+          return;
+        }
       }
       
       if (editForm.password) updateData.password = editForm.password;
@@ -228,7 +247,7 @@ const ProfilePage = () => {
         
         if (response.status === 401) {
           // Token expired or invalid, show error and stay on page
-          setErrors({ general: 'Sesión expirada. Por favor, inicia sesión nuevamente.' });
+          showError('Sesión expirada. Por favor, inicia sesión nuevamente.');
           setSaving(false);
           return;
         }
@@ -247,13 +266,14 @@ const ProfilePage = () => {
       setEditingFields({});
       setEditForm(prev => ({ ...prev, password: '' })); // Clear password field
       setErrors({});
+      showSuccess('Perfil actualizado exitosamente');
       
       // Refresh the session to update the user data in the auth service
       await authService.validateSession();
       
     } catch (error) {
       console.error('Error updating profile:', error);
-      setErrors({ general: error.message });
+      showError(error.message);
     } finally {
       setSaving(false);
     }
@@ -338,6 +358,79 @@ const ProfilePage = () => {
     setErrors({});
   };
 
+  const handleEmailChangeConfirm = async () => {
+    setSaving(true);
+    setEmailChangeModal({ ...emailChangeModal, isOpen: false });
+
+    try {
+      const authService = AuthServiceFactory.getInstance();
+      const token = sessionStorage.getItem('naari_token');
+      
+      const updateData = {
+        email: emailChangeModal.newEmail
+      };
+
+      // Add other non-email changes if any
+      if (editForm.first_name.trim()) updateData.first_name = editForm.first_name.trim();
+      if (editForm.last_name.trim()) updateData.last_name = editForm.last_name.trim();
+      if (editForm.password) updateData.password = editForm.password;
+
+      console.log('Critical Security Event: Admin email change', {
+        oldEmail: emailChangeModal.oldEmail,
+        newEmail: emailChangeModal.newEmail,
+        userId: profile.id,
+        timestamp: new Date().toISOString(),
+        action: 'admin_self_email_change'
+      });
+
+      const response = await fetch(`${API_CONFIG.API_BASE}${API_ENDPOINTS.USERS.ME}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          showError('Sesión expirada. Por favor, inicia sesión nuevamente.');
+          setSaving(false);
+          return;
+        }
+        const error = await response.json().catch(() => ({ error: 'Error updating profile' }));
+        throw new Error(error.error || 'Error updating profile');
+      }
+
+      const updatedProfile = await response.json();
+      const profileData = updatedProfile.user || updatedProfile.data || updatedProfile;
+      
+      setProfile(profileData);
+      setEditingFields({});
+      setEditForm(prev => ({ ...prev, password: '' }));
+      setErrors({});
+      
+      // Show success message with security note
+      showSuccess(t('profile.email_changed_success', 'Email actualizado exitosamente. Este cambio ha sido registrado como evento de seguridad crítico.'));
+
+    } catch (error) {
+      console.error('Error updating email:', error);
+      showError(error.message || 'Error al actualizar el email');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEmailChangeCancel = () => {
+    setEmailChangeModal({
+      isOpen: false,
+      oldEmail: '',
+      newEmail: ''
+    });
+    // Reset email field to original value
+    setEditForm(prev => ({ ...prev, email: profile.email }));
+  };
+
   const profileContent = () => {
     if (loading) {
       return (
@@ -397,17 +490,12 @@ const ProfilePage = () => {
         </div>
 
         <div className="profile-content">
-          {errors.general && (
-            <div className="error-message general-error">
-              {errors.general}
-            </div>
-          )}
-
           <div className="profile-form">
             <div className="form-section">
               <h2>{t('profile.personal_info', 'Información Personal')}</h2>
               
               <div className="form-grid">
+                {/* Fila 1: Nombre y Apellido (campos medios que van bien juntos) */}
                 <div className="form-field">
                   <label>{t('profile.first_name', 'Nombre')}</label>
                   <div className="form-field-content">
@@ -420,7 +508,7 @@ const ProfilePage = () => {
                           onBlur={(e) => handleFieldBlur('first_name', e)}
                           onKeyDown={e => handleFieldKeyPress(e, 'first_name')}
                           className={errors.first_name ? 'form-input error' : 'form-input'}
-                          placeholder={t('profile.first_name_placeholder', 'Ingresa tu nombre')}
+                          placeholder={t('profile.first_name_placeholder', 'Ej: María José')}
                           autoFocus
                         />
                         {errors.first_name && <span className="error-text">{errors.first_name}</span>}
@@ -455,7 +543,7 @@ const ProfilePage = () => {
                           onBlur={(e) => handleFieldBlur('last_name', e)}
                           onKeyDown={e => handleFieldKeyPress(e, 'last_name')}
                           className={errors.last_name ? 'form-input error' : 'form-input'}
-                          placeholder={t('profile.last_name_placeholder', 'Ingresa tu apellido')}
+                          placeholder={t('profile.last_name_placeholder', 'Ej: García Rodríguez')}
                           autoFocus
                         />
                         {errors.last_name && <span className="error-text">{errors.last_name}</span>}
@@ -479,7 +567,8 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="form-field">
+              {/* Fila 2: Email (ancho completo por ser campo largo y crítico) */}
+              <div className="form-field full-width">
                 <label>
                   {t('profile.email', 'Correo electrónico')}
                   {!isAdmin() && (
@@ -498,7 +587,7 @@ const ProfilePage = () => {
                         onBlur={(e) => handleFieldBlur('email', e)}
                         onKeyDown={e => handleFieldKeyPress(e, 'email')}
                         className={errors.email ? 'form-input error' : 'form-input'}
-                        placeholder={t('profile.email_placeholder', 'correo@ejemplo.com')}
+                        placeholder={t('profile.email_placeholder', 'Ej: maria.garcia@empresa.com')}
                         autoFocus
                       />
                       {errors.email && <span className="error-text">{errors.email}</span>}
@@ -531,7 +620,8 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="form-field">
+              {/* Fila 3: Contraseña (ancho completo para dar importancia visual) */}
+              <div className="form-field full-width">
                 <label>{t('profile.password', 'Contraseña')}</label>
                 <div className="form-field-content">
                   {editingFields.password ? (
@@ -544,7 +634,7 @@ const ProfilePage = () => {
                           onBlur={(e) => handleFieldBlur('password', e)}
                           onKeyDown={e => handleFieldKeyPress(e, 'password')}
                           className={errors.password ? 'form-input error' : 'form-input'}
-                          placeholder={t('profile.password_placeholder', 'Nueva contraseña')}
+                          placeholder={t('profile.password_placeholder', 'Mínimo 8 caracteres con mayúscula, número y símbolo')}
                           autoFocus
                         />
                         <button
@@ -583,11 +673,11 @@ const ProfilePage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <CalendarLayout>
       <div className="profile-page-content">
         {profileContent()}
       </div>
-    </DashboardLayout>
+    </CalendarLayout>
   );
 };
 
