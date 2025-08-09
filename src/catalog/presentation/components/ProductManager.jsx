@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
-import QRCode from 'qrcode';
 
 /**
  * ProductManager - Gestor de productos
@@ -80,15 +79,24 @@ export const ProductManager = ({ catalogFactory }) => {
         return;
       }
 
-      // Usar el qr_uuid del producto como el contenido del QR
-      const qrCodeUrl = await QRCode.toDataURL(product.qr_uuid, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
+      // Importar dinámicamente el módulo QRCode
+      const qrcode = await import('qrcode-generator');
+
+      // Crear un objeto QR
+      const qr = qrcode.default(0, 'M');
+      qr.addData(product.qr_uuid);
+      qr.make();
+
+      // Crear el SVG del código QR
+      const qrSvg = qr.createSvgTag({
+        cellSize: 4,
+        margin: 4,
+        scalable: true
       });
+
+      // Convertir SVG a data URL
+      const svgData = new Blob([qrSvg], { type: 'image/svg+xml;charset=utf-8' });
+      const qrCodeUrl = `data:image/svg+xml;base64,${btoa(qrSvg)}`;
       
       setQrModal({
         isOpen: true,
