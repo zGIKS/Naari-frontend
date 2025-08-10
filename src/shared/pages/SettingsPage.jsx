@@ -88,19 +88,19 @@ const SettingsPage = () => {
                 </span>
               </div>
               <div className="settings-option-control">
-                <button
-                  onClick={toggleTheme}
-                  className={`theme-toggle-button ${theme}`}
-                >
-                  <div className="theme-toggle-slider">
+                <div className="theme-toggle-wrapper">
+                  <button
+                    onClick={toggleTheme}
+                    className={`theme-toggle-button ${theme} active`}
+                  >
                     <div className="theme-toggle-icon">
                       {theme === 'light' ? <SunIcon /> : <MoonIcon />}
                     </div>
-                  </div>
-                  <span className="theme-toggle-label">
-                    {theme === 'light' ? t('theme.light', 'Claro') : t('theme.dark', 'Oscuro')}
-                  </span>
-                </button>
+                    <span className="theme-toggle-label">
+                      {theme === 'light' ? t('theme.light', 'Claro') : t('theme.dark', 'Oscuro')}
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

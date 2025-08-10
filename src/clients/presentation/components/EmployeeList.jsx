@@ -11,22 +11,16 @@ export const EmployeeList = ({
   isLoading = false 
 }) => {
   const { t } = useTranslation();
-  const { isAdmin } = useUserRole();
+  const { user, isAdmin } = useUserRole();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(null);
 
   // Función para verificar si es el usuario actual
   const isCurrentUser = (employee) => {
-    const token = sessionStorage.getItem('naari_token');
-    if (!token) return false;
+    if (!user) return false;
     
-    try {
-      const tokenData = JSON.parse(atob(token.split('.')[1]));
-      return tokenData.userId === employee.id || String(tokenData.userId) === String(employee.id);
-    } catch (error) {
-      return false;
-    }
+    return user.id === employee.id || String(user.id) === String(employee.id);
   };
 
   // Función para verificar si se puede activar/desactivar un usuario
@@ -65,7 +59,11 @@ export const EmployeeList = ({
       textArea.value = email;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+      }
       document.body.removeChild(textArea);
       setCopiedEmail(employeeId);
       setTimeout(() => setCopiedEmail(null), 2000);
@@ -74,7 +72,6 @@ export const EmployeeList = ({
 
 
   // Debounce de 500ms y búsqueda inmediata con Enter
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const debounceTimeout = React.useRef();
 
   // Ejecuta búsqueda (llama onSearch) y controla loading
@@ -88,12 +85,10 @@ export const EmployeeList = ({
   useEffect(() => {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
     if (searchTerm === '') {
-      setDebouncedSearchTerm('');
       triggerSearch('');
       return;
     }
     debounceTimeout.current = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
       triggerSearch(searchTerm);
     }, 500);
     // eslint-disable-next-line
@@ -108,7 +103,6 @@ export const EmployeeList = ({
   const handleSearchKeyDown = (e) => {
     if (e.key === 'Enter') {
       if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-      setDebouncedSearchTerm(searchTerm);
       triggerSearch(searchTerm);
     }
   };

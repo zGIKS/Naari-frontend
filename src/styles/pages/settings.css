@@ -34,7 +34,10 @@
 .settings-header {
   padding: var(--spacing-2xl);
   background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-xl);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .settings-header h1 {
@@ -64,7 +67,7 @@
 .settings-breadcrumb a {
   color: var(--primary-color);
   text-decoration: none;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .settings-breadcrumb a:hover {
@@ -89,7 +92,7 @@
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
@@ -135,7 +138,7 @@
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-xl);
   border: 1px solid var(--border-color);
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .settings-section:hover {
@@ -227,83 +230,87 @@
    Theme Toggle
    ========================================================================== */
 
-.theme-toggle {
+/* Theme Toggle Button - Matching Language Selector Style */
+.theme-toggle-wrapper {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .theme-toggle-button {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
   background: var(--bg-primary);
   border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--border-radius-md);
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   color: var(--text-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  min-height: 40px;
-  max-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 36px;
+  min-width: 90px;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .theme-toggle-button:hover {
-  background: var(--primary-color);
-  color: white;
+  background: var(--bg-secondary);
   border-color: var(--primary-color);
   transform: translateY(-1px);
 }
 
-.theme-toggle-button:focus {
+.theme-toggle-button:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 
-.theme-toggle-slider {
-  width: 40px;
-  height: 20px;
-  background: var(--bg-tertiary);
-  border-radius: var(--border-radius-full);
-  position: relative;
-  transition: var(--transition);
-  border: 1px solid var(--border-color);
-  flex-shrink: 0;
+.theme-toggle-button:active {
+  transform: translateY(0);
 }
 
-.theme-toggle-button.dark .theme-toggle-slider {
+/* Active theme state - similar to language selector active state */
+.theme-toggle-button.active {
   background: var(--primary-color);
+  color: white;
   border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .theme-toggle-icon {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
-  color: var(--bg-primary);
-  font-size: 8px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
-.theme-toggle-button.dark .theme-toggle-icon {
-  transform: translateX(20px);
-  background: white;
-  color: var(--primary-color);
+.theme-toggle-icon svg {
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .theme-toggle-label {
-  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Hover effects */
+.theme-toggle-button:hover .theme-toggle-icon svg {
+  transform: scale(1.1);
+}
+
+.theme-toggle-button:active .theme-toggle-icon svg {
+  transform: scale(0.9);
+}
+
+/* Dark theme specific styles */
+.theme-toggle-button.dark.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
 }
 
 /* ==========================================================================
@@ -327,7 +334,7 @@
   border-radius: var(--border-radius-md);
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   color: var(--text-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -391,98 +398,6 @@
   flex-shrink: 0;
 }
 
-/* ==========================================================================
-   Toggle Switches
-   ========================================================================== */
-
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 52px;
-  height: 28px;
-  cursor: pointer;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-slider {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-tertiary);
-  border: 2px solid var(--border-color);
-  transition: var(--transition);
-  border-radius: var(--border-radius-full);
-}
-
-.toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 2px;
-  bottom: 2px;
-  background: white;
-  transition: var(--transition);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-}
-
-.toggle-switch input:checked + .toggle-slider {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.toggle-switch input:checked + .toggle-slider:before {
-  transform: translateX(24px);
-}
-
-.toggle-switch:hover .toggle-slider {
-  box-shadow: var(--shadow-md);
-}
-
-.toggle-switch input:focus + .toggle-slider {
-  box-shadow: var(--focus-ring);
-}
-
-/* Toggle sizes */
-.toggle-switch.sm {
-  width: 40px;
-  height: 22px;
-}
-
-.toggle-switch.sm .toggle-slider:before {
-  height: 16px;
-  width: 16px;
-  left: 1px;
-  bottom: 1px;
-}
-
-.toggle-switch.sm input:checked + .toggle-slider:before {
-  transform: translateX(18px);
-}
-
-.toggle-switch.lg {
-  width: 64px;
-  height: 34px;
-}
-
-.toggle-switch.lg .toggle-slider:before {
-  height: 26px;
-  width: 26px;
-  left: 2px;
-  bottom: 2px;
-}
-
-.toggle-switch.lg input:checked + .toggle-slider:before {
-  transform: translateX(30px);
-}
 
 /* ==========================================================================
    Settings Loading States
@@ -581,7 +496,7 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: var(--font-size-base);
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .settings-form-input:focus {

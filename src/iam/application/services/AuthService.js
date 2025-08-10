@@ -1,5 +1,6 @@
 import { LoginCommand } from '../use-cases/LoginCommand.js';
 import { SessionManager } from '../../domain/services/SessionManager.js';
+import { clearUserCache } from '../../../shared/hooks/useUserRole.js';
 
 export class AuthService {
   constructor(apiClient) {
@@ -38,6 +39,7 @@ export class AuthService {
 
   async logout() {
     await this.sessionManager.logout();
+    clearUserCache(); // Limpiar cache del hook useUserRole
     this.notifyObservers('LOGOUT_SUCCESS', null);
   }
 

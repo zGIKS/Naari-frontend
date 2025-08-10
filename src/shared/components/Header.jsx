@@ -72,15 +72,8 @@ const LogoutIcon = () => (
 const Header = ({ onToggleSidebar, sidebarOpen = false }) => {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
-  const [user, setUser] = useState(null);
-  const { userRole } = useUserRole();
+  const { user, userRole } = useUserRole();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const authService = AuthServiceFactory.getInstance();
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-  }, []);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'es' ? 'en' : 'es';

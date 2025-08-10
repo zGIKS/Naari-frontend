@@ -34,9 +34,13 @@ const LoginForm = ({ onLoginSuccess }) => {
       const authService = AuthServiceFactory.getInstance();
       const result = await authService.login(email, password);
       
+      console.log('LoginForm - Login result:', result); // Debug log
+      
       if (result.success && result.user) {
+        console.log('LoginForm - Login successful, redirecting to Calendar'); // Debug log
         window.location.href = '/Calendar';
       } else {
+        console.log('LoginForm - Login failed:', result.error); // Debug log
         // Mapear errores específicos de sesión
         const errorKey = {
           'USER_NOT_ACTIVE': 'login.invalidCredentials',
@@ -46,6 +50,7 @@ const LoginForm = ({ onLoginSuccess }) => {
         showError(t(errorKey));
       }
     } catch (err) {
+      console.log('LoginForm - Login error caught:', err); // Debug log
       showError(t('login.error'));
     } finally {
       setLoading(false);

@@ -7,6 +7,9 @@ export class SessionManager {
     this.currentUser = null;
     this.token = null;
     this.observers = [];
+    this.isValidatingSession = false;
+    this.lastUserFetch = null;
+    this.userCacheExpiry = 5 * 60 * 1000; // 5 minutos
   }
 
   addObserver(observer) {
@@ -18,6 +21,18 @@ export class SessionManager {
   }
 
   async validateSession() {
+    // Evitar múltiples validaciones simultáneas
+    if (this.isValidatingSession) {
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!this.isValidatingSession) {
+            clearInterval(checkInterval);
+            resolve(!!this.currentUser);
+          }
+        }, 50);
+      });
+    }
+
     const token = this.getStoredToken();
     if (!token) {
       return false;
@@ -29,36 +44,51 @@ export class SessionManager {
       return false;
     }
 
+    // Si ya tenemos un usuario válido y el cache no ha expirado, usar cache
+    if (this.currentUser && this.lastUserFetch && 
+        (Date.now() - this.lastUserFetch < this.userCacheExpiry)) {
+      console.log('SessionManager - Using cached user data');
+      return true;
+    }
+
+    this.isValidatingSession = true;
+
     try {
       this.apiClient.setAuthToken(token);
       
       // Extraer roles del JWT
       const tokenInfo = JWTUtils.getTokenInfo(token);
-      console.log('SessionManager - Token info during validation:', tokenInfo); // Debug log
+      console.log('SessionManager - Token info during validation:', tokenInfo);
       
       const userResponse = await this.apiClient.get(ApiRouter.USERS.ME);
-      console.log('SessionManager - User response from /users/me:', userResponse); // Debug log
+      console.log('SessionManager - User response from /users/me:', userResponse);
       
-      if (userResponse.authenticated && userResponse.active) {
+      if (userResponse.active !== false) {
         // Combinar datos del usuario con roles del JWT
         const userWithRoles = {
           ...userResponse,
+          authenticated: true,
           roles: tokenInfo?.roles || [],
           userId: tokenInfo?.userId,
           sessionId: tokenInfo?.sessionId
         };
         
-        console.log('SessionManager - Final user with roles:', userWithRoles); // Debug log
+        console.log('SessionManager - Final user with roles:', userWithRoles);
         
         this.currentUser = userWithRoles;
         this.token = token;
+        this.lastUserFetch = Date.now();
+        
+        this.isValidatingSession = false;
         return true;
       } else {
         this.clearSession();
+        this.isValidatingSession = false;
         return false;
       }
     } catch (error) {
       this.clearSession();
+      this.isValidatingSession = false;
       return false;
     }
   }
@@ -80,10 +110,11 @@ export class SessionManager {
         const userResponse = await this.apiClient.get(ApiRouter.USERS.ME);
         console.log('SessionManager - User response during login:', userResponse); // Debug log
         
-        if (userResponse.authenticated && userResponse.active) {
+        if (userResponse.active !== false) {
           // Combinar datos del usuario con roles del JWT
           const userWithRoles = {
             ...userResponse,
+            authenticated: true, // Agregamos esta propiedad ya que el API no la incluye
             roles: tokenInfo?.roles || [],
             userId: tokenInfo?.userId,
             sessionId: tokenInfo?.sessionId
@@ -92,6 +123,7 @@ export class SessionManager {
           console.log('SessionManager - Final user with roles during login:', userWithRoles); // Debug log
           
           this.currentUser = userWithRoles;
+          this.lastUserFetch = Date.now();
           this.notifyObservers('SESSION_CREATED', userWithRoles);
           return { success: true, user: userWithRoles };
         } else {
@@ -121,6 +153,8 @@ export class SessionManager {
   clearSession() {
     this.currentUser = null;
     this.token = null;
+    this.lastUserFetch = null;
+    this.isValidatingSession = false;
     this.removeStoredToken();
     this.apiClient.clearAuthToken();
     this.notifyObservers('SESSION_CLEARED', null);

@@ -77,6 +77,7 @@ export class UserService {
       const response = await this.apiClient.getWithErrorHandling(API_ENDPOINTS.USERS.ME);
       
       if (response.success) {
+        // El API /users/me ahora incluye el campo 'role'
         return {
           success: true,
           data: Employee.fromApiResponse(response.data)
@@ -183,15 +184,17 @@ export class UserService {
     
     if (response.success) {
       const employees = response.data.users || [];
-      const enrichedEmployees = employees.map(emp => this._enrichEmployeeWithRole(emp));
+      const enrichedEmployees = employees.map(emp => Employee.fromApiResponse(emp));
       
       console.log('UserService.getAllEmployees - Raw employees from backend:', employees);
-      console.log('UserService.getAllEmployees - Enriched employees with roles:', enrichedEmployees);
+      console.log('UserService.getAllEmployees - Processed employees:', enrichedEmployees);
       
       return {
         success: true,
         data: enrichedEmployees,
-        total: response.data.total || employees.length
+        total: response.data.total || employees.length,
+        page: response.data.page || 0,
+        limit: response.data.limit || employees.length
       };
     }
     
@@ -201,147 +204,6 @@ export class UserService {
     };
   }
 
-  /**
-   * Enriquece los datos del empleado con rol basado en información disponible
-   * Usa la misma lógica que SessionManager para determinar roles
-   */
-  _enrichEmployeeWithRole(employeeData) {
-    console.log('UserService._enrichEmployeeWithRole - Input data:', employeeData);
-    
-    // Crear el empleado base
-    const employee = Employee.fromApiResponse(employeeData);
-    console.log('UserService._enrichEmployeeWithRole - Base employee after fromApiResponse:', employee);
-    
-    // Aplicar la misma lógica que SessionManager para obtener roles
-    try {
-      const token = sessionStorage.getItem('naari_token');
-      if (token) {
-        const tokenInfo = JWTUtils.getTokenInfo(token);
-        console.log('UserService._enrichEmployeeWithRole - Token info:', tokenInfo);
-        
-        if (tokenInfo && tokenInfo.userId === employeeData.id) {
-          // Si es el usuario actual, usar roles del JWT (igual que SessionManager)
-          if (tokenInfo.roles && tokenInfo.roles.length > 0) {
-            employee.role = tokenInfo.roles[0]; // Primer rol como principal
-            console.log('UserService._enrichEmployeeWithRole - Using JWT role for current user:', employee.role);
-          } else {
-            employee.role = 'user'; // fallback si no hay roles en el token
-            console.log('UserService._enrichEmployeeWithRole - No roles in JWT, using fallback: user');
-          }
-        } else {
-          // Para otros usuarios, intentar determinar el rol por heurísticas
-          const inferredRole = this._inferRoleFromUserData(employeeData);
-          employee.role = inferredRole;
-          console.log('UserService._enrichEmployeeWithRole - Using inferred role for other user:', inferredRole);
-        }
-      } else {
-        // Sin token, usar heurísticas
-        const inferredRole = this._inferRoleFromUserData(employeeData);
-        employee.role = inferredRole;
-        console.log('UserService._enrichEmployeeWithRole - No token, using inferred role:', inferredRole);
-      }
-    } catch (error) {
-      console.debug('Could not extract role from token:', error);
-      const inferredRole = this._inferRoleFromUserData(employeeData);
-      employee.role = inferredRole;
-      console.log('UserService._enrichEmployeeWithRole - Token error, using inferred role:', inferredRole);
-    }
-    
-    console.log('UserService._enrichEmployeeWithRole - Final employee:', employee);
-    return employee;
-  }
-
-  /**
-   * Infiere el rol basándose en los datos del usuario (heurísticas)
-   */
-  _inferRoleFromUserData(employeeData) {
-    console.log('UserService._inferRoleFromUserData - Input data:', employeeData);
-    
-    // PRIMERO: Si el empleado ya tiene un rol definido en el backend, usarlo
-    if (employeeData.role && employeeData.role.trim()) {
-      console.log('UserService._inferRoleFromUserData - Using backend role:', employeeData.role);
-      return employeeData.role;
-    }
-    
-    // SEGUNDO: Verificar si hay un rol temporal guardado para este empleado
-    const tempRoleKey = `temp_role_${employeeData.id}`;
-    const tempRole = sessionStorage.getItem(tempRoleKey);
-    if (tempRole) {
-      console.log('UserService._inferRoleFromUserData - Using temporary cached role:', tempRole);
-      return tempRole;
-    }
-    
-    console.log('UserService._inferRoleFromUserData - No backend role or temp role found, using heuristics');
-    
-    // Heurísticas para determinar roles cuando no tenemos información del JWT
-    const email = employeeData.email?.toLowerCase() || '';
-    const fullName = employeeData.full_name?.toLowerCase() || '';
-    const firstName = employeeData.first_name?.toLowerCase() || '';
-    const lastName = employeeData.last_name?.toLowerCase() || '';
-    
-    // ADMINISTRATOR - Los administradores no se crean desde el frontend
-    // Solo se infieren roles de recepcionista o especialista
-    
-    // RECEPTIONIST - Detectar recepcionistas
-    if (
-      email.includes('recep') ||
-      email.includes('front') ||
-      email.includes('desk') ||
-      fullName.includes('recep') ||
-      firstName.includes('recep') ||
-      email.includes('atencion') ||
-      email.includes('cliente') ||
-      email.includes('counter')
-    ) {
-      return 'receptionist';
-    }
-    
-    // ESTHETICIAN - Detectar especialistas en estética
-    if (
-      email.includes('estet') ||
-      email.includes('specialist') ||
-      email.includes('beauty') ||
-      email.includes('especialista') ||
-      fullName.includes('estet') ||
-      fullName.includes('specialist') ||
-      firstName.includes('estet') ||
-      email.includes('terapista') ||
-      email.includes('masajista') ||
-      email.includes('cosmetolog') ||
-      email.includes('dermato')
-    ) {
-      return 'esthetician';
-    }
-    
-    // HEURÍSTICA AVANZADA: Basarse en patrones de nombres comunes
-    // Para testing - simular algunos usuarios con diferentes roles
-    if (email.includes('valeria') || email.includes('valentina') || firstName.includes('valeria')) {
-      return 'esthetician';
-    }
-    
-    if (email.includes('patricia') || email.includes('camila') || firstName.includes('patricia')) {
-      return 'esthetician';
-    }
-    
-    if (email.includes('maria') || email.includes('ana') || firstName.includes('maria')) {
-      return 'receptionist';
-    }
-    
-    // Si no se puede determinar con certeza, usar solo roles no-admin
-    // Basarse en el hash del email para consistencia entre receptionist y esthetician
-    const emailHash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const roleIndex = emailHash % 2;
-    
-    let finalRole;
-    switch (roleIndex) {
-      case 0: finalRole = 'receptionist'; break;
-      case 1: finalRole = 'esthetician'; break;
-      default: finalRole = 'receptionist'; break;
-    }
-    
-    console.log('UserService._inferRoleFromUserData - Final inferred role:', finalRole);
-    return finalRole;
-  }
 
   /**
    * Busca empleados por término de búsqueda

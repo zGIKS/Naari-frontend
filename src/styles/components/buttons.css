@@ -505,64 +505,7 @@
   cursor: not-allowed;
 }
 
-/* Theme Toggle Button */
-.theme-toggle-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  width: 248px;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all var(--transition), transform var(--transition-fast);
-  font-size: var(--font-size-sm);
-  text-align: left;
-  min-height: 52px;
-  box-sizing: border-box;
-  margin: 0 var(--spacing-sm);
-  outline: none;
-  position: relative;
-}
 
-.theme-toggle-button:hover {
-  background: var(--hover-overlay);
-  border-color: var(--primary-color);
-  transform: translateX(2px);
-}
-
-.theme-toggle-button:focus-visible {
-  box-shadow: var(--focus-ring);
-}
-
-.theme-toggle-slider {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  flex: 1;
-}
-
-.theme-toggle-icon {
-  width: 20px;
-  height: 20px;
-  transition: transform var(--transition-fast);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-toggle-button:hover .theme-toggle-icon {
-  transform: scale(1.1);
-}
-
-.theme-toggle-label {
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-base);
-  line-height: 1.2;
-}
 
 /* More Options Button */
 .more-options-button {
