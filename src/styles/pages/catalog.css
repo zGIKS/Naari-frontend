@@ -1183,7 +1183,7 @@
   border: 4px solid var(--border-color);
   border-top: 4px solid var(--primary-color);
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
   margin-bottom: var(--spacing-lg);
 }
 

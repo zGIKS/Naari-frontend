@@ -19,7 +19,7 @@
   border: 3px solid var(--border-color);
   border-top: 3px solid var(--primary-color);
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
   display: inline-block;
 }
 
@@ -192,7 +192,7 @@
   border: 2px solid transparent;
   border-top: 2px solid currentColor;
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
   margin-right: var(--spacing-sm);
 }
 
@@ -213,7 +213,7 @@
   border: 2px solid transparent;
   border-top: 2px solid currentColor;
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 .btn.loading .btn-spinner {
@@ -523,7 +523,7 @@
 }
 
 .animate-spin {
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 /* ==========================================================================
@@ -571,7 +571,7 @@
   border: 3px solid var(--border-color);
   border-top: 3px solid var(--primary-color);
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 /* ==========================================================================

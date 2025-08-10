@@ -241,7 +241,7 @@
   border: 2px solid transparent;
   border-top: 2px solid white;
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 /* ==========================================================================

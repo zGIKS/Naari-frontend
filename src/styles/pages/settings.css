@@ -417,7 +417,7 @@
   border: 2px solid var(--border-color);
   border-top: 2px solid var(--primary-color);
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 .settings-loading-overlay {
@@ -441,7 +441,7 @@
   border: 2px solid var(--border-color);
   border-top: 2px solid var(--primary-color);
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 .settings-option.loading {
@@ -464,7 +464,7 @@
   border: 2px solid var(--border-color);
   border-top: 2px solid var(--primary-color);
   border-radius: 50%;
-  animation: spin var(--transition-slow) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 /* ==========================================================================
