@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * PackageManager - Gestor de paquetes
@@ -26,9 +27,9 @@ export const PackageManager = ({ catalogFactory }) => {
 
   useEffect(() => {
     loadPackages();
-  }, []);
+  }, [loadPackages]);
 
-  const loadPackages = async () => {
+  const loadPackages = useCallback(async () => {
     setLoading(true);
     try {
       const data = await packageService.getAllPackages();
@@ -38,7 +39,7 @@ export const PackageManager = ({ catalogFactory }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [packageService]);
 
   const getFilteredPackages = () => {
     let filtered = packages;
@@ -203,7 +204,7 @@ export const PackageManager = ({ catalogFactory }) => {
       {/* Lista de paquetes */}
       <div className="packages-section">
         {loading ? (
-          <div className="loading-message">{t('common.loading')}</div>
+          <Spinner message={t('common.loading', 'Cargando...')} />
         ) : filteredPackages.length === 0 ? (
           <div className="empty-message">
             {filters.search || filters.type !== 'all' || filters.status !== 'all'

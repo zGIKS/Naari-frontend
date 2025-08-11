@@ -5,7 +5,7 @@ import LoginHeader from '../../../shared/components/LoginHeader';
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  const handleLoginSuccess = (user) => {
+  const handleLoginSuccess = () => {
     // La sesión ya fue creada por el SessionManager, solo navegamos
     navigate('/Calendar');
   };

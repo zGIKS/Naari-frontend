@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CalendarLayout from '../../../shared/components/CalendarLayout';
+import Spinner from '../../../shared/components/Spinner';
 import { BranchManager } from '../components/BranchManager';
 import { UserManager } from '../../../clients/presentation/components/UserManager';
 import { CatalogFactory } from '../../infrastructure/factories/CatalogFactory';
@@ -31,7 +32,7 @@ export const AdminCalendar = () => {
 
   useEffect(() => {
     // Inicializar factories con el token actual
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (token) {
       const catalogFactory = CatalogFactory.getInstance();
       catalogFactory.initialize(API_CONFIG.API_BASE, token);
@@ -75,7 +76,11 @@ export const AdminCalendar = () => {
 
   const renderActiveComponent = () => {
     if (!catalogFactory || !userFactory) {
-      return <div className="loading">Cargando...</div>;
+      return (
+        <div className="dashboard-loading">
+          <Spinner message="Inicializando panel..." />
+        </div>
+      );
     }
 
     switch (activeTab) {
@@ -91,10 +96,7 @@ export const AdminCalendar = () => {
   if (!catalogFactory || !userFactory) {
     return (
       <CalendarLayout>
-        <div className="admin-loading">
-          <div className="spinner"></div>
-          <p>{t('common.loading', 'Cargando...')}</p>
-        </div>
+        <Spinner message={t('common.loading', 'Cargando...')} />
       </CalendarLayout>
     );
   }

@@ -16,10 +16,34 @@ export const ClientManager = ({ clientFactory }) => {
   const [clients, setClients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const loadClients = useCallback(async () => {
+    if (!clientFactory) return;
+    
+    setIsLoading(true);
+    try {
+      const clientService = clientFactory.createClientService(t);
+      const response = await clientService.getClients();
+      
+      if (response.success) {
+        setClients(response.data || []);
+      } else {
+        console.error('Failed to load clients:', response.error);
+        showError(t('clients.error.load_failed', 'Error al cargar los clientes'));
+        setClients([]);
+      }
+    } catch (error) {
+      console.error('Error loading clients:', error);
+      showError(t('clients.error.network', 'Error de red al cargar los clientes'));
+      setClients([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [clientFactory, t, showError]);
+
   // Cargar clientes al montar el componente
   useEffect(() => {
     loadClients();
-  }, [clientFactory]);
+  }, [loadClients]);
 
   // Detectar cuando se regresa de crear un cliente y recargar la lista
   useEffect(() => {
@@ -27,35 +51,13 @@ export const ClientManager = ({ clientFactory }) => {
       loadClients();
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, navigate, location.pathname]);
-
-  const loadClients = useCallback(async () => {
-    if (!clientFactory) return;
-
-    setIsLoading(true);
-    try {
-      const clientService = clientFactory.createClientService(t);
-      const response = await clientService.getClients();
-
-      if (response.success) {
-        setClients(response.data);
-      } else {
-        showError( response.error || t('clients.error.load_failed', 'Error al cargar clientes'));
-      }
-    } catch (error) {
-      console.error('Error loading clients:', error);
-      showError( t('clients.error.network', 'Error de conexión'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [clientFactory]);
-
+  }, [location.state, navigate, location.pathname, loadClients]);
 
   const handleCreateNewClient = () => {
     navigate('/clients/create');
   };
 
-  const handleSearch = useCallback(async (searchTerm) => {
+  const handleSearch = useCallback(async () => {
     // La búsqueda se maneja localmente en ClientList por ahora
     // En el futuro se puede implementar búsqueda en el backend
   }, []);

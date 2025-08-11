@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Employee } from '../../domain/entities/Employee.js';
 import { useUserRole } from '../../../shared/hooks/useUserRole.js';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * EmployeeForm - Formulario para crear empleados
@@ -22,13 +23,13 @@ export const EmployeeForm = ({
   // Verificar si es el usuario actual editando su propio perfil
   const isEditingOwnProfile = () => {
     if (!employee) return false;
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (!token) return false;
     
     try {
       const tokenData = JSON.parse(atob(token.split('.')[1]));
       return tokenData.userId === employee.id || String(tokenData.userId) === String(employee.id);
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -371,7 +372,7 @@ export const EmployeeForm = ({
         >
           {isLoading ? (
             <>
-              <div className="spinner-small"></div>
+              <Spinner size="sm" message="" />
               {t('common.creating', 'Creando...')}
             </>
           ) : (

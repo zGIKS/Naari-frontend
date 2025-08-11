@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * DragDropPackageBuilder - Constructor de paquetes con drag and drop
@@ -29,7 +30,7 @@ export const DragDropPackageBuilder = ({
 
   useEffect(() => {
     loadAvailableItems();
-  }, []);
+  }, [loadAvailableItems]);
 
   useEffect(() => {
     // Notificar cambios en el paquete
@@ -38,7 +39,7 @@ export const DragDropPackageBuilder = ({
     }
   }, [packageItems, onPackageChange]);
 
-  const loadAvailableItems = async () => {
+  const loadAvailableItems = useCallback(async () => {
     setLoading(true);
     try {
       const [productsData, servicesData] = await Promise.all([
@@ -53,7 +54,7 @@ export const DragDropPackageBuilder = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [productService, serviceService]);
 
   const handleAddToPackage = (item, type) => {
     setPackageItems(prev => {
@@ -187,7 +188,7 @@ export const DragDropPackageBuilder = ({
 
             <div className="items-list">
               {loading ? (
-                <div className="loading">{t('common.loading')}</div>
+                <Spinner size="sm" />
               ) : (
                 getFilteredItems().map(item => (
                   <DraggableItem

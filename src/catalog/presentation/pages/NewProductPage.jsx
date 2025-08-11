@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * NewProductPage - Página para crear/editar productos
@@ -37,16 +38,16 @@ export const NewProductPage = ({ catalogFactory }) => {
     if (isEditing && productFromState) {
       setEditingProduct(productFromState);
     }
-  }, [productFromState, isEditing]);
+  }, [productFromState, isEditing, loadBranches]);
 
-  const loadBranches = async () => {
+  const loadBranches = useCallback(async () => {
     try {
       const data = await branchService.getAllBranches();
       setBranches(data.filter(branch => branch.isActive));
     } catch (error) {
       console.error('Error loading branches:', error);
     }
-  };
+  }, [branchService]);
 
 
   const handleSubmit = async (e) => {
@@ -93,7 +94,7 @@ export const NewProductPage = ({ catalogFactory }) => {
 
       if (isEditing && editingProduct) {
         // Para edición, excluir branchId del payload según especificación de API
-        const { branchId, ...updatePayload } = productData;
+        const { branchId: _, ...updatePayload } = productData;
         await productService.updateProduct(editingProduct.id, updatePayload);
       } else {
         await productService.createProduct(productData);
@@ -411,7 +412,7 @@ export const NewProductPage = ({ catalogFactory }) => {
               <button type="submit" className="btn btn-primary" disabled={submitLoading}>
                 {submitLoading ? (
                   <>
-                    <div className="spinner-small"></div>
+                    <Spinner size="sm" message="" />
                     {t('common.saving', 'Guardando...')}
                   </>
                 ) : (

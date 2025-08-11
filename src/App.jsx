@@ -20,20 +20,8 @@ const CreateClientPage = lazy(() => import('./clients/presentation/pages/CreateC
 const EditClientPage = lazy(() => import('./clients/presentation/pages/EditClientPage').then(module => ({ default: module.EditClientPage })));
 const PackagesPage = lazy(() => import('./catalog/presentation/pages/PackagesPage').then(module => ({ default: module.PackagesPage })));
 
-// Componente de loading mejorado
-const LoadingSpinner = () => (
-  <div className="loading-container" style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    background: 'var(--background-color)',
-    color: 'var(--text-color)'
-  }}>
-    <div className="spinner"></div>
-    <span style={{ marginLeft: '12px' }}>Cargando...</span>
-  </div>
-);
+// Componente de loading vacío para Suspense (sin spinner visible)
+const LoadingSpinner = () => null;
 
 function App() {
   return (

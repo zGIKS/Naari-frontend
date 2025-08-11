@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../hooks/useLanguage';
 import CalendarLayout from '../components/CalendarLayout';
+import Spinner from '../components/Spinner';
 
 const SunIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -149,7 +150,7 @@ const SettingsPage = () => {
                   </div>
                   {languageLoading && (
                     <div className="settings-loading-overlay">
-                      <div className="spinner"></div>
+                      <Spinner />
                     </div>
                   )}
                 </div>

@@ -1,5 +1,5 @@
 export class LoginStrategy {
-  async execute(credentials, authRepository, sessionManager) {
+  async execute() {
     throw new Error('execute method must be implemented');
   }
 }
@@ -35,14 +35,10 @@ export class ForceLoginStrategy extends LoginStrategy {
       sessionManager.invalidateCurrentSession();
     }
 
-    try {
-      // Autenticar y crear nueva sesión
-      const user = await authRepository.authenticate(credentials);
-      sessionManager.createSession(user, user.accessToken);
-      
-      return { success: true, user, error: null };
-    } catch (error) {
-      throw error;
-    }
+    // Autenticar y crear nueva sesión
+    const user = await authRepository.authenticate(credentials);
+    sessionManager.createSession(user, user.accessToken);
+    
+    return { success: true, user, error: null };
   }
 }

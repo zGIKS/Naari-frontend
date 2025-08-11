@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import Spinner from './Spinner';
 import './SearchBar.css';
 
 /**
@@ -50,7 +51,7 @@ export const SearchBar = ({
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, [searchTerm, triggerSearch]);
+  }, [searchTerm, triggerSearch, debounceMs]);
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
@@ -88,7 +89,7 @@ export const SearchBar = ({
           />
           {(isSearching || isLoading) && (
             <div className="search-loading">
-              <div className="spinner-small"></div>
+              <Spinner size="sm" message="" />
             </div>
           )}
           {searchTerm && !isSearching && !isLoading && (

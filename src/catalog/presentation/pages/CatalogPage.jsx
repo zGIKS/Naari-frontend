@@ -41,7 +41,7 @@ export const CatalogPage = () => {
 
   useEffect(() => {
     // Inicializar el factory con el token actual
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (token) {
       const factory = CatalogFactory.getInstance();
       factory.initialize(API_CONFIG.API_BASE, token);
@@ -56,7 +56,8 @@ export const CatalogPage = () => {
 
   const renderActiveComponent = () => {
     if (!catalogFactory) {
-      return <div className="loading">{t('common.loading', 'Cargando...')}</div>;
+      // No mostrar nada, ProtectedRoute maneja el loading
+      return null;
     }
 
     // Renderizar páginas de formularios específicas
@@ -84,14 +85,8 @@ export const CatalogPage = () => {
   };
 
   if (!catalogFactory) {
-    return (
-      <CalendarLayout>
-        <div className="catalog-loading">
-          <div className="spinner"></div>
-          <p>{t('common.loading', 'Cargando...')}</p>
-        </div>
-      </CalendarLayout>
-    );
+    // No mostrar spinner, ProtectedRoute ya maneja el loading
+    return null;
   }
 
   return (

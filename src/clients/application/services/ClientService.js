@@ -223,7 +223,7 @@ export class ClientService {
           return this.t('clients.error.unauthorized_login_again', 'No tienes autorización. Inicia sesión nuevamente.');
         case 403:
           return this.t('clients.error.no_permissions', 'No tienes permisos para realizar esta acción.');
-        case 409:
+        case 409: {
           // Intentar obtener el mensaje específico del backend
           const errorMessage = response.data?.message || '';
           if (errorMessage.includes('DNI')) {
@@ -236,6 +236,7 @@ export class ClientService {
             return this.t('clients.error.phone_already_exists', 'Ya existe un cliente con este teléfono.');
           }
           return this.t('clients.error.client_already_exists', 'Ya existe un cliente con este DNI o email.');
+        }
         case 500:
           return this.t('clients.error.server_error', 'Error del servidor. Intenta nuevamente más tarde.');
         default:
@@ -267,7 +268,7 @@ export class ClientService {
   }
 
   _isValidPhone(phone) {
-    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    const cleanPhone = phone.replace(/[\s\-()]/g, '');
     return /^\d{9,}$/.test(cleanPhone);
   }
 }

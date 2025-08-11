@@ -62,7 +62,7 @@ export const BranchForm = ({ branch, onSubmit, onCancel }) => {
     setSubmitting(true);
     try {
       await onSubmit(formData);
-    } catch (error) {
+    } catch {
       // El error será manejado por el componente padre
     } finally {
       setSubmitting(false);
@@ -181,7 +181,7 @@ export const BranchForm = ({ branch, onSubmit, onCancel }) => {
           >
             {submitting ? (
               <>
-                <div className="btn-spinner"></div>
+                <div className="spinner-sm"></div>
                 {t('common.saving', 'Guardando...')}
               </>
             ) : (

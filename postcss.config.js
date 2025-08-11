@@ -1,3 +1,4 @@
+/* eslint-env node */
 // PostCSS configuration for ES modules
 import purgecss from '@fullhuman/postcss-purgecss';
 

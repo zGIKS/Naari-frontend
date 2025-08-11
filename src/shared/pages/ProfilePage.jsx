@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { API_CONFIG } from '../config/ApiConfig';
@@ -7,6 +7,7 @@ import CalendarLayout from '../components/CalendarLayout';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { useToast } from '../components/ToastProvider';
+import Spinner from '../components/Spinner';
 
 const EditIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -77,15 +78,7 @@ const ProfilePage = () => {
     newEmail: ''
   });
 
-  useEffect(() => {
-    fetchProfile();
-  }, [navigate]);
-
-  const isAdmin = () => {
-    return profile?.role === 'administrator' || profile?.roles?.includes('administrator');
-  };
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     setLoading(true);
     setErrors({});
     
@@ -133,6 +126,14 @@ const ProfilePage = () => {
     } finally {
       setLoading(false);
     }
+  }, [navigate, showError]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const isAdmin = () => {
+    return profile?.role === 'administrator' || profile?.roles?.includes('administrator');
   };
 
   const validateForm = () => {
@@ -191,7 +192,7 @@ const ProfilePage = () => {
         return;
       }
       
-      const token = sessionStorage.getItem('naari_token');
+      const token = localStorage.getItem('naari_auth_token');
       console.log('Token being used:', token ? 'Token exists' : 'No token found');
       
       if (!token) {
@@ -358,13 +359,13 @@ const ProfilePage = () => {
     setErrors({});
   };
 
-  const handleEmailChangeConfirm = async () => {
+  const _handleEmailChangeConfirm = async () => {
     setSaving(true);
     setEmailChangeModal({ ...emailChangeModal, isOpen: false });
 
     try {
-      const authService = AuthServiceFactory.getInstance();
-      const token = sessionStorage.getItem('naari_token');
+      const _authService = AuthServiceFactory.getInstance();
+      const token = localStorage.getItem('naari_auth_token');
       
       const updateData = {
         email: emailChangeModal.newEmail
@@ -421,7 +422,7 @@ const ProfilePage = () => {
     }
   };
 
-  const handleEmailChangeCancel = () => {
+  const _handleEmailChangeCancel = () => {
     setEmailChangeModal({
       isOpen: false,
       oldEmail: '',
@@ -433,12 +434,7 @@ const ProfilePage = () => {
 
   const profileContent = () => {
     if (loading) {
-      return (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>{t('common.loading', 'Cargando...')}</p>
-        </div>
-      );
+      return null; // Sin spinner durante el desarrollo
     }
 
     return (
@@ -474,7 +470,7 @@ const ProfilePage = () => {
                 >
                   {saving ? (
                     <>
-                      <div className="btn-spinner"></div>
+                      <div className="spinner-sm"></div>
                       {t('common.saving', 'Guardando...')}
                     </>
                   ) : (

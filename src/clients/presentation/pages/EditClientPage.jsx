@@ -6,6 +6,7 @@ import { ClientForm } from '../components/ClientForm';
 import CalendarLayout from '../../../shared/components/CalendarLayout';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * EditClientPage - Página dedicada para editar un cliente existente
@@ -22,7 +23,7 @@ export const EditClientPage = () => {
 
   useEffect(() => {
     // Inicializar el factory con el token actual
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (token) {
       const factory = ClientFactory.getInstance();
       factory.initialize(API_CONFIG.API_BASE, token);
@@ -40,7 +41,7 @@ export const EditClientPage = () => {
       showError( t('clients.error.no_client_data', 'No se encontraron datos del cliente'));
       navigate('/clients');
     }
-  }, [location.state, navigate, t]);
+  }, [location.state, navigate, t, showError]);
 
 
   const handleUpdateClient = async (clientData) => {
@@ -77,8 +78,7 @@ export const EditClientPage = () => {
     return (
       <CalendarLayout>
         <div className="edit-client-page-loading">
-          <div className="spinner"></div>
-          <p>{t('common.loading', 'Cargando...')}</p>
+          <Spinner  />
         </div>
       </CalendarLayout>
     );

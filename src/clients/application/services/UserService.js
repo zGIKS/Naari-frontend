@@ -228,7 +228,7 @@ export class UserService {
       }
 
       // Verificar si es el usuario actual
-      const token = sessionStorage.getItem('naari_token');
+      const token = localStorage.getItem('naari_auth_token');
       let isCurrentUser = false;
       
       if (token) {
@@ -269,7 +269,7 @@ export class UserService {
       
       if (!isCurrentUser && employeeData.role) {
         // Verificar si el usuario actual es administrador antes de permitir cambios de rol
-        const token = sessionStorage.getItem('naari_token');
+        const token = localStorage.getItem('naari_auth_token');
         let isAdmin = false;
         
         if (token) {

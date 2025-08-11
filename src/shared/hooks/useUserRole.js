@@ -18,7 +18,7 @@ export const clearUserCache = () => {
 export const useUserRole = () => {
   const [userRole, setUserRole] = useState(null);
   const [userRoles, setUserRoles] = useState([]);
-  const [permissions, setPermissions] = useState([]);
+  const [permissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const { i18n } = useTranslation();

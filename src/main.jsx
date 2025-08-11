@@ -46,9 +46,6 @@ const loadNonCriticalCSS = () => {
 const initializeApp = () => {
   const rootElement = document.getElementById('root');
   
-  // Limpiar el loading inicial del HTML
-  rootElement.innerHTML = '';
-  
   const root = createRoot(rootElement);
   
   root.render(

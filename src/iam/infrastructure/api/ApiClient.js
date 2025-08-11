@@ -17,7 +17,7 @@ export class ApiClient {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          sessionStorage.removeItem('naari_token');
+          localStorage.removeItem('naari_auth_token');
         }
         return Promise.reject(error);
       }
@@ -52,7 +52,7 @@ export class ApiClient {
         (response) => response,
         (error) => {
           if (error.response?.status === 401) {
-            sessionStorage.removeItem('naari_token');
+            localStorage.removeItem('naari_auth_token');
           }
           return Promise.reject(error);
         }

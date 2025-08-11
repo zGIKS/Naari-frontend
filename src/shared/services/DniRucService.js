@@ -7,7 +7,7 @@ export async function searchByDni(dni) {
   if (!dni || dni.length !== 8) return null;
   
   try {
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (!token) {
       console.error('No authentication token found');
       return null;
@@ -56,7 +56,7 @@ export async function searchByRuc(ruc) {
   if (!ruc || ruc.length !== 11) return null;
   
   try {
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (!token) {
       console.error('No authentication token found');
       return null;

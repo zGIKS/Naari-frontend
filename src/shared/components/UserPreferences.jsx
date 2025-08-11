@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../hooks/useLanguage';
+import Spinner from './Spinner';
 
 /**
  * UserPreferences - Componente para configurar preferencias de usuario
@@ -21,12 +22,7 @@ export const UserPreferences = () => {
   };
 
   if (themeLoading || languageLoading) {
-    return (
-      <div className="preferences-loading">
-        <div className="spinner"></div>
-        <p>{t('common.loading', 'Cargando preferencias...')}</p>
-      </div>
-    );
+    return null; // Sin spinner, carga silenciosa
   }
 
   return (

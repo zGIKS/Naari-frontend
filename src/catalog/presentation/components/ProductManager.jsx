@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * ProductManager - Gestor de productos
@@ -12,6 +13,7 @@ export const ProductManager = ({ catalogFactory }) => {
   const [products, setProducts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, productId: null, productName: '' });
   const [qrModal, setQrModal] = useState({ isOpen: false, qrCodeUrl: '', productName: '', productId: '' });
 
@@ -19,21 +21,16 @@ export const ProductManager = ({ catalogFactory }) => {
   const branchService = catalogFactory.getBranchService();
 
 
-  useEffect(() => {
-    loadBranches();
-    loadProducts();
-  }, []);
-
-  const loadBranches = async () => {
+  const loadBranches = useCallback(async () => {
     try {
       const data = await branchService.getAllBranches();
       setBranches(data.filter(branch => branch.isActive));
     } catch (error) {
       console.error('Error loading branches:', error);
     }
-  };
+  }, [branchService]);
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
       const data = await productService.getAllProducts();
@@ -50,7 +47,12 @@ export const ProductManager = ({ catalogFactory }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [productService]);
+
+  useEffect(() => {
+    loadBranches();
+    loadProducts();
+  }, [loadBranches, loadProducts]);
 
 
   const handleCreateProduct = () => {
@@ -95,7 +97,6 @@ export const ProductManager = ({ catalogFactory }) => {
       });
 
       // Convertir SVG a data URL
-      const svgData = new Blob([qrSvg], { type: 'image/svg+xml;charset=utf-8' });
       const qrCodeUrl = `data:image/svg+xml;base64,${btoa(qrSvg)}`;
       
       setQrModal({
@@ -117,16 +118,6 @@ export const ProductManager = ({ catalogFactory }) => {
            product.qr_uuid !== '';
   };
 
-  // Función para obtener el estado del producto
-  const getProductStatus = (product) => {
-    if (product.stock === 0 || product.stock === '0') {
-      return { status: 'out_of_stock', message: t('admin.out_of_stock', 'Sin stock'), showQR: false };
-    } else if (product.qr_uuid && product.qr_uuid !== null && product.qr_uuid !== '') {
-      return { status: 'available', message: t('admin.available', 'Disponible'), showQR: true };
-    } else {
-      return { status: 'updating', message: t('admin.updating', 'Actualizando...'), showQR: false };
-    }
-  };
 
   const handleCloseQRModal = () => {
     setQrModal({ isOpen: false, qrCodeUrl: '', productName: '', productId: '' });
@@ -142,7 +133,7 @@ export const ProductManager = ({ catalogFactory }) => {
       await loadProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
-      setError(getErrorMessage(error));
+      setError(error.message || 'Error al eliminar el producto');
     }
   };
 
@@ -174,10 +165,19 @@ export const ProductManager = ({ catalogFactory }) => {
       </div>
 
       <div className="manager-content">
+        {error && (
+          <div className="error-message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            {error}
+          </div>
+        )}
         {loading ? (
           <div className="loading-state">
-            <div className="spinner"></div>
-            <p>{t('common.loading', 'Cargando productos...')}</p>
+            <Spinner message={t('products.loading', 'Cargando productos...')} />
           </div>
         ) : (
           <div className="product-list">
@@ -316,164 +316,6 @@ export const ProductManager = ({ catalogFactory }) => {
         )}
       </div>
 
-      {false && (
-        <div className="form-modal">
-          <div className="form-overlay" onClick={() => setShowForm(false)}></div>
-          <div className="form-container">
-            <div className="product-form">
-              <h3>{editingProduct ? t('admin.edit_product', 'Editar Producto') : t('admin.new_product', 'Nuevo Producto')}</h3>
-              {error && (
-                <div className="error-message">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                  </svg>
-                  {error}
-                </div>
-              )}
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                handleSubmit({
-                  name: formData.get('name'),
-                  description: formData.get('description'),
-                  brand: formData.get('brand'),
-                  stock: parseInt(formData.get('stock')),
-                  purchasePrice: parseFloat(formData.get('purchasePrice')),
-                  salePrice: parseFloat(formData.get('salePrice')),
-                  lowStockAlert: parseInt(formData.get('lowStockAlert')),
-                  expirationDate: formData.get('expirationDate'),
-                  branchId: formData.get('branchId')
-                });
-              }}>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.product_name', 'Nombre del Producto')}</label>
-                    <input 
-                      name="name" 
-                      type="text" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.name || ''}
-                      required 
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.product_brand', 'Marca')}</label>
-                    <input 
-                      name="brand" 
-                      type="text" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.brand || ''}
-                      required 
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>{t('admin.product_description', 'Descripción')}</label>
-                  <textarea 
-                    name="description" 
-                    className="form-input"
-                    defaultValue={editingProduct?.description || ''}
-                  ></textarea>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.stock', editingProduct ? 'Stock' : 'Stock Inicial')}</label>
-                    <input 
-                      name="stock" 
-                      type="number" 
-                      min="0" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.stock || ''}
-                      required 
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.low_stock_alert', 'Alerta Stock Bajo')}</label>
-                    <input 
-                      name="lowStockAlert" 
-                      type="number" 
-                      min="0" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.lowStockAlert || ''}
-                      required 
-                    />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.purchase_price', 'Precio Compra')}</label>
-                    <input 
-                      name="purchasePrice" 
-                      type="number" 
-                      step="0.01" 
-                      min="0" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.purchasePrice || ''}
-                      required 
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>{t('admin.sale_price', 'Precio Venta')}</label>
-                    <input 
-                      name="salePrice" 
-                      type="number" 
-                      step="0.01" 
-                      min="0" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.salePrice || ''}
-                      required 
-                    />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{t('admin.expiration_date', 'Fecha de Vencimiento')}</label>
-                    <input 
-                      name="expirationDate" 
-                      type="date" 
-                      className="form-input" 
-                      defaultValue={editingProduct?.expirationDate ? 
-                        editingProduct.expirationDate.toISOString().split('T')[0] : ''
-                      }
-                      required 
-                    />
-                  </div>
-                  {!editingProduct && (
-                    <div className="form-group">
-                      <label>{t('admin.select_branch', 'Sucursal')}</label>
-                      <select name="branchId" className="form-input" required>
-                        <option value="">{t('admin.select_branch_option', 'Selecciona una sucursal')}</option>
-                        {branches.map(branch => (
-                          <option key={branch.id} value={branch.id}>
-                            {branch.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
-                <div className="form-actions">
-                  <button type="button" onClick={() => setShowForm(false)} className="btn btn-secondary" disabled={submitLoading}>
-                    {t('common.cancel', 'Cancelar')}
-                  </button>
-                  <button type="submit" className="btn btn-primary" disabled={submitLoading}>
-                    {submitLoading ? (
-                      <>
-                        <div className="spinner-sm"></div>
-                        {editingProduct ? t('common.saving', 'Guardando...') : t('common.creating', 'Creando...')}
-                      </>
-                    ) : (
-                      editingProduct ? t('common.save', 'Guardar') : t('common.create', 'Crear')
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
       <ConfirmationModal
         isOpen={confirmDelete.isOpen}

@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BranchForm } from './BranchForm';
 import { BranchList } from './BranchList';
 import { BranchStatusConfirmationModal } from '../../../shared/components/BranchStatusConfirmationModal';
 import { useToast } from '../../../shared/components/ToastProvider';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * BranchManager - Gestor de sucursales
  * Implementa el patrón Observer para reaccionar a cambios
  */
-export const BranchManager = ({ catalogFactory, userFactory }) => {
+export const BranchManager = ({ catalogFactory }) => {
   const { t } = useTranslation();
   const { showSuccess, showError } = useToast();
   const [branches, setBranches] = useState([]);
@@ -24,6 +25,20 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
   });
 
   const branchService = catalogFactory.getBranchService();
+
+  const loadBranches = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await branchService.getAllBranches();
+      setBranches(data);
+    } catch (error) {
+      console.error('Error loading branches:', error);
+      setError('Error al cargar las sucursales');
+    } finally {
+      setLoading(false);
+    }
+  }, [branchService]);
 
   // Observer para reaccionar a eventos del servicio
   useEffect(() => {
@@ -58,25 +73,12 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
     return () => {
       branchService.unsubscribe(observer);
     };
-  }, [branchService]);
+  }, [branchService, loadBranches]);
 
   // Cargar sucursales al montar el componente
   useEffect(() => {
     loadBranches();
-  }, []);
-
-  const loadBranches = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await branchService.getAllBranches();
-      setBranches(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadBranches]);
 
   const handleCreateNew = () => {
     setEditingBranch(null);
@@ -197,8 +199,7 @@ export const BranchManager = ({ catalogFactory, userFactory }) => {
           </div>
         ) : loading ? (
           <div className="loading-state">
-            <div className="spinner"></div>
-            <p>{t('common.loading', 'Cargando sucursales...')}</p>
+            <Spinner message={t('branches.loading', 'Cargando sucursales...')} />
           </div>
         ) : (
           <BranchList

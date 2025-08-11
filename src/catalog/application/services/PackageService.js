@@ -6,7 +6,7 @@ import { Package, PackageItem } from '../../domain/entities/Package.js';
  */
 
 class PackageValidationStrategy {
-  validate(packageData) {
+  validate() {
     throw new Error('Method must be implemented by subclass');
   }
 }

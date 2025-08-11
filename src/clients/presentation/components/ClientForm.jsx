@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { searchByDni, searchByRuc } from '../../../shared/services/DniRucService';
 import { useTranslation } from 'react-i18next';
 import { Client } from '../../domain/entities/Client.js';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * ClientForm - Formulario para crear/editar clientes
@@ -67,7 +68,7 @@ export const ClientForm = ({
       setDniSearchError(null);
     } catch (error) {
       console.error('Error al buscar DNI:', error);
-      setDniSearchError('Error al consultar RENIEC. Intente nuevamente.');
+      setDniSearchError(t('clients.error.dni_search_failed', 'Error al consultar RENIEC. Intente nuevamente.'));
     }
     
     setDniSearchLoading(false);
@@ -105,7 +106,7 @@ export const ClientForm = ({
       setRucSearchError(null);
     } catch (error) {
       console.error('Error al buscar RUC:', error);
-      setRucSearchError('Error al consultar SUNAT. Intente nuevamente.');
+      setRucSearchError(t('clients.error.ruc_search_failed', 'Error al consultar SUNAT. Intente nuevamente.'));
     }
     
     setRucSearchLoading(false);
@@ -144,7 +145,7 @@ export const ClientForm = ({
     }
     
     // Validar teléfono si se proporciona
-    if (formData.phone && !/^\d{9,}$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
+    if (formData.phone && !/^\d{9,}$/.test(formData.phone.replace(/[\s\-()]/g, ''))) {
       newErrors.phone = t('clients.validation.phone_invalid', 'Teléfono debe tener al menos 9 dígitos');
     }
     
@@ -199,7 +200,7 @@ export const ClientForm = ({
                 type="button"
                 onClick={handleDniSearch}
                 disabled={dniSearchLoading || !(formData.dni && formData.dni.length === 8)}
-                title="Buscar información por DNI"
+                title={t('clients.form.search_dni', 'Buscar información por DNI')}
                 style={{
                   position: 'absolute',
                   right: '8px',
@@ -283,7 +284,7 @@ export const ClientForm = ({
                 type="button"
                 onClick={handleRucSearch}
                 disabled={rucSearchLoading || !(formData.ruc && formData.ruc.length === 11)}
-                title="Buscar información por RUC"
+                title={t('clients.form.search_ruc', 'Buscar información por RUC')}
                 style={{
                   position: 'absolute',
                   right: '8px',
@@ -657,7 +658,7 @@ export const ClientForm = ({
         >
           {isLoading ? (
             <>
-              <div className="spinner-small"></div>
+              <Spinner size="sm" message="" />
               {t('common.saving', 'Guardando...')}
             </>
           ) : (

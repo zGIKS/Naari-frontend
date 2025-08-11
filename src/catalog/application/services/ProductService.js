@@ -7,7 +7,7 @@ import { Product } from '../../domain/entities/Product.js';
 
 // Strategy pattern para validaciones
 class ProductValidationStrategy {
-  validate(product) {
+  validate() {
     throw new Error('Method must be implemented by subclass');
   }
 }

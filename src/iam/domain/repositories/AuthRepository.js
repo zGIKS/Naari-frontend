@@ -1,5 +1,5 @@
 export class AuthRepository {
-  async authenticate(credentials) {
+  async authenticate() {
     throw new Error('authenticate method must be implemented');
   }
 }

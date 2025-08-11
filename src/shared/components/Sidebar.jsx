@@ -99,7 +99,7 @@ const Sidebar = ({ isOpen }) => {
   const [navigationItems, setNavigationItems] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
-  const { userRoles, userRole, permissions, loading } = useUserRole();
+  const { userRoles, userRole: _userRole, permissions, loading } = useUserRole();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();

@@ -1,24 +1,23 @@
 export class NavigationFactory {
-  static createSidebarItems(userRoles, permissions = []) {
+  static createSidebarItems(userRoles) {
     const hasRole = (role) => userRoles?.includes(role);
-    const hasPermission = (permission) => permissions?.includes(permission);
 
     if (hasRole('administrator')) {
-      return this.createAdministratorNavigation(permissions);
+      return this.createAdministratorNavigation();
     }
     
     if (hasRole('receptionist')) {
-      return this.createReceptionistNavigation(permissions);
+      return this.createReceptionistNavigation();
     }
     
     if (hasRole('esthetician')) {
-      return this.createEstheticianNavigation(permissions);
+      return this.createEstheticianNavigation();
     }
 
     return [];
   }
 
-  static createAdministratorNavigation(permissions) {
+  static createAdministratorNavigation() {
     return [
       {
         icon: 'CalendarIcon',
@@ -105,7 +104,7 @@ export class NavigationFactory {
     ];
   }
 
-  static createReceptionistNavigation(permissions) {
+  static createReceptionistNavigation() {
     return [
       {
         icon: 'CalendarIcon',
@@ -153,7 +152,7 @@ export class NavigationFactory {
     ];
   }
 
-  static createEstheticianNavigation(permissions) {
+  static createEstheticianNavigation() {
     return [
       {
         icon: 'CalendarIcon',

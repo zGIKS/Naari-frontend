@@ -17,7 +17,7 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-const LoginForm = ({ onLoginSuccess }) => {
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +38,8 @@ const LoginForm = ({ onLoginSuccess }) => {
       
       if (result.success && result.user) {
         console.log('LoginForm - Login successful, redirecting to Calendar'); // Debug log
-        window.location.href = '/Calendar';
+        // Forzar recarga de la página para asegurar redirección
+        window.location.replace('/Calendar');
       } else {
         console.log('LoginForm - Login failed:', result.error); // Debug log
         // Mapear errores específicos de sesión
@@ -103,7 +104,7 @@ const LoginForm = ({ onLoginSuccess }) => {
           disabled={loading}
           className="submit-button"
         >
-          {loading ? '...' : t('login.submit')}
+          {loading ? 'Iniciando sesión...' : t('login.submit')}
         </button>
       </form>
     </div>

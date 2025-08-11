@@ -4,6 +4,7 @@ import { API_CONFIG } from '../config/ApiConfig';
 
 const ThemeContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -19,7 +20,7 @@ export const ThemeProvider = ({ children }) => {
 
   // Inicializar servicio de preferencias
   useEffect(() => {
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (token) {
       const service = new UserPreferencesService(API_CONFIG.API_BASE, token);
       setPreferencesService(service);

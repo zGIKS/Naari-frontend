@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * ServiceManager - Gestor de servicios estéticos
@@ -33,36 +34,25 @@ export const ServiceManager = ({ catalogFactory }) => {
     return service.treatmentFrequency; // Fallback para datos antiguos
   };
 
-  useEffect(() => {
-    loadBranches();
-  }, []);
-
-  useEffect(() => {
-    if (branches.length > 0) {
-      loadCategories();
-      loadServices();
-    }
-  }, [branches]);
-
-  const loadBranches = async () => {
+  const loadBranches = useCallback(async () => {
     try {
       const data = await branchService.getAllBranches();
       setBranches(data.filter(branch => branch.isActive));
     } catch (error) {
       console.error('Error loading branches:', error);
     }
-  };
+  }, [branchService]);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const data = await categoryService.getAllCategoriesFromAllBranches(branches);
       setCategories(data);
     } catch (error) {
       console.error('Error loading categories:', error);
     }
-  };
+  }, [categoryService, branches]);
 
-  const loadServices = async () => {
+  const loadServices = useCallback(async () => {
     setLoading(true);
     try {
       const data = await serviceService.getAllServices();
@@ -72,7 +62,18 @@ export const ServiceManager = ({ catalogFactory }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [serviceService]);
+
+  useEffect(() => {
+    loadBranches();
+  }, [loadBranches]);
+
+  useEffect(() => {
+    if (branches.length > 0) {
+      loadCategories();
+      loadServices();
+    }
+  }, [branches, loadCategories, loadServices]);
 
   const handleEditService = async (service) => {
     try {
@@ -107,7 +108,7 @@ export const ServiceManager = ({ catalogFactory }) => {
       setServices(services.filter(service => service.id !== serviceId));
     } catch (error) {
       console.error('Error deleting service:', error);
-      alert('Error al eliminar el servicio');
+      alert(t('admin.service_error_delete', 'Error al eliminar el servicio'));
     }
   };
 
@@ -140,8 +141,7 @@ export const ServiceManager = ({ catalogFactory }) => {
       <div className="manager-content">
         {loading ? (
           <div className="loading-state">
-            <div className="spinner"></div>
-            <p>{t('common.loading', 'Cargando servicios...')}</p>
+            <Spinner message={t('services.loading', 'Cargando servicios...')} />
           </div>
         ) : (
           <div className="service-list">

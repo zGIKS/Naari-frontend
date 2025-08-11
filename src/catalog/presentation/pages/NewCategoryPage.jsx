@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * NewCategoryPage - Página para crear/editar categorías
@@ -35,16 +36,16 @@ export const NewCategoryPage = ({ catalogFactory }) => {
         branchId: categoryFromState.branchId
       });
     }
-  }, [categoryFromState, isEditing]);
+  }, [categoryFromState, isEditing, loadBranches]);
 
-  const loadBranches = async () => {
+  const loadBranches = useCallback(async () => {
     try {
       const data = await branchService.getAllBranches();
       setBranches(data.filter(branch => branch.isActive));
     } catch (error) {
       console.error('Error loading branches:', error);
     }
-  };
+  }, [branchService]);
 
 
   const handleInputChange = (e) => {
@@ -296,7 +297,7 @@ export const NewCategoryPage = ({ catalogFactory }) => {
               <button type="submit" className="btn btn-primary" disabled={submitLoading}>
                 {submitLoading ? (
                   <>
-                    <div className="spinner-small"></div>
+                    <Spinner size="sm" message="" />
                     {t('common.saving', 'Guardando...')}
                   </>
                 ) : (

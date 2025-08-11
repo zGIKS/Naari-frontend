@@ -6,6 +6,7 @@ import { ClientForm } from '../components/ClientForm';
 import CalendarLayout from '../../../shared/components/CalendarLayout';
 import { ClientFactory } from '../../infrastructure/factories/ClientFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * CreateClientPage - Página dedicada para crear un nuevo cliente
@@ -19,7 +20,7 @@ export const CreateClientPage = () => {
 
   useEffect(() => {
     // Inicializar el factory con el token actual
-    const token = sessionStorage.getItem('naari_token');
+    const token = localStorage.getItem('naari_auth_token');
     if (token) {
       const factory = ClientFactory.getInstance();
       factory.initialize(API_CONFIG.API_BASE, token);
@@ -62,8 +63,7 @@ export const CreateClientPage = () => {
     return (
       <CalendarLayout>
         <div className="create-client-page-loading">
-          <div className="spinner"></div>
-          <p>{t('common.loading', 'Cargando...')}</p>
+          <Spinner  />
         </div>
       </CalendarLayout>
     );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserPreferencesService } from '../services/UserPreferencesService';
 import { API_CONFIG } from '../config/ApiConfig';
@@ -8,23 +8,8 @@ export const useLanguage = () => {
   const [loading, setLoading] = useState(true);
   const [preferencesService, setPreferencesService] = useState(null);
 
-  // Inicializar servicio de preferencias
-  useEffect(() => {
-    const token = sessionStorage.getItem('naari_token');
-    if (token) {
-      const service = new UserPreferencesService(API_CONFIG.API_BASE, token);
-      setPreferencesService(service);
-      loadUserLanguagePreference(service);
-    } else {
-      // Si no hay token, usar localStorage como fallback
-      const savedLanguage = localStorage.getItem('naari_language') || 'es';
-      i18n.changeLanguage(savedLanguage);
-      setLoading(false);
-    }
-  }, [i18n]);
-
   // Cargar preferencia de idioma del servidor
-  const loadUserLanguagePreference = async (service) => {
+  const loadUserLanguagePreference = useCallback(async (service) => {
     try {
       setLoading(true);
       console.log('Loading user language preference...');
@@ -52,7 +37,22 @@ export const useLanguage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [i18n]);
+
+  // Inicializar servicio de preferencias
+  useEffect(() => {
+    const token = localStorage.getItem('naari_auth_token');
+    if (token) {
+      const service = new UserPreferencesService(API_CONFIG.API_BASE, token);
+      setPreferencesService(service);
+      loadUserLanguagePreference(service);
+    } else {
+      // Si no hay token, usar localStorage como fallback
+      const savedLanguage = localStorage.getItem('naari_language') || 'es';
+      i18n.changeLanguage(savedLanguage);
+      setLoading(false);
+    }
+  }, [i18n, loadUserLanguagePreference]);
 
   // Cambiar idioma
   const changeLanguage = async (newLanguage) => {

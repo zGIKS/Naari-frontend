@@ -124,7 +124,7 @@ export default defineConfig({
         entryFileNames: 'assets/js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
-          const ext = info[info.length - 1];
+          const _ext = info[info.length - 1];
           if (/\.(css)$/.test(assetInfo.name)) {
             return `assets/css/[name]-[hash:8].[ext]`;
           }
@@ -207,6 +207,7 @@ export default defineConfig({
   assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
   
   // Variables de entorno
+  // Note: ESLint may not know about `process` in ESM config; these are evaluated by Node at build time.
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
     __PROD__: JSON.stringify(process.env.NODE_ENV === 'production')

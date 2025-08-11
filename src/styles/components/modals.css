@@ -434,14 +434,7 @@ body.modal-open {
   gap: var(--spacing-lg);
 }
 
-.loading-spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--bg-tertiary);
-  border-top: 4px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
+/* Removed conflicting .loading-spinner rules to use shared spinner styles */
 
 /* ==========================================================================
    Modal Animations

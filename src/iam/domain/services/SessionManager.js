@@ -86,7 +86,7 @@ export class SessionManager {
         this.isValidatingSession = false;
         return false;
       }
-    } catch (error) {
+    } catch {
       this.clearSession();
       this.isValidatingSession = false;
       return false;
@@ -169,14 +169,14 @@ export class SessionManager {
   }
 
   getStoredToken() {
-    return sessionStorage.getItem('naari_token');
+    return localStorage.getItem('naari_auth_token');
   }
 
   storeToken(token) {
-    sessionStorage.setItem('naari_token', token);
+    localStorage.setItem('naari_auth_token', token);
   }
 
   removeStoredToken() {
-    sessionStorage.removeItem('naari_token');
+    localStorage.removeItem('naari_auth_token');
   }
 }

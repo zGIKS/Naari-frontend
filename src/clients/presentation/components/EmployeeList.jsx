@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole } from '../../../shared/hooks/useUserRole.js';
+import Spinner from '../../../shared/components/Spinner';
 
 export const EmployeeList = ({ 
   employees = [], 
-  branches = [], 
   onEdit, 
   onToggleStatus, 
   onSearch,
@@ -91,7 +91,6 @@ export const EmployeeList = ({
     debounceTimeout.current = setTimeout(() => {
       triggerSearch(searchTerm);
     }, 500);
-    // eslint-disable-next-line
     return () => debounceTimeout.current && clearTimeout(debounceTimeout.current);
   }, [searchTerm, triggerSearch]);
 
@@ -124,8 +123,7 @@ export const EmployeeList = ({
   if (isLoading) {
     return (
       <div className="employee-list-loading">
-        <div className="spinner"></div>
-        <p>{t('common.loading', 'Cargando...')}</p>
+        <Spinner />
       </div>
     );
   }
@@ -152,7 +150,7 @@ export const EmployeeList = ({
             />
             {(isSearching || isLoading) && (
               <div className="search-loading">
-                <div className="spinner-small"></div>
+                <Spinner size="sm" message="" />
               </div>
             )}
             {searchTerm && !isSearching && !isLoading && (

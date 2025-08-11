@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * NewServicePage - Página para crear/editar servicios
@@ -27,31 +28,31 @@ export const NewServicePage = ({ catalogFactory }) => {
     if (isEditing && serviceFromState) {
       setEditingService(serviceFromState);
     }
-  }, [serviceFromState, isEditing]);
+  }, [serviceFromState, isEditing, loadBranches]);
 
   useEffect(() => {
     if (branches.length > 0) {
       loadCategories();
     }
-  }, [branches]);
+  }, [branches, loadCategories]);
 
-  const loadBranches = async () => {
+  const loadBranches = useCallback(async () => {
     try {
       const data = await branchService.getAllBranches();
       setBranches(data.filter(branch => branch.isActive));
     } catch (error) {
       console.error('Error loading branches:', error);
     }
-  };
+  }, [branchService]);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const data = await categoryService.getAllCategoriesFromAllBranches(branches);
       setCategories(data);
     } catch (error) {
       console.error('Error loading categories:', error);
     }
-  };
+  }, [categoryService, branches]);
 
 
   const handleSubmit = async (e) => {
@@ -469,7 +470,7 @@ export const NewServicePage = ({ catalogFactory }) => {
               <button type="submit" className="btn btn-primary" disabled={submitLoading}>
                 {submitLoading ? (
                   <>
-                    <div className="spinner-small"></div>
+                    <Spinner size="sm" message="" />
                     {t('common.saving', 'Guardando...')}
                   </>
                 ) : (

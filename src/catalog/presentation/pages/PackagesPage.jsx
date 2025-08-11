@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import CalendarLayout from '../../../shared/components/CalendarLayout';
+import Spinner from '../../../shared/components/Spinner';
 import { CatalogFactory } from '../../infrastructure/factories/CatalogFactory';
 import { API_CONFIG } from '../../../shared/config/ApiConfig';
 import './PackagesPage.css';
@@ -22,13 +23,9 @@ export const PackagesPage = () => {
   const [currentView, setCurrentView] = useState('list'); // 'list' or 'create'
   const [selectedPackage, setSelectedPackage] = useState(null);
 
-  useEffect(() => {
-    initializeCatalogFactory();
-  }, []);
-
-  const initializeCatalogFactory = () => {
+  const initializeCatalogFactory = useCallback(() => {
     try {
-      const token = sessionStorage.getItem('naari_token');
+      const token = localStorage.getItem('naari_auth_token');
       if (token) {
         const factory = CatalogFactory.getInstance();
         factory.initialize(API_CONFIG.API_BASE, token);
@@ -39,7 +36,11 @@ export const PackagesPage = () => {
     } catch (error) {
       console.error('Error initializing catalog factory:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    initializeCatalogFactory();
+  }, [initializeCatalogFactory]);
 
   const handleCreateNew = () => {
     setSelectedPackage(null);
@@ -59,10 +60,7 @@ export const PackagesPage = () => {
   const renderContent = () => {
     if (!catalogFactory) {
       return (
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Cargando...</p>
-        </div>
+        <Spinner  />
       );
     }
 
@@ -90,12 +88,12 @@ export const PackagesPage = () => {
 
   const getBreadcrumbs = () => {
     const breadcrumbs = [
-      { label: 'Paquetes', path: '/packages' }
+      { label: t('navigation.packages', 'Paquetes'), path: '/packages' }
     ];
 
     if (currentView === 'create') {
       breadcrumbs.push({
-        label: selectedPackage ? 'Editar Paquete' : 'Crear Paquete',
+        label: selectedPackage ? t('packages.editPackage', 'Editar Paquete') : t('packages.createPackage', 'Crear Paquete'),
         path: '/packages/create'
       });
     }
@@ -137,11 +135,7 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
 
   const packageService = catalogFactory.getPackageService();
 
-  useEffect(() => {
-    loadPackages();
-  }, []);
-
-  const loadPackages = async () => {
+  const loadPackages = useCallback(async () => {
     setLoading(true);
     try {
       const data = await packageService.getAllPackages();
@@ -151,7 +145,11 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [packageService]);
+
+  useEffect(() => {
+    loadPackages();
+  }, [loadPackages]);
 
   const getFilteredPackages = () => {
     let filtered = packages;
@@ -193,7 +191,6 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
 
   const handleConfirmToggleStatus = async () => {
     const { packageId, activate } = confirmationModal;
-    const packageObj = packages.find(p => p.id === packageId);
     
     setConfirmationModal({ ...confirmationModal, isOpen: false });
 
@@ -224,7 +221,7 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
         )
       );
       console.error('Error toggling package status:', error);
-      alert(`Error al ${activate ? 'activar' : 'desactivar'} el paquete: ${error.message}`);
+      alert(`${t('packages.error.status_change_failed', 'Error al cambiar estado del paquete')}: ${error.message}`);
     }
   };
 
@@ -245,8 +242,8 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
       {/* Header */}
       <div className="manager-header">
         <div className="header-content">
-          <h2>Gestión de Paquetes</h2>
-          <p>Crea paquetes combinando productos y servicios con precios especiales</p>
+          <h2>{t('packages.title', 'Gestión de Paquetes')}</h2>
+          <p>{t('packages.description', 'Crea paquetes combinando productos y servicios con precios especiales')}</p>
         </div>
         <div className="header-actions">
           <button onClick={onCreateNew} className="btn btn-primary">
@@ -266,10 +263,10 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
             onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
             className="filter-select"
           >
-            <option value="all">Todos los Tipos</option>
-            <option value="product">Productos</option>
-            <option value="service">Servicios</option>
-            <option value="mixed">Mixto</option>
+            <option value="all">{t('packages.allTypes', 'Todos los Tipos')}</option>
+            <option value="product">{t('packages.types.product', 'Productos')}</option>
+            <option value="service">{t('packages.types.service', 'Servicios')}</option>
+            <option value="mixed">{t('packages.types.mixed', 'Mixto')}</option>
           </select>
 
           <select
@@ -277,16 +274,16 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
             className="filter-select"
           >
-            <option value="all">Todos los Estados</option>
-            <option value="active">Activo</option>
-            <option value="inactive">Inactivo</option>
-            <option value="available">Disponible</option>
-            <option value="outOfStock">Sin Stock</option>
+            <option value="all">{t('packages.allStatuses', 'Todos los Estados')}</option>
+            <option value="active">{t('packages.statuses.active', 'Activo')}</option>
+            <option value="inactive">{t('packages.statuses.inactive', 'Inactivo')}</option>
+            <option value="available">{t('packages.statuses.available', 'Disponible')}</option>
+            <option value="outOfStock">{t('packages.statuses.outOfStock', 'Sin Stock')}</option>
           </select>
 
           <input
             type="text"
-            placeholder="Buscar paquetes..."
+            placeholder={t('packages.searchPlaceholder', 'Buscar paquetes...')}
             value={filters.search}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
             className="search-input"
@@ -297,10 +294,7 @@ const PackagesList = ({ catalogFactory, onCreateNew, onEditPackage }) => {
       {/* Content */}
       <div className="manager-content">
         {loading ? (
-          <div className="loading-state">
-            <div className="spinner"></div>
-            <p>Cargando paquetes...</p>
-          </div>
+          <Spinner  />
         ) : filteredPackages.length === 0 ? (
           <div className="empty-content">
             <h3>{filters.search || filters.type !== 'all' || filters.status !== 'all'
@@ -536,6 +530,7 @@ const PackageCreator = ({ catalogFactory, selectedPackage, onBack, onSaved }) =>
  * Creador de paquetes con Drag & Drop
  */
 const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
   const [packageItems, setPackageItems] = useState({
@@ -543,8 +538,8 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
     services: []
   });
   const [packageForm, setPackageForm] = useState({
-    name: selectedPackage?.name || 'Mi Paquete',
-    description: selectedPackage?.description || 'Descripción del paquete',
+    name: selectedPackage?.name || '',
+    description: selectedPackage?.description || '',
     stockQuantity: selectedPackage?.stockQuantity || 5
   });
   const [loading, setLoading] = useState(true);
@@ -555,14 +550,7 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
     serviceSearch: ''
   });
 
-  useEffect(() => {
-    loadAvailableItems();
-    if (selectedPackage) {
-      loadSelectedPackage();
-    }
-  }, []);
-
-  const loadAvailableItems = async () => {
+  const loadAvailableItems = useCallback(async () => {
     try {
       setLoading(true);
       const [productsData, servicesData] = await Promise.all([
@@ -576,9 +564,9 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [catalogFactory]);
 
-  const loadSelectedPackage = () => {
+  const loadSelectedPackage = useCallback(() => {
     if (selectedPackage) {
       console.log('PackageCreator - Loading selected package:', selectedPackage); // Debug log
       
@@ -613,7 +601,14 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
         services: mappedServices
       });
     }
-  };
+  }, [selectedPackage]);
+
+  useEffect(() => {
+    loadAvailableItems();
+    if (selectedPackage) {
+      loadSelectedPackage();
+    }
+  }, [loadAvailableItems, selectedPackage, loadSelectedPackage]);
 
   const addItemToPackage = (item, type) => {
     const existingItemIndex = packageItems[type].findIndex(existing => existing.id === item.id);
@@ -759,9 +754,8 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
 
   if (loading) {
     return (
-      <div className="loading-state">
-        <div className="spinner"></div>
-        <p>Cargando elementos...</p>
+      <div className="packages-loading">
+        <Spinner message="Cargando paquetes..." />
       </div>
     );
   }
@@ -901,15 +895,15 @@ const DragDropPackageCreator = ({ catalogFactory, selectedPackage, onSaved }) =>
                 >
                   {saving ? (
                     <>
-                      <div className="spinner small"></div>
-                      Guardando...
+                      <div className="spinner-sm"></div>
+                      {t('common.saving', 'Guardando...')}
                     </>
                   ) : (
-                    selectedPackage ? 'Actualizar Paquete' : 'Crear Paquete'
+                    selectedPackage ? t('packages.update', 'Actualizar Paquete') : t('packages.create', 'Crear Paquete')
                   )}
                 </button>
                 <button onClick={onSaved} className="btn btn-secondary full-width">
-                  Cancelar
+                  {t('common.cancel', 'Cancelar')}
                 </button>
               </div>
             </div>

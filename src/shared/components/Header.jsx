@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
@@ -69,19 +68,19 @@ const LogoutIcon = () => (
   </svg>
 );
 
-const Header = ({ onToggleSidebar, sidebarOpen = false }) => {
+const Header = ({ onToggleSidebar }) => {
   const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
-  const { user, userRole } = useUserRole();
-  const navigate = useNavigate();
+  const { theme: _theme, toggleTheme: _toggleTheme } = useTheme();
+  const { user, userRole: _userRole } = useUserRole();
+  const _navigate = useNavigate();
 
-  const toggleLanguage = () => {
+  const _toggleLanguage = () => {
     const newLang = i18n.language === 'es' ? 'en' : 'es';
     i18n.changeLanguage(newLang);
     localStorage.setItem('naari_language', newLang);
   };
 
-  const handleLogout = async () => {
+  const _handleLogout = async () => {
     try {
       const authService = AuthServiceFactory.getInstance();
       await authService.logout();

@@ -77,7 +77,7 @@ class BaseApiService {
           } else if (errorBody.error) {
             errorMessage = errorBody.error;
           }
-        } catch (parseError) {
+        } catch {
           // If we can't parse the error response, use the default message
         }
         
@@ -98,7 +98,7 @@ class BaseApiService {
       
       try {
         return await response.json();
-      } catch (jsonError) {
+      } catch {
         // Si no se puede parsear como JSON, retornar objeto vacío
         return {};
       }
@@ -119,7 +119,7 @@ class BaseApiService {
     throw new Error('Method must be implemented by subclass');
   }
 
-  async create(data) {
+  async create() {
     throw new Error('Method must be implemented by subclass');
   }
 }

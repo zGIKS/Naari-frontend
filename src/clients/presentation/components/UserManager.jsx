@@ -4,6 +4,7 @@ import { useToast } from '../../../shared/components/ToastProvider';
 import { EmployeeForm } from './EmployeeForm';
 import { EmployeeList } from './EmployeeList';
 import { UserStatusConfirmationModal } from '../../../shared/components/UserStatusConfirmationModal';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * UserManager - Componente para gestión de usuarios/empleados en admin panel
@@ -46,22 +47,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     }
   }, [userFactory, t, showError]);
 
-  // Cargar datos al montar el componente
-  useEffect(() => {
-    // Solo cargar si tenemos los factories y no hemos cargado aún
-    if (catalogFactory && userFactory && branches.length === 0) {
-      loadBranches();
-    }
-  }, [catalogFactory, userFactory, branches.length]);
-
-  useEffect(() => {
-    // Solo cargar empleados si tenemos userFactory y no hemos cargado aún
-    if (userFactory && employees.length === 0) {
-      loadEmployees();
-    }
-  }, [userFactory, employees.length, loadEmployees]);
-
-  const loadBranches = async () => {
+  const loadBranches = useCallback(async () => {
     if (!catalogFactory) return;
 
     setIsLoadingBranches(true);
@@ -75,7 +61,22 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     } finally {
       setIsLoadingBranches(false);
     }
-  };
+  }, [catalogFactory, t, showError]);
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    // Solo cargar si tenemos los factories y no hemos cargado aún
+    if (catalogFactory && userFactory && branches.length === 0) {
+      loadBranches();
+    }
+  }, [catalogFactory, userFactory, branches.length, loadBranches]);
+
+  useEffect(() => {
+    // Solo cargar empleados si tenemos userFactory y no hemos cargado aún
+    if (userFactory && employees.length === 0) {
+      loadEmployees();
+    }
+  }, [userFactory, employees.length, loadEmployees]);
 
   const handleCreateEmployee = async (employeeData) => {
     if (!userFactory) return;
@@ -196,8 +197,7 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
   if (!userFactory || !catalogFactory) {
     return (
       <div className="user-manager-loading">
-        <div className="spinner"></div>
-        <p>{t('common.loading', 'Cargando...')}</p>
+        <Spinner />
       </div>
     );
   }

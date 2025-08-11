@@ -145,13 +145,9 @@ export class CategoryService {
   }
 
   async createCategory(categoryData) {
-    try {
-      const command = new CreateCategoryCommand(categoryData, this.apiService, this.observer);
-      const result = await command.execute();
-      return Category.fromApiResponse(result.data || result);
-    } catch (error) {
-      throw error;
-    }
+    const command = new CreateCategoryCommand(categoryData, this.apiService, this.observer);
+    const result = await command.execute();
+    return Category.fromApiResponse(result.data || result);
   }
 
   async updateCategory(categoryId, categoryData) {
@@ -177,7 +173,7 @@ export class CategoryService {
     }
   }
 
-  async toggleCategoryStatus(categoryId, activate, category) {
+  async toggleCategoryStatus(categoryId, activate) {
     try {
       let result;
       if (activate) {

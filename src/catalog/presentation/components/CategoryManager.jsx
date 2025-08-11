@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../../../shared/components/ConfirmationModal';
+import Spinner from '../../../shared/components/Spinner';
 
 /**
  * CategoryManager - Gestor de categorías unificado
@@ -12,7 +13,7 @@ export const CategoryManager = ({ catalogFactory }) => {
   const [categories, setCategories] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [selectedBranch, setSelectedBranch] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
   const [confirmationModal, setConfirmationModal] = useState({
@@ -25,6 +26,54 @@ export const CategoryManager = ({ catalogFactory }) => {
 
   const categoryService = catalogFactory.getCategoryService();
   const branchService = catalogFactory.getBranchService();
+
+  const getErrorMessage = useCallback((error) => {
+    if (error.status === 400) {
+      return t('admin.category_error_invalid_data', 'Datos inválidos. Verifica que todos los campos estén correctos.');
+    } else if (error.status === 401) {
+      return t('admin.category_error_unauthorized', 'No tienes autorización. Inicia sesión nuevamente.');
+    } else if (error.status === 403) {
+      return t('admin.category_error_forbidden', 'No tienes permisos para crear categorías.');
+    } else if (error.status === 409) {
+      return t('admin.category_error_conflict', 'Ya existe una categoría con ese nombre en esta sucursal.');
+    } else if (error.status === 500) {
+      return t('admin.category_error_server', 'Error del servidor. Intenta nuevamente más tarde.');
+    } else if (error.status === 0) {
+      return t('admin.category_error_network', 'Error de conexión. Verifica tu conexión a internet.');
+    }
+    return t('admin.category_error_general', 'Error al crear la categoría. Intenta nuevamente.');
+  }, [t]);
+
+  const loadBranches = useCallback(async () => {
+    try {
+      const data = await branchService.getAllBranches();
+      setBranches(data.filter(branch => branch.isActive));
+    } catch (error) {
+      console.error('Error loading branches:', error);
+    }
+  }, [branchService]);
+
+  const loadCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      let data = [];
+      
+      if (selectedBranch) {
+        // Load categories for specific branch
+        data = await categoryService.getAllCategories(selectedBranch);
+      } else {
+        // Load all categories using the general endpoint
+        data = await categoryService.getAllCategories();
+      }
+      
+      setCategories(data);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryService, selectedBranch]);
 
   // Observer simplificado para manejar solo errores ya que usamos actualización optimista
   useEffect(() => {
@@ -45,47 +94,16 @@ export const CategoryManager = ({ catalogFactory }) => {
     return () => {
       categoryService.unsubscribe(observer);
     };
-  }, [categoryService]);
+  }, [categoryService, getErrorMessage]);
 
   useEffect(() => {
     loadBranches();
     loadCategories(); // Load categories initially
-  }, []);
+  }, [loadBranches, loadCategories]);
 
   useEffect(() => {
     loadCategories(); // Reload categories when branch selection changes
-  }, [selectedBranch]);
-
-  const loadBranches = async () => {
-    try {
-      const data = await branchService.getAllBranches();
-      setBranches(data.filter(branch => branch.isActive));
-    } catch (error) {
-      console.error('Error loading branches:', error);
-    }
-  };
-
-  const loadCategories = async () => {
-    setLoading(true);
-    try {
-      let data = [];
-      
-      if (selectedBranch) {
-        // Load categories for specific branch
-        data = await categoryService.getAllCategories(selectedBranch);
-      } else {
-        // Load all categories using the general endpoint
-        data = await categoryService.getAllCategories();
-      }
-      
-      setCategories(data);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-      setCategories([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadCategories]);
 
   const handleCreateCategory = () => {
     navigate('/catalog/categories/new');
@@ -149,58 +167,6 @@ export const CategoryManager = ({ catalogFactory }) => {
     });
   };
 
-  const handleSubmit = async (formData) => {
-    setSubmitLoading(true);
-    setError(null);
-    
-    try {
-      if (editingCategory) {
-        // Actualización optimista para edición
-        setCategories(prevCategories => 
-          prevCategories.map(cat => 
-            cat.id === editingCategory.id 
-              ? { ...cat, name: formData.name, description: formData.description }
-              : cat
-          )
-        );
-        await categoryService.updateCategory(editingCategory.id, formData);
-      } else {
-        await categoryService.createCategory(formData);
-      }
-      
-      // Recargar datos para asegurar consistencia
-      await loadCategories();
-      setShowForm(false);
-      setEditingCategory(null);
-    } catch (error) {
-      console.error('Error saving category:', error);
-      setError(getErrorMessage(error));
-      // Si falla, recargar datos para revertir cambios optimistas
-      if (editingCategory) {
-        await loadCategories();
-      }
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
-
-  const getErrorMessage = (error) => {
-    if (error.status === 400) {
-      return t('admin.category_error_invalid_data', 'Datos inválidos. Verifica que todos los campos estén correctos.');
-    } else if (error.status === 401) {
-      return t('admin.category_error_unauthorized', 'No tienes autorización. Inicia sesión nuevamente.');
-    } else if (error.status === 403) {
-      return t('admin.category_error_forbidden', 'No tienes permisos para crear categorías.');
-    } else if (error.status === 409) {
-      return t('admin.category_error_conflict', 'Ya existe una categoría con ese nombre en esta sucursal.');
-    } else if (error.status === 500) {
-      return t('admin.category_error_server', 'Error del servidor. Intenta nuevamente más tarde.');
-    } else if (error.status === 0) {
-      return t('admin.category_error_network', 'Error de conexión. Verifica tu conexión a internet.');
-    }
-    return t('admin.category_error_general', 'Error al crear la categoría. Intenta nuevamente.');
-  };
-
   const getFilteredCategories = () => {
     if (statusFilter === 'all') {
       return categories;
@@ -261,8 +227,7 @@ export const CategoryManager = ({ catalogFactory }) => {
       <div className="manager-content">
         {loading ? (
           <div className="loading-state">
-            <div className="spinner"></div>
-            <p>{t('common.loading', 'Cargando categorías...')}</p>
+            <Spinner message={t('categories.loading', 'Cargando categorías...')} />
           </div>
         ) : (
           <div className="category-list">

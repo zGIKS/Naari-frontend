@@ -8,7 +8,8 @@ export const useOptimizedService = (factory, dependencies = []) => {
   const service = useMemo(() => {
     if (!factory) return null;
     return factory;
-  }, dependencies);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [factory, ...dependencies]);
 
   // Memoizar funciones comunes del servicio
   const memoizedOperations = useMemo(() => {
@@ -33,6 +34,7 @@ export const useOptimizedService = (factory, dependencies = []) => {
  * Hook para memoizar callbacks pesados
  */
 export const useOptimizedCallback = (callback, dependencies = []) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(callback, dependencies);
 };
 

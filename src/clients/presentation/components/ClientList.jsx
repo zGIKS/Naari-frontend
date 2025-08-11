@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchBar } from '../../../shared/components/SearchBar';
+import Spinner from '../../../shared/components/Spinner';
 import './ClientList.css';
 
 /**
@@ -9,7 +10,6 @@ import './ClientList.css';
 export const ClientList = ({ 
   clients = [], 
   isLoading = false, 
-  onSearch = null,
   onRefresh = null,
   onEdit = null
 }) => {
@@ -51,8 +51,7 @@ export const ClientList = ({
   if (isLoading) {
     return (
       <div className="client-list-loading">
-        <div className="spinner"></div>
-        <p>{t('common.loading', 'Cargando...')}</p>
+        <Spinner />
       </div>
     );
   }

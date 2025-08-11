@@ -18,7 +18,7 @@ export class ApiAuthRepository extends AuthRepository {
       const user = UserAssembler.fromApiResponse(response);
       
       if (user.accessToken) {
-        localStorage.setItem('naari_token', user.accessToken);
+        localStorage.setItem('naari_auth_token', user.accessToken);
         this.apiClient.setAuthToken(user.accessToken);
       }
       

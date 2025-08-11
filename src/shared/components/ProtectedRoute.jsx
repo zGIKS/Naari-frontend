@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
+import Spinner from './Spinner';
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -13,21 +14,31 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
       try {
         const authService = AuthServiceFactory.getInstance();
         
-        // Validar sesión contra la API
+        // Primero verificar cache local (rápido, sin spinner)
+        const currentUser = authService.getCurrentUser();
+        const token = localStorage.getItem('naari_auth_token');
+        
+        if (!token) {
+          // Sin token = no autenticado (rápido)
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Solo mostrar spinner si necesitamos validar contra API
         const isValid = await authService.validateSession();
         
-        if (isValid) {
+        if (isValid && currentUser) {
           setIsAuthenticated(true);
           
           // Verificar si es administrador
-          const currentUser = authService.getCurrentUser();
           const userIsAdmin = currentUser?.role === 'administrator' || 
                              currentUser?.roles?.includes('administrator');
           setIsAdmin(userIsAdmin);
         } else {
           setIsAuthenticated(false);
         }
-      } catch (error) {
+      } catch {
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -35,17 +46,10 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
     };
 
     checkAuthentication();
-  }, [location.pathname]);
+  }, []); // Solo ejecutar una vez, no en cada cambio de ruta
 
   if (isLoading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Verificando sesión...</p>
-        </div>
-      </div>
-    );
+    return <Spinner fullScreen={true} />;
   }
 
   if (!isAuthenticated) {
