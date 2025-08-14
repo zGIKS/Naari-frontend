@@ -19,10 +19,8 @@ const Spinner = ({
   if (fullScreen) {
     return (
       <div className="loading-screen">
-        <div className="loading-spinner">
           <div className={spinnerClass}></div>
           <p>{loadingMessage}</p>
-        </div>
       </div>
     );
   }
