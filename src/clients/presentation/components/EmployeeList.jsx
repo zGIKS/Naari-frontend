@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole } from '../../../shared/hooks/useUserRole.js';
+import { SearchBar } from '../../../shared/components/SearchBar';
 import Spinner from '../../../shared/components/Spinner';
 
 export const EmployeeList = ({ 
   employees = [], 
   onEdit, 
-  onToggleStatus, 
-  onSearch,
+  onToggleStatus,
   isLoading = false 
 }) => {
   const { t } = useTranslation();
   const { user, isAdmin } = useUserRole();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const [filteredEmployees, setFilteredEmployees] = useState(employees);
   const [copiedEmail, setCopiedEmail] = useState(null);
 
   // Función para verificar si es el usuario actual
@@ -71,43 +70,31 @@ export const EmployeeList = ({
   };
 
 
-  // Debounce de 500ms y búsqueda inmediata con Enter
-  const debounceTimeout = React.useRef();
-
-  // Ejecuta búsqueda (llama onSearch) y controla loading
-  const triggerSearch = useCallback(async (term) => {
-    setIsSearching(true);
-    if (onSearch) await onSearch(term);
-    setIsSearching(false);
-  }, [onSearch]);
-
-  // Debounce: espera 500ms tras escribir
+  // Actualizar filteredEmployees cuando cambie employees
   useEffect(() => {
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-    if (searchTerm === '') {
-      triggerSearch('');
+    setFilteredEmployees(employees);
+  }, [employees]);
+
+  const handleSearch = async (searchTerm) => {
+    // Búsqueda local siempre (no depende del padre)
+    if (!searchTerm.trim()) {
+      setFilteredEmployees(employees);
       return;
     }
-    debounceTimeout.current = setTimeout(() => {
-      triggerSearch(searchTerm);
-    }, 500);
-    return () => debounceTimeout.current && clearTimeout(debounceTimeout.current);
-  }, [searchTerm, triggerSearch]);
-
-  // Búsqueda inmediata con Enter
-  const handleSearchInput = (e) => {
-    setSearchTerm(e.target.value);
+    
+    const term = searchTerm.toLowerCase();
+    const filtered = employees.filter(employee => {
+      return (
+        (employee.fullName && employee.fullName.toLowerCase().includes(term)) ||
+        (employee.firstName && employee.firstName.toLowerCase().includes(term)) ||
+        (employee.lastName && employee.lastName.toLowerCase().includes(term)) ||
+        (employee.email && employee.email.toLowerCase().includes(term))
+      );
+    });
+    setFilteredEmployees(filtered);
+    
+    console.log('Búsqueda:', searchTerm, 'Resultados:', filtered.length);
   };
-
-  const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-      triggerSearch(searchTerm);
-    }
-  };
-
-  // No frontend filtering needed - search is handled by backend
-  const filteredEmployees = employees;
 
 
   const getRoleColor = (role) => {
@@ -130,52 +117,18 @@ export const EmployeeList = ({
 
   return (
     <div className="employee-list">
-      {/* Search and Filters Bar */}
-      <div className="search-filters-bar">
-        {/* Search Input */}
-        <div className="search-container">
-          <div className="search-input-wrapper">
-            <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input
-              type="text"
-              placeholder={t('users.search.placeholder', 'Buscar por nombre, apellido o email...')}
-              value={searchTerm}
-              onChange={handleSearchInput}
-              onKeyDown={handleSearchKeyDown}
-              className="search-input"
-              autoFocus
-            />
-            {(isSearching || isLoading) && (
-              <div className="search-loading">
-                <Spinner size="sm" message="" />
-              </div>
-            )}
-            {searchTerm && !isSearching && !isLoading && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="clear-search-btn"
-                title={t('common.clear', 'Limpiar')}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-      </div>
+      <SearchBar 
+        placeholder={t('users.search.placeholder', 'Buscar por nombre, apellido o email...')}
+        onSearch={handleSearch}
+        isLoading={isLoading}
+      />
 
       {/* Results Summary */}
       <div className="results-summary">
         <div className="results-count">
           <h3>{t('users.list.employees_list', 'Lista de Empleados')}</h3>
           <span className="count-badge">
-            {employees.length} {t('users.list.employees_count', 'empleados')}
+            {filteredEmployees.length} {t('users.list.employees_count', 'empleados')}
           </span>
         </div>
       </div>
@@ -187,7 +140,10 @@ export const EmployeeList = ({
             <circle cx="12" cy="7" r="4"/>
           </svg>
           <h3>{t('users.list.no_employees', 'No hay empleados')}</h3>
-          <p>{t('users.list.no_employees_desc', 'No se encontraron empleados con los filtros aplicados')}</p>
+          <p>{employees.length === 0 ? 
+            t('users.list.no_employees_desc', 'Comienza registrando tu primer empleado') :
+            t('users.list.no_results', 'No se encontraron empleados con la búsqueda actual')
+          }</p>
         </div>
       ) : (
         <div className="list-grid">

@@ -190,9 +190,6 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
     setEditingEmployee(null);
   };
 
-  const handleSearch = useCallback(async (searchTerm) => {
-    await loadEmployees(searchTerm);
-  }, [loadEmployees]);
 
   if (!userFactory || !catalogFactory) {
     return (
@@ -232,10 +229,8 @@ export const UserManager = ({ userFactory, catalogFactory }) => {
           <div className="manager-content">
             <EmployeeList
               employees={employees}
-              branches={branches}
               onEdit={handleEditEmployee}
               onToggleStatus={handleToggleEmployeeStatus}
-              onSearch={handleSearch}
               isLoading={isLoadingEmployees}
             />
           </div>

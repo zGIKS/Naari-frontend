@@ -37,8 +37,8 @@ export const SearchBar = ({
       clearTimeout(debounceTimeout.current);
     }
 
+    // No hacer búsqueda automática al inicializar con término vacío
     if (searchTerm === '') {
-      triggerSearch('');
       return;
     }
 
@@ -54,7 +54,13 @@ export const SearchBar = ({
   }, [searchTerm, triggerSearch, debounceMs]);
 
   const handleInputChange = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    
+    // Si se borra todo el contenido, ejecutar búsqueda vacía inmediatamente
+    if (value === '') {
+      triggerSearch('');
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -68,6 +74,8 @@ export const SearchBar = ({
 
   const handleClear = () => {
     setSearchTerm('');
+    // Ejecutar búsqueda vacía para limpiar resultados
+    triggerSearch('');
   };
 
   return (
