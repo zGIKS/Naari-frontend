@@ -7,6 +7,7 @@ import CalendarLayout from '../components/CalendarLayout';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { useToast } from '../components/ToastProvider';
+import { notifyProfileUpdate } from '../utils/profileNotifications';
 import Spinner from '../components/Spinner';
 
 const EditIcon = () => (
@@ -83,26 +84,31 @@ const ProfilePage = () => {
     setErrors({});
     
     try {
-      const authService = AuthServiceFactory.getInstance();
-      
-      // First check if user is still authenticated
-      if (!authService.isAuthenticated()) {
+      const token = localStorage.getItem('naari_auth_token');
+      if (!token) {
         navigate('/login');
         return;
       }
 
-      // Try to validate session (this will refresh user data)
-      const isValidSession = await authService.validateSession();
-      
-      if (!isValidSession) {
-        // Session expired, redirect to login
-        navigate('/login');
-        return;
+      // Hacer petición directa a la API sin usar cache
+      const response = await fetch(`${API_CONFIG.API_BASE}${API_ENDPOINTS.USERS.ME}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/login');
+          return;
+        }
+        throw new Error('Error al cargar el perfil');
       }
 
-      // Get current user data from the session
-      const currentUser = authService.getCurrentUser();
-      console.log('Profile data received:', currentUser);
+      const currentUser = await response.json();
+      console.log('Profile data received from API:', currentUser);
       
       if (currentUser) {
         setProfile(currentUser);
@@ -130,7 +136,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile]);
+  }, []); // Solo ejecutar una vez al montar el componente
 
   const isAdmin = () => {
     return profile?.role === 'administrator' || profile?.roles?.includes('administrator');
@@ -269,8 +275,8 @@ const ProfilePage = () => {
       setErrors({});
       showSuccess('Perfil actualizado exitosamente');
       
-      // Refresh the session to update the user data in the auth service
-      await authService.validateSession();
+      // Notificar a otros componentes que el perfil se actualizó
+      notifyProfileUpdate(profileData);
       
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -413,6 +419,9 @@ const ProfilePage = () => {
       
       // Show success message with security note
       showSuccess(t('profile.email_changed_success', 'Email actualizado exitosamente. Este cambio ha sido registrado como evento de seguridad crítico.'));
+      
+      // Notificar a otros componentes que el perfil se actualizó
+      notifyProfileUpdate(profileData);
 
     } catch (error) {
       console.error('Error updating email:', error);

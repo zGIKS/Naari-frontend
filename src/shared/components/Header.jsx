@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { AuthServiceFactory } from '../../iam/infrastructure/factories/AuthServiceFactory';
 import { useUserRole } from '../hooks/useUserRole';
+import { addProfileObserver, removeProfileObserver } from '../utils/profileNotifications';
 
 const SunIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -73,6 +75,25 @@ const Header = ({ onToggleSidebar }) => {
   const { theme: _theme, toggleTheme: _toggleTheme } = useTheme();
   const { user, userRole: _userRole } = useUserRole();
   const _navigate = useNavigate();
+  const [displayUser, setDisplayUser] = useState(user);
+
+  // Escuchar cambios en el perfil
+  useEffect(() => {
+    const handleProfileUpdate = (updatedProfile) => {
+      setDisplayUser(updatedProfile);
+    };
+
+    addProfileObserver(handleProfileUpdate);
+
+    return () => {
+      removeProfileObserver(handleProfileUpdate);
+    };
+  }, []);
+
+  // Actualizar displayUser cuando user cambie (para casos no relacionados con ProfilePage)
+  useEffect(() => {
+    setDisplayUser(user);
+  }, [user]);
 
   const _toggleLanguage = () => {
     const newLang = i18n.language === 'es' ? 'en' : 'es';
@@ -116,7 +137,7 @@ const Header = ({ onToggleSidebar }) => {
             <div className="user-name-display">
               <UserIcon />
               <span className="user-name">
-                {user?.full_name || user?.firstName || user?.email || 'Usuario'}
+                {displayUser?.full_name || displayUser?.firstName || displayUser?.email || 'Usuario'}
               </span>
             </div>
           </div>
@@ -126,7 +147,7 @@ const Header = ({ onToggleSidebar }) => {
             <div className="user-name-display">
               <UserIcon />
               <span className="user-name">
-                {user?.full_name || user?.firstName || user?.email || 'Usuario'}
+                {displayUser?.full_name || displayUser?.firstName || displayUser?.email || 'Usuario'}
               </span>
             </div>
           </div>
